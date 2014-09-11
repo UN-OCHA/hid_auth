@@ -2,12 +2,30 @@ extends layout
 
 block content
   .container
+    h1= title
+    p Welcome to #{title}, a sign on service for HumanitarianResponse.info and other OCHA community sites.
+
+    if message
+      div.messages(class='alert alert-warning', role='alert') #{message}
+
     form.form-signin(method='post', action='', role='form')
-      h2.form-signin-heading Please Login
+      h2.form-signin-heading Sign In
       .form-group
         input.form-control(name='email', type='email', placeholder='Your email')
       .form-group
         input.form-control(name='password', type='password', placeholder='Your password')
       .form-group
         button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign in
+        input(type='hidden', name='client_id', value='#{client_id}')
+
+    form.form-signin(method='post', action='/password-reset', role='form')
+      h2.form-signin-heading Reset Your Password
+      .form-group
+        button.btn.btn-lg.btn-primary.btn-block(type='submit') Reset Your Password
+        input(type='hidden', name='client_id', value='#{client_id}')
+
+    form.form-signin(method='post', action='/register', role='form')
+      h2.form-signin-heading Create a New Account
+      .form-group
+        button.btn.btn-lg.btn-primary.btn-block(type='submit') Create a New Account
         input(type='hidden', name='client_id', value='#{client_id}')

@@ -15,7 +15,7 @@ app.set('view engine', 'jade');
 app.use(express.cookieParser('ncie0fnft6wjfmgtjz8i'));
 app.use(express.cookieSession());
 
-app.locals.title = 'OAuth Example';
+app.locals.title = 'ContactsID Sign In';
 app.locals.pretty = true;
 
 app.configure('development', 'production', function() {
@@ -61,7 +61,6 @@ app.get('/oauth/authorize', function(req, res, next) {
       req.query.client_id + '&redirect_uri=' + req.query.redirect_uri);
   }
 
-console.log('authorize get',req);
   res.render('authorise', {
     client_id: req.query.client_id,
     redirect_uri: req.query.redirect_uri
@@ -75,7 +74,6 @@ app.post('/oauth/authorize', function(req, res, next) {
       req.query.client_id +'&redirect_uri=' + req.query.redirect_uri);
   }
 
-console.log('authorize post ', req);
   next();
 }, app.oauth.authCodeGrant(function(req, next) {
   // The first param should to indicate an error
@@ -90,10 +88,17 @@ app.get('/secret', middleware.requiresUser, function(req, res) {
 
 app.use(app.oauth.errorHandler());
 
-app.post('/v1/users', routes.users.create);
+//app.post('/v1/users', routes.users.create);
 app.get('/account', middleware.requiresUser, routes.users.show);
 app.get('/account.json', middleware.requiresUser, routes.users.showjson);
 app.post('/session', routes.session.create);
 app.get('/session', routes.session.show);
+
+app.all('/logout', function (req, res) {
+  req.session = null;
+//TODO: add validation for redirect based on client ID
+  var redirect = (req.query.redirect && String(req.query.redirect).length) ? req.query.redirect : '/';
+  res.redirect(redirect);
+});
 
 module.exports = app;

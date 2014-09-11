@@ -23,4 +23,3 @@ module.exports.showjson = function(req, res, next) {
     res.send('{"id": "' + user.email + '"}');
   });
 };
-

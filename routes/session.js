@@ -7,13 +7,12 @@ module.exports.create = function(req, res, next) {
     if (user) {
       req.session.userId = user.email;
       var redirect = (req.query.redirect != null ? req.query.redirect : '/account');
-console.log('client id: ', req.query.client_id);
       redirect += "?client_id=" + req.query.client_id;
       redirect += "&redirect_uri=" + req.query.redirect_uri;
       res.redirect(redirect);
     } else {
-console.log('client id: ', req.query.client_id);
-      res.status(401).render('login', {client_id: req.query.client_id});
+      console.log('Authentication failed for ' + req.body.email);
+      res.status(401).render('login', {client_id: req.query.client_id, message: 'Authentication failed'});
     }
   });
 };

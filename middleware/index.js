@@ -3,11 +3,9 @@ var User = models.User;
 
 function requiresUser(req, res, next) {
   if (req.session.userId) {
-console.log('has session userId ' + req.session.userId);
     req.user = { id: req.session.userId }
     next();
   } else {
-console.log('does not have session userId');
     res.app.oauth.authorise()(req, res, next);
   }
 }

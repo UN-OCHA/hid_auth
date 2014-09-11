@@ -17,7 +17,6 @@ module.exports.getAccessToken = function(bearerToken, callback) {
 };
 
 module.exports.saveAccessToken = function(token, clientId, expires, userId, callback) {
-console.log("access token user " + userId);
   var fields = {
     clientId: clientId,
     userId: userId.id,

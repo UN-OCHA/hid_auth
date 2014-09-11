@@ -13,7 +13,6 @@ OAuthClientsSchema.static('getClient', function(clientId, clientSecret, callback
   if (clientSecret != null) {
     params.clientSecret = clientSecret;
   }
-console.log('trying to find client with ID ' + clientId);
   OAuthClientsModel.findOne(params, callback);
 });
 

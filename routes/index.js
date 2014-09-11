@@ -1,5 +1,5 @@
 exports.index = function(req, res){
-  res.render('index');
+  res.redirect('/session');
 };
 
 exports.session = require('./session');
