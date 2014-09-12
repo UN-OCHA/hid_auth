@@ -67,7 +67,6 @@ app.get('/oauth/authorize', function(req, res, next) {
   });
 });
 
-// Handle authorise
 app.post('/oauth/authorize', function(req, res, next) {
   if (!req.session.userId) {
     return res.redirect('/session?redirect=' + req.path + 'client_id=' +
@@ -82,15 +81,13 @@ app.post('/oauth/authorize', function(req, res, next) {
   next(null, req.body.allow === 'yes', req.session.userId, null);
 }));
 
-app.get('/secret', middleware.requiresUser, function(req, res) {
-  res.send('Secret area');
-});
-
 app.use(app.oauth.errorHandler());
 
-//app.post('/v1/users', routes.users.create);
 app.get('/account', middleware.requiresUser, routes.users.show);
 app.get('/account.json', middleware.requiresUser, routes.users.showjson);
+
+app.all('/register', routes.register.form);
+
 app.post('/session', routes.session.create);
 app.get('/session', routes.session.show);
 

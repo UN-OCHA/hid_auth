@@ -5,12 +5,14 @@ var Schema = mongoose.Schema;
 var ValidationError = require('./../errors').ValidationError;
 
 var OAuthUsersSchema = new Schema({
+  user_id: { type: String, unique: true, required: true },
   email: { type: String, unique: true, required: true },
+  email_recovery: { type: String },
   hashed_password: { type: String, required: true },
-  password_reset_token: { type: String, unique: true },
+  password_reset_token: { type: String },
   reset_token_expires: Date,
-  firstname: String,
-  lastname: String
+  name_given: String,
+  name_family: String
 });
 
 function hashPassword(password) {
@@ -23,6 +25,8 @@ OAuthUsersSchema.static('register', function(fields, cb) {
 
   fields.hashed_password = hashPassword(fields.password);
   delete fields.password;
+
+  fields.user_id = fields.email + '_' + Date.now();
 
   user = new OAuthUsersModel(fields);
   user.save(cb);

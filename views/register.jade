@@ -1,0 +1,23 @@
+extends layout
+
+block content
+  .container
+    h1 Create a New Account
+    p Sign up for a ContactsID Sign In account, which will let you access HumanitarianResponse.info and the ContactsID system.
+
+    if message
+      div.messages(class='alert alert-warning', role='alert') #{message}
+
+    form.form-signin(method='post', action='', role='form')
+      h2.form-signin-heading Account Settings
+      .form-group
+        input.form-control(name='email', type='email', placeholder='Your email')
+      .form-group
+        input.form-control(name='email_recovery', type='email', placeholder='Your recovery email')
+      .form-group
+        input.form-control(name='name_given', type='text', placeholder='Your given name')
+      .form-group
+        input.form-control(name='name_family', type='text', placeholder='Your family name')
+      .form-group
+        button.btn.btn-lg.btn-primary.btn-block(type='submit') Register
+        input(type='hidden', name='client_id', value='#{options.client_id}')
