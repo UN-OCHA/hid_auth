@@ -83,7 +83,7 @@ app.post('/oauth/authorize', function(req, res, next) {
 
 app.use(app.oauth.errorHandler());
 
-app.get('/account', middleware.requiresUser, routes.users.show);
+app.all('/account', middleware.requiresUser, routes.users.account);
 app.get('/account.json', middleware.requiresUser, routes.users.showjson);
 
 app.all('/register', routes.register.form);
