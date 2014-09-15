@@ -45,12 +45,12 @@ module.exports.account = function(req, res, next) {
           res.redirect(redirect_uri);
         }
         else {
-          res.render('account', {user: user, message: message, redirect_uri: redirect_uri});
+          res.render('account', {user: user, message: message, redirect_uri: redirect_uri, csrf: req.csrfToken()});
         }
       });
     }
 
-    res.render('account', {user: user, message: message, redirect_uri: redirect_uri});
+    res.render('account', {user: user, message: message, redirect_uri: redirect_uri, csrf: req.csrfToken()});
   });
 };
 

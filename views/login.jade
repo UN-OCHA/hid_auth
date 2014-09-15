@@ -17,15 +17,18 @@ block content
       .form-group
         button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign in
         input(type='hidden', name='client_id', value='#{client_id}')
+        input(type='hidden', name='_csrf', value='#{csrf}')
 
     form.form-signin(method='post', action='/password-reset', role='form')
       h2.form-signin-heading Reset Your Password
       .form-group
         button.btn.btn-lg.btn-primary.btn-block(type='submit') Reset Your Password
         input(type='hidden', name='client_id', value='#{client_id}')
+        input(type='hidden', name='_csrf', value='#{csrf}')
 
     form.form-signin(method='post', action='/register', role='form')
       h2.form-signin-heading Create a New Account
       .form-group
         button.btn.btn-lg.btn-primary.btn-block(type='submit') Create a New Account
         input(type='hidden', name='client_id', value='#{client_id}')
+        input(type='hidden', name='_csrf', value='#{csrf}')
