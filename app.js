@@ -4,6 +4,7 @@ var config = require('./config');
 var path = require('path');
 var models = require('./models');
 var middleware = require('./middleware');
+var csrf = require('csurf');
 var app = express();
 var oauthserver = require('node-oauth2-server');
 var User = models.User;
@@ -24,6 +25,8 @@ app.configure('development', 'production', function() {
 
 app.use(express.bodyParser());
 app.use(express.methodOverride());
+
+app.use(csrf());
 
 app.oauth = oauthserver({
   model: models.oauth,
