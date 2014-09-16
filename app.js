@@ -4,7 +4,7 @@ var config = require('./config');
 var path = require('path');
 var models = require('./models');
 var middleware = require('./middleware');
-var csrf = require('csurf');
+var csrf = require('csurf')();
 var app = express();
 var oauthserver = require('node-oauth2-server');
 var User = models.User;
@@ -26,7 +26,16 @@ app.configure('development', 'production', function() {
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 
-app.use(csrf());
+var formCSRF = function (req, res, next) {
+  // Skip CSRF validation on the /oauth/access_token callback, as it's not based
+  // on a form submission.
+  if (req.path == '/oauth/access_token') {
+    next();
+  } else {
+    csrf(req, res, next);
+  }
+}
+app.use(formCSRF);
 
 app.oauth = oauthserver({
   model: models.oauth,
@@ -66,7 +75,8 @@ app.get('/oauth/authorize', function(req, res, next) {
 
   res.render('authorise', {
     client_id: req.query.client_id,
-    redirect_uri: req.query.redirect_uri
+    redirect_uri: req.query.redirect_uri,
+    csrf: req.csrfToken()
   });
 });
 
