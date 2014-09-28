@@ -40,7 +40,7 @@ module.exports.account = function(req, res, next) {
     if (changed) {
       return user.save(function (err, item) {
         message = 'Settings successfully saved.';
-        if (redirect_uri && String(redirect_uri).length) {
+        if (redirect_uri && redirect_uri != undefined && String(redirect_uri).length) {
           console.log('redirect uri is ' + redirect_uri);
           res.redirect(redirect_uri);
         }

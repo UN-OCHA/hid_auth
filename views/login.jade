@@ -3,32 +3,67 @@ extends layout
 block content
   .container
     h1= title
-    p Welcome to #{title}, a sign on service for HumanitarianResponse.info and other OCHA community sites.
 
-    if message
-      div.messages(class='alert alert-warning', role='alert') #{message}
+    ul.nav.nav-tabs(role='tablist')
 
-    form.form-signin(method='post', action='', role='form')
-      h2.form-signin-heading Sign In
-      .form-group
-        input.form-control(name='email', type='email', placeholder='Your email')
-      .form-group
-        input.form-control(name='password', type='password', placeholder='Your password')
-      .form-group
-        button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign in
-        input(type='hidden', name='client_id', value='#{client_id}')
-        input(type='hidden', name='_csrf', value='#{csrf}')
+      li.active
+        a(href='#login', role='tab', data-toggle='tab') Sign In
+      li
+        a(href='#register', role='tab', data-toggle='tab') Register
+      li
+        a(href='#help', role='tab', data-toggle='tab') Help
 
-    form.form-signin(method='post', action='/password-reset', role='form')
-      h2.form-signin-heading Reset Your Password
-      .form-group
-        button.btn.btn-lg.btn-primary.btn-block(type='submit') Reset Your Password
-        input(type='hidden', name='client_id', value='#{client_id}')
-        input(type='hidden', name='_csrf', value='#{csrf}')
+    div.tab-content
 
-    form.form-signin(method='post', action='/register', role='form')
-      h2.form-signin-heading Create a New Account
-      .form-group
-        button.btn.btn-lg.btn-primary.btn-block(type='submit') Create a New Account
-        input(type='hidden', name='client_id', value='#{client_id}')
-        input(type='hidden', name='_csrf', value='#{csrf}')
+      div.tab-pane.active(id='login')
+
+        p Welcome to #{title}, a sign on service for HumanitarianResponse.info and other OCHA community sites.
+
+        if message
+          div.messages(class='alert alert-warning', role='alert') #{message}
+
+        form.form-signin(method='post', action='', role='form')
+          .form-group
+            input.form-control(name='email', type='email', placeholder='Email address', required, autofocus)
+          .form-group
+            input.form-control(name='password', type='password', placeholder='Password', required)
+          .form-group
+            button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign In
+            input(type='hidden', name='client_id', value='#{client_id}')
+            input(type='hidden', name='_csrf', value='#{csrf}')
+
+      div.tab-pane(id='register')
+
+        p Sign up for a #{title} account, which will let you access HumanitarianResponse.info and other OCHA community sites.
+
+        if message
+          div.messages(class='alert alert-warning', role='alert') #{message}
+
+        form.form-signin(method='post', action='register', role='form')
+          .form-group
+            input.form-control(name='email', type='email', placeholder='Email address', required)
+          .form-group
+            input.form-control(name='email_recovery', type='email', placeholder='Recovery email address (optional)')
+          .form-group
+            input.form-control(name='name_given', type='text', placeholder='Given name (optional)')
+          .form-group
+            input.form-control(name='name_family', type='text', placeholder='Family name (optional)')
+          .form-group
+            button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign Up
+            input(type='hidden', name='client_id', value='#{client_id}')
+            input(type='hidden', name='_csrf', value='#{csrf}')
+
+      div.tab-pane(id='help')
+
+        p If you forget the password for your #{title} account, you can request that a password reset link is sent to your primary or recovery email address.
+
+        if message
+          div.messages(class='alert alert-warning', role='alert') #{message}
+
+        form.form-signin(method='post', action='resetpw', role='form')
+          .form-group
+            input.form-control(name='email', type='email', placeholder='Email address (primary or recovery)', required)
+          .form-group
+            button.btn.btn-lg.btn-primary.btn-block(type='submit') Reset Password
+            input(type='hidden', name='client_id', value='#{client_id}')
+            input(type='hidden', name='_csrf', value='#{csrf}')
