@@ -16,7 +16,7 @@ app.set('view engine', 'jade');
 app.use(express.cookieParser('ncie0fnft6wjfmgtjz8i'));
 app.use(express.cookieSession());
 
-app.locals.title = 'ContactsID Sign In';
+app.locals.title = 'Humanitarian ID';
 app.locals.pretty = true;
 
 app.configure('development', 'production', function() {

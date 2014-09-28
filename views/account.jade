@@ -2,30 +2,30 @@ extends layout
 
 block content
   .container
-    h1 #{user.email}
+    h1 Hi, #{user.name_given}
     p Change your account settings for ContactsID Sign In applications.
 
     if message
       div.messages(class='alert alert-warning', role='alert') #{message}
 
     form.form-account(method='post', action='', role='form')
-      h2.form-account-heading Account Settings
+      h2.form-account-heading Update Your Account
       .form-group
-        input.form-control(name='pass_current', type='password', placeholder='Your current password')
+        input.form-control(name='email', type='email', placeholder='Email address', value='#{user.email}', required)
+      .form-group
+        input.form-control(name='email_recovery', type='email', placeholder='Recovery email address', value='#{user.email_recovery}')
+      .form-group
+        input.form-control(name='pass_new', type='password', placeholder='New password')
+      .form-group
+        input.form-control(name='pass_confirm', type='password', placeholder='New password (again)')
+      .form-group
+        input.form-control(name='name_given', type='text', placeholder='Given name', value='#{user.name_given}')
+      .form-group
+        input.form-control(name='name_family', type='text', placeholder='Family name', value='#{user.name_family}')
+      .form-group
+        input.form-control(name='pass_current', type='password', placeholder='Current password')
         em You must provide your current password to change your email address, recovery email, or password.
       .form-group
-        input.form-control(name='email', type='email', placeholder='Your email', value='#{user.email}')
-      .form-group
-        input.form-control(name='email_recovery', type='email', placeholder='Your recovery email', value='#{user.email_recovery}')
-      .form-group
-        input.form-control(name='pass_new', type='password', placeholder='Your new password')
-      .form-group
-        input.form-control(name='pass_confirm', type='password', placeholder='Your new password (again)')
-      .form-group
-        input.form-control(name='name_given', type='text', placeholder='Your given name', value='#{user.name_given}')
-      .form-group
-        input.form-control(name='name_family', type='text', placeholder='Your family name', value='#{user.name_family}')
-      .form-group
-        button.btn.btn-lg.btn-primary.btn-block(type='submit') Save changes
+        button.btn.btn-lg.btn-primary.btn-block(type='submit') Update Account
         input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
         input(type='hidden', name='_csrf', value='#{csrf}')
