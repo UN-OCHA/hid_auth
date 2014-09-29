@@ -7,6 +7,7 @@ module.exports.form = function(req, res, next) {
   if (options.email) {
     password = 'abc123';
     options.password = password;
+//TODO: test for existing user
     User.register(options, function (err, data) {
       message = 'Account successfully created. Initial password set to: ' + password;
       options = {};

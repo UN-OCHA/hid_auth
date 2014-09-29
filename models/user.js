@@ -16,8 +16,7 @@ var OAuthUsersSchema = new Schema({
 });
 
 function hashPassword(password) {
-  var salt = bcrypt.genSaltSync(10);
-  return bcrypt.hashSync(password, salt);
+  return bcrypt.hashSync(password, 11);
 }
 
 OAuthUsersSchema.static('register', function(fields, cb) {
@@ -49,4 +48,5 @@ OAuthUsersSchema.static('authenticate', function(email, password, cb) {
 mongoose.model('users', OAuthUsersSchema);
 
 var OAuthUsersModel = mongoose.model('users');
+OAuthUsersModel.hashPassword = hashPassword;
 module.exports = OAuthUsersModel;

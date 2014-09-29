@@ -1,5 +1,6 @@
 var User = require('./../models').User;
 var errors = require('./../errors');
+var bcrypt = require('bcrypt');
 
 module.exports.account = function(req, res, next) {
   User.findOne({email: req.session.userId}, function(err, user) {
@@ -69,4 +70,65 @@ module.exports.showjson = function(req, res, next) {
     res.send(JSON.stringify(user));
     return next();
   });
+};
+
+module.exports.resetpw = function(req, res, next) {
+  var email = (req.body && req.body.email) ? req.body.email : undefined;
+
+  if (email == undefined || !String(email).length) {
+    res.render('index', {action: 'help', message: "An email address is required to reset an account's password.", csrf: req.csrfToken()});
+    return next(new errors.BadRequest("Email address is required to reset an account's password."));
+  }
+
+  User.findOne({email: email}, function(err, user) {
+    if (err) return next(err);
+    if (!user) return next(new errors.NotFound('User not found'));
+//TODO: check recovery email
+
+    var message = null,
+      redirect_uri = req.query.redirect_uri || req.body.redirect_uri || '',
+      now = Date.now(),
+      reset_url = "resetpw/" + new Buffer(user.email + "/" + now + "/" + new Buffer(User.hashPassword(user.hashed_password + now + user.user_id)).toString('base64')).toString('base64');
+
+    message = 'Use password reset link: ' + reset_url;
+    res.render('index', {user: user, message: message, redirect_uri: redirect_uri, csrf: req.csrfToken()});
+  });
+};
+
+module.exports.resetpwuse = function(req, res, next) {
+  var encodedKey = (req.params && req.params.key) ? req.params.key : undefined;
+
+  if (encodedKey != undefined && String(encodedKey).length) {
+    // decode key
+    var key = new Buffer(encodedKey, 'base64').toString('ascii'),
+      parts = key.split('/'),
+      email = parts[0],
+      timestamp = parts[1],
+      hash = new Buffer(parts[2], 'base64').toString('ascii');
+
+    // verify timestamp is not too old
+    if (timestamp < (Date.now() - 5184000) || timestamp > Date.now()) {
+      next(true);
+    }
+
+    // look up user
+    User.findOne({email: email}, function(err, user) {
+      if (err) return next(err);
+      if (!user) return next(new errors.NotFound('User not found'));
+
+      // verify hash
+      if (!bcrypt.compareSync(user.hashed_password + timestamp + user.user_id, hash)) {
+        return next(new errors.BadRequest('Invalid password reset link.'));
+      }
+
+      // log operation
+      console.log('valid password link for ' + email + '. initiating session');
+
+      // register session
+      req.session.userId = user.email;
+
+      // redirect to account page to change password
+      res.redirect('account');
+    });
+  }
 };
