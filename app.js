@@ -99,10 +99,10 @@ app.use(app.oauth.errorHandler());
 app.all('/account', middleware.requiresUser, routes.users.account);
 app.get('/account.json', middleware.requiresUser, routes.users.showjson);
 
-app.all('/register', routes.register.form);
-
-app.post('/session', routes.session.create);
-app.get('/session', routes.session.show);
+app.post('/register', routes.register.form);
+app.post('/login', routes.session.create);
+app.post('/resetpw', routes.users.resetpw);
+app.get('/resetpw/:key', routes.users.resetpwuse);
 
 app.all('/logout', function (req, res) {
   req.session = null;
