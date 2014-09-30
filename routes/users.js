@@ -1,5 +1,6 @@
 var User = require('./../models').User;
 var errors = require('./../errors');
+var mail = require('./../mail');
 var bcrypt = require('bcrypt');
 
 module.exports.account = function(req, res, next) {
@@ -90,8 +91,29 @@ module.exports.resetpw = function(req, res, next) {
       now = Date.now(),
       reset_url = "resetpw/" + new Buffer(user.email + "/" + now + "/" + new Buffer(User.hashPassword(user.hashed_password + now + user.user_id)).toString('base64')).toString('base64');
 
-    message = 'Use password reset link: ' + reset_url;
-    res.render('index', {user: user, message: message, redirect_uri: redirect_uri, csrf: req.csrfToken()});
+    // setup e-mail data with unicode symbols
+    var mailText = 'Use password reset link: ' + reset_url;
+    var mailOptions = {
+      from: 'Contacts ID <info@contactsid.local>',
+      to: email,
+      subject: 'Password reset for Contacts ID',
+      text: mailText
+    };
+    
+    // send mail with defined transport object
+    mail.sendMail(mailOptions, function(error, info){
+      var message;
+      if (error) {
+        console.log(error);
+        message = 'Sending password reset failed.';
+      }
+      else {
+        console.log('Message sent: ' + info.response);
+        message = 'Sending password successful! Check your email and follow the included link to reset your password.';
+      }
+      res.render('index', {user: user, message: message, redirect_uri: redirect_uri, csrf: req.csrfToken()});
+    });
+
   });
 };
 
