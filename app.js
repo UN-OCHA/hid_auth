@@ -16,8 +16,9 @@ app.set('view engine', 'jade');
 app.use(express.cookieParser('ncie0fnft6wjfmgtjz8i'));
 app.use(express.cookieSession());
 
+app.set('title', 'Humanitarian ID');
 app.locals.title = 'Humanitarian ID';
-app.locals.pretty = true;
+app.set('emailFrom', 'info@humanitarian.id');
 
 app.configure('development', 'production', function() {
   app.use(express.logger('dev'));
@@ -69,11 +70,11 @@ app.all('/oauth/access_token', app.oauth.grant());
 
 app.get('/oauth/authorize', function(req, res, next) {
   if (!req.session.userId) {
-    return res.redirect('/session?redirect=' + req.path + '&client_id=' +
+    return res.redirect('/?redirect=' + req.path + '&client_id=' +
       req.query.client_id + '&redirect_uri=' + req.query.redirect_uri);
   }
 
-  res.render('authorise', {
+  res.render('authorize', {
     client_id: req.query.client_id,
     redirect_uri: req.query.redirect_uri,
     csrf: req.csrfToken()
@@ -82,14 +83,14 @@ app.get('/oauth/authorize', function(req, res, next) {
 
 app.post('/oauth/authorize', function(req, res, next) {
   if (!req.session.userId) {
-    return res.redirect('/session?redirect=' + req.path + 'client_id=' +
+    return res.redirect('/?redirect=' + req.path + 'client_id=' +
       req.query.client_id +'&redirect_uri=' + req.query.redirect_uri);
   }
 
   next();
 }, app.oauth.authCodeGrant(function(req, next) {
   // The first param should to indicate an error
-  // The second param should a bool to indicate if the user did authorise the app
+  // The second param should a bool to indicate if the user did authorize the app
   // The third param should for the user/uid (only used for passing to saveAuthCode)
   next(null, req.body.allow === 'yes', req.session.userId, null);
 }));

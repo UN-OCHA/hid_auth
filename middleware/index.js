@@ -3,9 +3,10 @@ var User = models.User;
 
 function requiresUser(req, res, next) {
   if (req.session.userId) {
-    req.user = { id: req.session.userId }
+    req.user = {id: req.session.userId}
     next();
-  } else {
+  }
+  else {
     res.app.oauth.authorise()(req, res, next);
   }
 }
