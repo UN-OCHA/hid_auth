@@ -1,57 +1,78 @@
 var User = require('./../models').User;
 var mail = require('./../mail');
+var async = require('async');
 
 module.exports.form = function(req, res, next) {
   var options = req.body || {},
-    message = null;
+    message = null,
+    data;
 
-  if (options.email) {
-    password = 'abc123';
-    options.password = password;
-//TODO: test for existing user
-    User.register(options, function (err, data) {
-      message = 'Account successfully created. Initial password set to: ' + password;
-      options = {};
-
-      if (err) {
-        res.render('index', {options: options, message: message, csrf: req.csrfToken()});
-        return next(true);
-      }
-      else {
-        // setup e-mail data
-        var now = Date.now(),
-          reset_url = "resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64')).toString('base64');
-        var mailText = 'Use link to verify your account: ' + reset_url;
-        var mailOptions = {
-          from: 'Contacts ID <info@contactsid.local>',
-          to: data.email,
-          subject: 'Account verify link for Contacts ID',
-          text: mailText
-        };
-        
-        // send mail with defined transport object
-        mail.sendMail(mailOptions, function(error, info){
-          var message;
-          if (error) {
-            console.log(error);
-            message = 'Verify email sending failed.';
-          }
-          else {
-            console.log('Message sent: ' + info.response);
-            message = 'Verify email sent successful! Check your email and follow the included link to reset your password.';
-          }
-          res.render('index', {options: options, message: message, csrf: req.csrfToken()});
-          next();
-        });
-
+  async.series([
+    function (cb) {
+      // Validate the email address
+      if (options.email == undefined || String(options.email).length < 1) {
+        message = 'An email address is required to register a new account.';
+        return cb(true);
       }
 
+      // Ensure the email address isn't already registered
+      User.findOne({email: options.email}, function(err, user) {
+        if (err || (user && user.user_id)) {
+          message = 'The email address supplied is already registered with an account. Do you need to reset your password?';
+          return cb(true);
+        }
+        else {
+          return cb();
+        }
+      });
+    },
+    function (cb) {
+      // Generate a random password
+      var password = User.hashPassword(options.email + Date.now() + JSON.stringify(options)),
+        pos = Math.floor(Math.random() * (password.length - 12));
+      password = password.substr(pos, 12);
+      options.password = password;
 
-    });
-    return;
-  }
-  else if (req.body) {
-    message = 'An email address is required to register a new account.';
-  }
-  res.render('index', {options: options, message: message, csrf: req.csrfToken()});
+      // Register the account
+      User.register(options, function (err, user) {
+        if (err) {
+          message = 'Account registration failed. Please try again or contact administrators.';
+          return cb(true);
+        }
+        data = user;
+        return cb();
+      });
+    },
+    function (cb) {
+      // Set up email content
+      var now = Date.now(),
+        reset_url = req.protocol + "://" + req.get('host') + "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64')).toString('base64');
+      var mailText = 'Thanks for registering for a ' + req.app.get('title') + ' account! Please follow this link to verify your account and set your password: ' + reset_url;
+      var mailOptions = {
+        from: req.app.get('title') + ' <' + req.app.get('emailFrom') + '>',
+        to: data.email,
+        subject: 'Account verify link for ' + req.app.get('title'),
+        text: mailText
+      };
+
+      // Send mail
+      mail.sendMail(mailOptions, function (err, info) {
+        if (err) {
+          console.log(err);
+          message = 'Verify email sending failed. Please try again or contact administrators.';
+          return cb(true);
+        }
+        else {
+          console.log('Message sent: ' + info.response);
+          message = 'Verify email sent successful! Check your email and follow the included link to reset your password.';
+          options = {};
+          return cb();
+        }
+      });
+    }
+  ],
+  function (err, results) {
+    res.render('index', {options: options, message: message, redirect: '', client_id: '', redirect_uri: '', csrf: req.csrfToken()});
+    next();
+  });
 };

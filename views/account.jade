@@ -2,14 +2,22 @@ extends layout
 
 block content
   .container
-    h1 Hi, #{user.name_given}
-    p Change your account settings for ContactsID Sign In applications.
+    h1= title
+    h2 Welcome, 
+      span.name= user.name_given
 
-    if message
-      div.messages(class='alert alert-warning', role='alert') #{message}
+    ul.nav.nav-tabs(role='tablist')
+      li.active
+        a(href='#') Update Your Account
+      li
+        a(href='/logout') Logout
 
     form.form-account(method='post', action='', role='form')
-      h2.form-account-heading Update Your Account
+      p Update your account settings for #{title}.
+
+      if message
+        div.messages(class='alert alert-warning', role='alert') #{message}
+
       .form-group
         input.form-control(name='email', type='email', placeholder='Email address', value='#{user.email}', required)
       .form-group
@@ -17,15 +25,16 @@ block content
       .form-group
         input.form-control(name='pass_new', type='password', placeholder='New password')
       .form-group
-        input.form-control(name='pass_confirm', type='password', placeholder='New password (again)')
+        input.form-control(name='pass_confirm', type='password', placeholder='New password (confirm)')
       .form-group
         input.form-control(name='name_given', type='text', placeholder='Given name', value='#{user.name_given}')
       .form-group
         input.form-control(name='name_family', type='text', placeholder='Family name', value='#{user.name_family}')
-      .form-group
+      .form-group.bg-warning.hidden
         input.form-control(name='pass_current', type='password', placeholder='Current password')
         em You must provide your current password to change your email address, recovery email, or password.
       .form-group
         button.btn.btn-lg.btn-primary.btn-block(type='submit') Update Account
         input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
+        input(type='hidden', name='user_id', value='#{user.user_id}')
         input(type='hidden', name='_csrf', value='#{csrf}')

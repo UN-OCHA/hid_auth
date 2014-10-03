@@ -1,5 +1,10 @@
-exports.index = function(req, res){
-  res.render('index', {client_id: req.query.client_id, csrf: req.csrfToken()});
+exports.index = function(req, res) {
+  if (req.session.userId) {
+    res.redirect('account');
+  }
+  else {
+    res.render('index', {redirect: req.query.redirect || '', client_id: req.query.client_id, redirect_uri: req.query.redirect_uri || '', csrf: req.csrfToken()});
+  }
 };
 
 exports.register = require('./register');

@@ -1,58 +1,117 @@
 var User = require('./../models').User;
 var errors = require('./../errors');
 var mail = require('./../mail');
+var async = require('async');
 var bcrypt = require('bcrypt');
 
 module.exports.account = function(req, res, next) {
-  User.findOne({email: req.session.userId}, function(err, user) {
-    if (err) return next(err);
-    if (!user) return next(new errors.NotFound('User not found'));
+  var options = req.body || {},
+    redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
+    message = null,
+    data = {};
 
-    var options = req.body || {},
-      message = null,
-      redirect_uri = req.query.redirect_uri || req.body.redirect_uri || '';
+  async.series([
+    function (cb) {
+      // Load user based on user_id
+      User.findOne({email: req.session.userId}, function(err, user) {
+        if (err || !user) {
+          message = "Could not load user account. Please try again or contact an administrator.";
+          return cb(true);
+        }
 
-    if (options.pass_current) {
-      // Validate the password
-      User.authenticate(user.email, options.pass_current, function(err, result) {
-        if (result) {
-          // If correct, allow to continue
-        }
-        else {
-          // If incorrect, show an error
-        }
+        data = user;
+        return cb();
       });
-    }
-    else {
-      // Remove fields that should not be changed without a valid password.
-      delete options.email;
-      delete options.email_recovery;
-      delete options.pass_new;
-      delete options.pass_confirm;
-    }
+    },
+    function (cb) {
+      // Validate the submitted form values.
 
-    // Update any fields
-    var changed = false;
-    for (var key in options) {
-      if (options.hasOwnProperty(key)) {
-        user[key] = options[key];
-        changed = true;
+      // If the email address is missing, then this form isn't submitted yet.
+      if (options.email == undefined) {
+        return cb(true);
+      }
+
+      // Verify form user_id matches session user_id
+      if (options.email !== req.session.userId) {
+        message = "Invalid account settings submission. Please try again or contact an administrator.";
+        return cb(true);
+      }
+
+      // If a new password is supplied, ensure that it matches the new password
+      // confirm field.
+      if (options.pass_new != undefined && String(options.pass_new).length && options.pass_new !== options.pass_confirm) {
+        message = "The values supplied for the New Password and New Password (confirm) fields do not match. Please check these fields and try again.";
+        return cb(true);
+      }
+
+      // If the primary or recovery email addresses are changed, or if a new
+      // password is supplied, then verify that the current password is correct.
+      // Make an exception if the user is following a password reset link.
+      if (req.session.allowPasswordReset && Date.now() < (req.session.allowPasswordReset + 5184000)) {
+        req.session.allowPasswordReset = 0;
+        return cb();
+      }
+      else if (options.email !== data.email || options.email_recovery !== data.email_recovery || (options.pass_new && String(options.pass_new).length)) {
+        User.authenticate(data.email, options.pass_current, function(err, result) {
+          if (result) {
+            // Current password is correct. Allow save to continue.
+            return cb();
+          }
+          else {
+            // Current password is incorrect. Abort the submission.
+            message = "The current password provided is incorrect. Please try again.";
+            return cb(true);
+          }
+        });
+      }
+      else {
+        // Remove fields that should not be changed without a valid password.
+        delete options.email;
+        delete options.email_recovery;
+        delete options.pass_new;
+        delete options.pass_confirm;
+        return cb();
+      }
+    },
+    function (cb) {
+      // Process/save the submitted form values.
+
+      // Update any fields
+      var changed = false;
+      for (var key in options) {
+        if (options.hasOwnProperty(key)) {
+          if (key == "pass_new") {
+            data.hashed_password = User.hashPassword(options.pass_new);
+          }
+          else {
+            data[key] = options[key];
+          }
+          changed = true;
+        }
+      }
+      if (changed) {
+        return data.save(function (err, item) {
+          if (err || !item) {
+            message = "Error updating the user account.";
+            return cb(true);
+          }
+          else {
+            data = item;
+            message = 'Settings successfully saved.';
+            return cb();
+          }
+        });
       }
     }
-    if (changed) {
-      return user.save(function (err, item) {
-        message = 'Settings successfully saved.';
-        if (redirect_uri && redirect_uri != undefined && String(redirect_uri).length) {
-          console.log('redirect uri is ' + redirect_uri);
-          res.redirect(redirect_uri);
-        }
-        else {
-          res.render('account', {user: user, message: message, redirect_uri: redirect_uri, csrf: req.csrfToken()});
-        }
-      });
+  ],
+  function (err, results) {
+    if (redirect_uri && redirect_uri != undefined && String(redirect_uri).length) {
+      res.redirect(redirect_uri);
     }
-
-    res.render('account', {user: user, message: message, redirect_uri: redirect_uri, csrf: req.csrfToken()});
+    else {
+      res.render('account', {user: data, message: message, redirect: '', client_id: '', redirect_uri: redirect_uri, csrf: req.csrfToken()});
+    }
+    next();
   });
 };
 
@@ -74,46 +133,78 @@ module.exports.showjson = function(req, res, next) {
 };
 
 module.exports.resetpw = function(req, res, next) {
-  var email = (req.body && req.body.email) ? req.body.email : undefined;
+  var email = (req.body && req.body.email) ? req.body.email : undefined,
+    options = {},
+    message = null,
+    data;
 
-  if (email == undefined || !String(email).length) {
-    res.render('index', {action: 'help', message: "An email address is required to reset an account's password.", csrf: req.csrfToken()});
-    return next(new errors.BadRequest("Email address is required to reset an account's password."));
-  }
-
-  User.findOne({email: email}, function(err, user) {
-    if (err) return next(err);
-    if (!user) return next(new errors.NotFound('User not found'));
-//TODO: check recovery email
-
-    var message = null,
-      redirect_uri = req.query.redirect_uri || req.body.redirect_uri || '',
-      now = Date.now(),
-      reset_url = "resetpw/" + new Buffer(user.email + "/" + now + "/" + new Buffer(User.hashPassword(user.hashed_password + now + user.user_id)).toString('base64')).toString('base64');
-
-    // setup e-mail data with unicode symbols
-    var mailText = 'Use password reset link: ' + reset_url;
-    var mailOptions = {
-      from: 'Contacts ID <info@contactsid.local>',
-      to: email,
-      subject: 'Password reset for Contacts ID',
-      text: mailText
-    };
-    
-    // send mail with defined transport object
-    mail.sendMail(mailOptions, function(error, info){
-      var message;
-      if (error) {
-        console.log(error);
-        message = 'Sending password reset failed.';
+  async.series([
+    function (cb) {
+      // Validate the email address
+      if (email == undefined || !String(email).length) {
+        message = "An email address is required to reset an account's password.";
+        options.email = email;
+        return cb(true);
       }
       else {
-        console.log('Message sent: ' + info.response);
-        message = 'Sending password successful! Check your email and follow the included link to reset your password.';
+        return cb();
       }
-      res.render('index', {user: user, message: message, redirect_uri: redirect_uri, csrf: req.csrfToken()});
-    });
+    },
+    function (cb) {
+      // Ensure an account exists with the email address (as the primary or
+      // recovery email address).
+      User.findOne({email: email}, function(err, user) {
+        if (user && user.user_id) {
+          data = user;
+          return cb();
+        }
 
+        User.findOne({email_recovery: email}, function(err, user) {
+          if (user && user.user_id) {
+            data = user;
+            return cb();
+          }
+          else {
+            message = "Could not find an account linked to the email address " + email + ".";
+            return cb(true);
+          }
+        });
+      });
+    },
+    function (cb) {
+      // Generate password reset link and send it in an email to the requested
+      // email address.
+      var redirect_uri = req.body.redirect_uri || '',
+        now = Date.now(),
+        reset_url = req.protocol + "://" + req.get('host') + "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64')).toString('base64');
+  
+      // Set up email content
+      var mailText = 'A password reset link for ' + req.app.get('title') + ' was requested for the account linked to the email address ' + data.email + '. Please follow this link to regain access to your account and reset your password: ' + reset_url;
+      var mailOptions = {
+        from: req.app.get('title') + ' <' + req.app.get('emailFrom') + '>',
+        to: email,
+        subject: 'Password reset for ' + req.app.get('title'),
+        text: mailText
+      };
+  
+      // Send mail
+      mail.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+          message = 'Password reset email sending failed. Please try again or contact administrators.';
+          return cb(true);
+        }
+        else {
+          console.log('Message sent: ' + info.response);
+          message = 'Sending password successful! Check your email and follow the included link to reset your password.';
+          return cb();
+        }
+      });
+    }
+  ],
+  function (err, results) {
+    res.render('index', {action: 'help', options: options, message: message, redirect: req.body.redirect || '', client_id: req.body.client_id || '', redirect_uri: req.body.redirect_uri || '', csrf: req.csrfToken()});
+    next();
   });
 };
 
@@ -126,10 +217,11 @@ module.exports.resetpwuse = function(req, res, next) {
       parts = key.split('/'),
       email = parts[0],
       timestamp = parts[1],
-      hash = new Buffer(parts[2], 'base64').toString('ascii');
+      hash = new Buffer(parts[2], 'base64').toString('ascii'),
+      now = Date.now();
 
     // verify timestamp is not too old
-    if (timestamp < (Date.now() - 5184000) || timestamp > Date.now()) {
+    if (timestamp < (now - 5184000) || timestamp > now) {
       next(true);
     }
 
@@ -148,6 +240,9 @@ module.exports.resetpwuse = function(req, res, next) {
 
       // register session
       req.session.userId = user.email;
+
+      // set session variable to allow password resets
+      req.session.allowPasswordReset = timestamp;
 
       // redirect to account page to change password
       res.redirect('account');
