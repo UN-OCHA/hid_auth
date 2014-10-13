@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var authorizedClientIds = ['drupal-proto'];
+//TODO Move this to a config file.
+var authorizedClientIds = ['drupal-proto', 'hrinfo-local', 'hrinfo-dev', 'hrinfo-stage', 'hrinfo-prod'];
 
 var OAuthClientsSchema = new Schema({
   clientId: String,
