@@ -70,6 +70,7 @@ app.all('/oauth/access_token', app.oauth.grant());
 
 app.get('/oauth/authorize', function(req, res, next) {
   if (!req.session.userId) {
+    console.log('Accessing /oauth/authorize without session. Redirecting to the login page.');
     return res.redirect('/?redirect=' + req.path + '&client_id=' +
       req.query.client_id + '&redirect_uri=' + req.query.redirect_uri);
   }
@@ -83,6 +84,7 @@ app.get('/oauth/authorize', function(req, res, next) {
 
 app.post('/oauth/authorize', function(req, res, next) {
   if (!req.session.userId) {
+    console.log('Posting to /oauth/authorize without session. Redirecting to the login page.');
     return res.redirect('/?redirect=' + req.path + 'client_id=' +
       req.query.client_id +'&redirect_uri=' + req.query.redirect_uri);
   }
@@ -107,6 +109,7 @@ app.get('/resetpw/:key', routes.users.resetpwuse);
 
 app.all('/logout', function (req, res) {
   req.session = null;
+  console.log('Clearing session to log out user ' + req.session.userId);
 //TODO: add validation for redirect based on client ID
   var redirect = (req.query.redirect && String(req.query.redirect).length) ? req.query.redirect : '/';
   res.redirect(redirect);

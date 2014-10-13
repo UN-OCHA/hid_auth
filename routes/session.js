@@ -9,7 +9,7 @@ module.exports.create = function(req, res, next) {
       var redirect = (req.body.redirect != null && req.body.redirect != undefined) ? req.body.redirect : '/account';
       redirect += "?client_id=" + req.body.client_id;
       redirect += "&redirect_uri=" + req.body.redirect_uri;
-      console.log('Authentication successful for ' + req.body.email);
+      console.log('Authentication successful for ' + req.body.email + '. Redirecting to: ' + redirect);
       res.redirect(redirect);
     }
     else {
