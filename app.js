@@ -108,8 +108,8 @@ app.post('/resetpw', routes.users.resetpw);
 app.get('/resetpw/:key', routes.users.resetpwuse);
 
 app.all('/logout', function (req, res) {
-  req.session = null;
   console.log('Clearing session to log out user ' + req.session.userId);
+  req.session = null;
 //TODO: add validation for redirect based on client ID
   var redirect = (req.query.redirect && String(req.query.redirect).length) ? req.query.redirect : '/';
   res.redirect(redirect);
