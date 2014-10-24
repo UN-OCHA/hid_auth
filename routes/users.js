@@ -220,9 +220,9 @@ module.exports.resetpwuse = function(req, res, next) {
       hash = new Buffer(parts[2], 'base64').toString('ascii'),
       now = Date.now();
 
-    // verify timestamp is not too old
-    if (timestamp < (now - 5184000) || timestamp > now) {
-      next(true);
+    // verify timestamp is not too old (allow up to 1 day in milliseconds)
+    if (timestamp < (now - 86400000) || timestamp > now) {
+      return next(new errors.BadRequest('Password reset link expired.'));
     }
 
     // look up user
