@@ -30,9 +30,11 @@ block content
         input.form-control(name='name_given', type='text', placeholder='Given name', value='#{user.name_given}')
       .form-group
         input.form-control(name='name_family', type='text', placeholder='Family name', value='#{user.name_family}')
-      .form-group.bg-warning.hidden
-        input.form-control(name='pass_current', type='password', placeholder='Current password')
-        em You must provide your current password to change your email address, recovery email, or password.
+      unless allowPasswordReset
+        .form-group.bg-warning.hidden
+          input.form-control(name='pass_current', type='password', placeholder='Current password')
+          em You must provide your current password to change your email address, recovery email, or password.
+
       .form-group
         button.btn.btn-lg.btn-primary.btn-block(type='submit') Update Account
         input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
