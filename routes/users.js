@@ -109,7 +109,7 @@ module.exports.account = function(req, res, next) {
       res.redirect(redirect_uri);
     }
     else {
-      res.render('account', {user: data, message: message, redirect: '', client_id: '', redirect_uri: redirect_uri, csrf: req.csrfToken()});
+      res.render('account', {user: data, message: message, redirect: '', client_id: '', redirect_uri: redirect_uri, csrf: req.csrfToken(), allowPasswordReset: req.session.allowPasswordReset || 0});
     }
     next();
   });
