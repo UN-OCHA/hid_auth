@@ -5,6 +5,8 @@ var async = require('async');
 var bcrypt = require('bcrypt');
 
 module.exports.account = function(req, res, next) {
+  req.session.returnURI = req.session.returnURI || req.query.return_uri || '';
+
   var options = req.body || {},
     redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
     message = null,
@@ -98,6 +100,9 @@ module.exports.account = function(req, res, next) {
           else {
             data = item;
             message = 'Settings successfully saved.';
+            if (req.session.returnURI) {
+              message += ' Return to  <a href="' + req.session.returnURI + '">' + req.session.returnURI + '</a>.';
+            }
             return cb();
           }
         });
@@ -109,7 +114,7 @@ module.exports.account = function(req, res, next) {
       res.redirect(redirect_uri);
     }
     else {
-      res.render('account', {user: data, message: message, redirect: '', client_id: '', redirect_uri: redirect_uri, csrf: req.csrfToken(), allowPasswordReset: req.session.allowPasswordReset || 0});
+      res.render('account', {user: data, message: message, redirect: req.session.returnURI, client_id: '', redirect_uri: redirect_uri, csrf: req.csrfToken(), allowPasswordReset: req.session.allowPasswordReset || 0});
     }
     next();
   });
@@ -137,6 +142,8 @@ module.exports.resetpw = function(req, res, next) {
     options = {},
     message = null,
     data;
+
+  req.session.returnURI = req.session.returnURI || req.query.return_uri || '';
 
   async.series([
     function (cb) {
@@ -176,8 +183,13 @@ module.exports.resetpw = function(req, res, next) {
       // email address.
       var redirect_uri = req.body.redirect_uri || '',
         now = Date.now(),
+        // TODO Add return_uri to this link
         reset_url = req.protocol + "://" + req.get('host') + "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64')).toString('base64');
-  
+
+      if (String(req.session.returnURI).length) {
+        reset_url += '?return_uri=' + req.session.returnURI;
+      }
+
       // Set up email content
       var mailText = 'A password reset link for ' + req.app.get('title') + ' was requested for the account linked to the email address ' + data.email + '. Please follow this link to regain access to your account and reset your password: ' + reset_url;
       var mailOptions = {
@@ -210,6 +222,8 @@ module.exports.resetpw = function(req, res, next) {
 
 module.exports.resetpwuse = function(req, res, next) {
   var encodedKey = (req.params && req.params.key) ? req.params.key : undefined;
+
+  req.session.returnURI = req.session.returnURI || req.query.return_uri || '';
 
   if (encodedKey != undefined && String(encodedKey).length) {
     // decode key
