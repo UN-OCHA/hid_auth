@@ -1,7 +1,7 @@
 mongo:
   image: unocha/mongodb
   volumes:
-    - /data/contactsid_auth_mongo:/data/db
+    - /data/contactsid_auth/mongo:/data/db
   environment:
     DNSDOCK_NAME: mongo
     DNSDOCK_IMAGE: contactsid
