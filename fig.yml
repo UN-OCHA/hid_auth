@@ -13,5 +13,3 @@ auth:
     DNSDOCK_NAME: auth
     DNSDOCK_IMAGE: contactsid
     NODE_ENV: dockerdev
-  links:
-    - mongo:mongo
