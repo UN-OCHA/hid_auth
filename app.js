@@ -69,6 +69,10 @@ app.get('/', middleware.loadUser, routes.index);
 app.all('/oauth/access_token', app.oauth.grant());
 
 app.get('/oauth/authorize', function(req, res, next) {
+  if (req.query.nonce && req.query.nonce.length) {
+    req.session.nonce = req.query.nonce;
+  }
+
   if (!req.session.userId) {
     console.log('Accessing /oauth/authorize without session. Redirecting to the login page.');
     return res.redirect('/?redirect=' + req.path + '&client_id=' +

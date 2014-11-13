@@ -5,6 +5,7 @@ var OAuthAuthCodeSchema = new Schema({
   authCode: { type: String, required: true, unique: true },
   clientId: String,
   userId: { type: String, required: true },
+  nonce: String,
   expires: Date
 });
 
@@ -16,11 +17,12 @@ module.exports.getAuthCode = function(authCode, callback) {
   OAuthAuthCodeModel.findOne({ authCode: authCode }, callback);
 };
 
-module.exports.saveAuthCode = function(code, clientId, expires, userId, callback) {
+module.exports.saveAuthCode = function(code, clientId, expires, userId, nonce, callback) {
   var fields = {
     clientId: clientId,
     userId: userId,
-    expires: expires
+    expires: expires,
+    nonce: nonce
   };
 
   OAuthAuthCodeModel.update({ authCode: code }, fields, { upsert: true }, function(err) {
