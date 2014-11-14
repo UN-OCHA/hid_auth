@@ -24,23 +24,23 @@ In addition, your code and data are saved on a different disk partition, so the 
 
 ### Running the site
 
-- Log into the UN OCHA docker hub. The username is unocha and the password is on the "New BlackMesh Environment" wiki page.
+- Log into the UN OCHA docker hub by running `docker login`. Enter the username, password, and email address found on: https://wiki.phase2technology.com/display/UN/New+BlackMesh+Infrastructure
 - Using your tool of choice, clone git@bitbucket.org:phase2tech/contactsid_auth.git into the code share.
-- Run `fig up` from the `/Volumes/code` directory.
+- Run `fig up` from the `/Volumes/code/contactsid_auth` directory.
 - This will download two containers from the Docker hub and then run them both.
 - At this point, you should be able to access the site at http://auth.contactsid.vm/ in your browser. You may additionally access mongo.contactsid.vm from your Mac if you would like to look at the Mongo database.
+
+### Working with Docker
+
 - You may use the `docker ps` command to see all running containers. The dev VM runs three containers named 'file-server', 'buildtools', and 'dnsdock' to provide its base services.
+- If you want to get a **shell** on either of the containers, you may do so with the `docker exec` command using its name.
+    - To get a shell on the mongo container, for example, you may do a `docker exec -it contactsidauth_mongo_1 /bin/bash` from your Mac. Note that you will be logged in as root and process ID 1 in your container will either be mongo or node or forego (a process manager for running multiple processes.)
 - By default, `fig up` will run the containers in the foreground and you will get nginx and node and Mongo logs in your terminal.
     - You can stop both services by hitting Ctrl-c.
 - If you wish to run the containers in the background, you may run them with `fig up -d`.
     - Note that in this case, you can still get the logs for the containers by doing a `docker logs -f contactsidauth_auth_1` or `docker logs -f contactsidauth_mongo_1`.
     - You may then stop the containers either via direct `docker stop` commands
-
-If you need to destroy the instances of the containers for some reason, you may `fig rm` and `fig up`. Note that the Mongo database will remain persistent, since it always uses the same location on the data partition, so this is not a lossy operation.
-
-If you want to get a shell on either of the containers, you may do so with the `docker exec` command using its name.
-
-To get a shell on the mongo container, for example, you may do a `docker exec -it contactsidauth_mongo_1 /bin/bash` from your Mac. Note that you will be logged in as root and process ID 1 in your container will either be mongo or node or forego (a process manager for running multiple processes.)
+- If you need to destroy the instances of the containers for some reason, you may `fig rm` and `fig up`. Note that the Mongo database will remain persistent, since it always uses the same location on the data partition, so this is not a lossy operation.
 
 ### Troubleshooting
 
