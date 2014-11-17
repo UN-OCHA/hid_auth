@@ -3,6 +3,7 @@ exports.index = function(req, res) {
     res.redirect('account');
   }
   else {
+    req.session.returnURI = req.query.return_uri || '';
     res.render('index', {redirect: req.query.redirect || '', client_id: req.query.client_id, redirect_uri: req.query.redirect_uri || '', csrf: req.csrfToken()});
   }
 };
