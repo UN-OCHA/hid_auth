@@ -111,6 +111,15 @@ module.exports.account = function(req, res, next) {
       res.redirect(redirect_uri);
     }
     else {
+      if (!data.email_recovery || typeof data.email_recovery != 'String') {
+        data.email_recovery = '';
+      }
+      if (!data.name_given || typeof data.name_given != 'String') {
+        data.name_given = '';
+      }
+      if (!data.name_family || typeof data.name_family != 'String') {
+        data.name_family = '';
+      }
       res.render('account', {user: data, message: message, redirect: '', client_id: '', redirect_uri: redirect_uri, csrf: req.csrfToken(), allowPasswordReset: req.session.allowPasswordReset || 0});
     }
     next();
