@@ -30,7 +30,7 @@ app.use(express.methodOverride());
 var formCSRF = function (req, res, next) {
   // Skip CSRF validation on the /oauth/access_token callback, as it's not based
   // on a form submission.
-  if (req.path == '/oauth/access_token') {
+  if (req.path == '/oauth/access_token' || req.path.substr(0, 5) == '/api/') {
     next();
   } else {
     csrf(req, res, next);
@@ -118,5 +118,7 @@ app.all('/logout', function (req, res) {
   var redirect = (req.query.redirect && String(req.query.redirect).length) ? req.query.redirect : '/';
   res.redirect(redirect);
 });
+
+app.post('/api/register', middleware.requiresKeySecret, routes.api.register);
 
 module.exports = app;
