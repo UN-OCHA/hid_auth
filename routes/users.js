@@ -9,6 +9,7 @@ module.exports.account = function(req, res, next) {
 
   var options = req.body || {},
     redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
+    submitted = false,
     message = null,
     data = {};
 
@@ -77,6 +78,7 @@ module.exports.account = function(req, res, next) {
     },
     function (cb) {
       // Process/save the submitted form values.
+      submitted = true;
 
       // Update any fields
       var changed = false;
@@ -110,10 +112,19 @@ module.exports.account = function(req, res, next) {
     }
   ],
   function (err, results) {
-    if (redirect_uri && redirect_uri != undefined && String(redirect_uri).length) {
+    if (submitted && redirect_uri && redirect_uri != undefined && String(redirect_uri).length) {
       res.redirect(redirect_uri);
     }
     else {
+      if (!data.email_recovery || typeof data.email_recovery != 'String') {
+        data.email_recovery = '';
+      }
+      if (!data.name_given || typeof data.name_given != 'String') {
+        data.name_given = '';
+      }
+      if (!data.name_family || typeof data.name_family != 'String') {
+        data.name_family = '';
+      }
       res.render('account', {user: data, message: message, redirect: req.session.returnURI, client_id: '', redirect_uri: redirect_uri, csrf: req.csrfToken(), allowPasswordReset: req.session.allowPasswordReset || 0});
     }
     next();
