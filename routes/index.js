@@ -10,3 +10,4 @@ exports.index = function(req, res) {
 exports.register = require('./register');
 exports.session = require('./session');
 exports.users = require('./users');
+exports.api = require('./api');
