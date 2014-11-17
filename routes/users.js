@@ -7,6 +7,7 @@ var bcrypt = require('bcrypt');
 module.exports.account = function(req, res, next) {
   var options = req.body || {},
     redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
+    submitted = false,
     message = null,
     data = {};
 
@@ -75,6 +76,7 @@ module.exports.account = function(req, res, next) {
     },
     function (cb) {
       // Process/save the submitted form values.
+      submitted = true;
 
       // Update any fields
       var changed = false;
@@ -105,7 +107,7 @@ module.exports.account = function(req, res, next) {
     }
   ],
   function (err, results) {
-    if (redirect_uri && redirect_uri != undefined && String(redirect_uri).length) {
+    if (submitted && redirect_uri && redirect_uri != undefined && String(redirect_uri).length) {
       res.redirect(redirect_uri);
     }
     else {
