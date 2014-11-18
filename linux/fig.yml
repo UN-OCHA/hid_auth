@@ -3,6 +3,7 @@ mongo:
   environment:
     DNSDOCK_NAME: mongo
     DNSDOCK_IMAGE: contactsid
+    MONGO_OPTIONS: --journal --noprealloc --smallfiles
 auth:
   image: unocha/nginx16-nodejs
   volumes:
