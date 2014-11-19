@@ -6,7 +6,7 @@ var models = require('./models');
 var middleware = require('./middleware');
 var csrf = require('csurf')();
 var app = express();
-var oauthserver = require('node-oauth2-server');
+var oauthserver = require('oauth2-server');
 var User = models.User;
 
 app.set('env', process.env.NODE_ENV || 'development');
@@ -82,6 +82,7 @@ app.get('/oauth/authorize', function(req, res, next) {
   res.render('authorize', {
     client_id: req.query.client_id,
     redirect_uri: req.query.redirect_uri,
+    response_type: req.query.response_type || 'code',
     csrf: req.csrfToken()
   });
 });

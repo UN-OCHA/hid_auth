@@ -30,6 +30,7 @@ module.exports.saveAuthCode = function(code, clientId, expires, userId, nonce, c
       console.error(err);
     }
 
-    callback(err);
+nonce(err);
+    //callback(err);
   });
 };
