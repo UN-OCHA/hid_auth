@@ -1,0 +1,39 @@
+.contactsid-app {
+  .spinner {
+    .three-dots-row-spinner {
+      background-color: #0fa4de;
+    }
+  }
+
+  .cg-busy {
+    .spinner {
+      float: left;
+
+      .three-dots-row-spinner {
+        margin: 10px;
+      }
+    }
+
+    .cg-busy-default-text {
+      margin: 17px 12px 6px 55px;
+      font-size: 16px;
+      color: #555;
+      text-align: left;
+      max-width: 400px;
+    }
+  }
+
+  p {
+    margin: 0 0 9px;
+  }
+
+  .active-countries-container li a,
+  .active-operations-container li a,
+  .active-contacts-container li a {
+    display: block;
+  }
+
+  .list-content {
+    margin-top: 20px;
+  }
+}

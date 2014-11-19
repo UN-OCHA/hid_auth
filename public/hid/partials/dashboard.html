@@ -1,0 +1,32 @@
+<div class="masthead">
+  <h2>{{title}}</h2>
+</div>
+
+<div ng-show='!isRouteLoading'>
+  <h3>My active profiles</h3>
+
+  <div class="active-profiles" cg-busy="dashboardDataTracker">
+    <ul class="active-profiles-container list-group">
+      <li class="profile-item list-group-item" ng-repeat="profile in userData.contacts" ng-class="{'list-group-item-info' : profile.type == 'global'}">
+        <h4>
+          <span class="fa fa-globe" ng-if="profile.type == 'global'"></span><span class="fa fa-thumb-tack" ng-if="profile.type == 'local'"></span> 
+          <span class="profile-item-name" ng-if="profile.type == 'global'">Global Contact List</span><span class="profile-item-name" ng-if="profile.type == 'local'">{{profile.location}}<span class="operation" ng-show="profile.operation.length"> &ndash; {{profile.operation}}</span></span>
+        </h4>
+        <div class="btn-group">
+          <a class="btn btn-default btn-sm" href="#/contactsId/profile/{{profile._id}}"><i class="fa fa-pencil-square-o"></i> Edit</a>
+          <a class="btn btn-default btn-sm" href="#/contactsId/list/{{profile.locationId}}" ng-if="profile.type == 'local'"><i class="fa fa-list-alt"></i> Contact List</a>
+          <a class="btn btn-warning btn-sm" href ng-click="checkout(profile._id)" ng-if="profile.type == 'local'"><i class="fa fa-times"></i> Checkout</a>
+        </div>
+      </li>
+      <li class="disaster-item" ng-if="profilesActive.length == 0">
+        <em>No profiles found.</em>
+      </li>
+    </ul>
+  </div>
+
+  <div class="actions">
+    <a class="btn btn-primary btn-lg btn-block" href="#/contactsId/checkin">Checkin</a>
+    <a class="btn btn-primary btn-lg btn-block" ng-show="!globalProfileId.length" href="#/contactsId/profile/{{globalProfileId}}">Global Profile</a>
+    <a class="btn btn-default btn-lg btn-block" href="{{logoutPath}}">Logout</a>
+  </div>
+</div>

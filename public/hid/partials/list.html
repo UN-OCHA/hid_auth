@@ -1,0 +1,57 @@
+<div class="masthead">
+  <h2>{{title}}</h2>
+  <div ng-show="!isRouteLoading">
+    <div class="back-link"><a class="btn btn-warning btn-sm" href="#/contactsId"><i class="fa fa-arrow-circle-left"></i> Back</a></div>
+
+    <h3>{{location}} &mdash; Contact List</h3>
+
+    <ul class="nav nav-pills" role="tablist">
+      <li role="presentation" ng-class="{active : mode !== 'list'}">
+        <a href ng-click="mode = 'search'"><i class="fa fa-search"></i> Search</a>
+      </li>
+      <li role="presentation" ng-class="{active : mode === 'list'}">
+        <a href ng-click="showList()"><i class="fa fa-list-alt"></i> List</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="list-content row" ng-show="!isRouteLoading">
+  <div class="col-xs-12">
+    <div class="search" ng-show="mode !== 'list'">
+      <form class="search-form">
+        <div class="form-group">
+          <label class="control-label" for="text">Search</label>
+          <input class="form-control" type="search" name="text" placeholder="Search by name, title, or organization" ng-model="query.text" />
+        </div>
+
+        <div class="form-group">
+          <h4>Filter List:</h4>
+          <label class="control-label" for="bundle">Bundle</label>
+          <select class="form-control" name="bundle" ng-model="query.bundle" ng-options="bundleName for (bundleId, bundleName) in bundles">
+            <option value=""></option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <input class="btn btn-primary btn-md" type="submit" ng-click="submitSearch()" value="Search" />
+          <input class="btn btn-warning btn-md" type="button" ng-click="resetSearch()" value="Reset Filters" />
+        </div>
+      </form>
+    </div>
+
+    <div class="active-contacts" ng-show="mode === 'list'" cg-busy="contactsPromise">
+      <div class="panel panel-default" ng-repeat="contact in contacts">
+        <div class="panel-heading"><a href="#/contactsId/contact/{{contact._id}}"><i class="fa fa-user"></i> {{contact.nameGiven}} {{contact.nameFamily}}</a></div>
+        <div class="panel-body">
+          <p ng-show="contact.jobtitle" class="contact-item-jobtitle"><span class="title">Job Title:</span> {{contact.jobtitle}}</p>
+          <p ng-show="contact.organization.length" class="contact-item-organization"><span class="title">Organization:</span> {{contact.organization[0].name}}</p>
+          <p><span class="title"><ng-pluralize count="contact.bundle.length" when="{'one': 'Bundle', 'other': 'Bundles'}"></ng-pluralize>:</span> {{contact.bundle.join(', ')}}</p>
+        </div>
+      </div>
+      <div class="panel panel-danger" ng-if="contacts.length == 0">
+        <div class="panel-heading"><em>No contacts found</em></div>
+      </div>
+    </div>
+  </div>
+</div>

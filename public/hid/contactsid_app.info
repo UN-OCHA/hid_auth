@@ -1,0 +1,7 @@
+name = ContactsID App
+core = 7.x
+package = ContactsID
+version = 7.x-1.0
+project = contactsid_app
+dependencies[] = contactsid_auth
+dependencies[] = contactsid_profiles

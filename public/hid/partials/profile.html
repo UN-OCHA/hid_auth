@@ -1,0 +1,166 @@
+<div class="masthead">
+  <h2>{{title}}</h2>
+</div>
+
+<div ng-show="!isRouteLoading">
+  <div class="active-countries" ng-hide="selectedPlace.length">
+    <div class="back-link"><a class="btn btn-warning btn-sm" href="#/contactsId"><i class="fa fa-arrow-circle-left"></i> Back</a></div>
+    <h3>Select a country</h3>
+    <ul class="active-countries-container list-group">
+      <li class="country-item list-group-item" ng-repeat="(place, operations) in placesOperations">
+        <a href="" ng-click="selectPlace()">{{place}}</a>
+      </li>
+      <li class="country-item" ng-if="placesOperations.length == 0">
+        <em>No active operations found.</em>
+      </li>
+    </ul>
+  </div>
+
+  <div class="active-operations" ng-show="selectedPlace.length && !selectedOperation.length">
+    <div class="back-link"><a class="btn btn-warning btn-sm" href="" ng-click="selectedPlace = ''"><i class="fa fa-arrow-circle-left"></i> Back</a></div>
+    <h3>Select an operation</h3>
+    <ul class="active-operations-container list-group" ng-repeat="(place, operations) in placesOperations" ng-show="selectedPlace = '{{place}}'" data-place="{{place}}">
+      <li class="operation-item list-group-item" ng-repeat="(opid, operation) in operations">
+        <a href="" ng-click="selectedOperation = '{{opid}}'">{{operation.name}}</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="update-profile" ng-show="selectedPlace.length && selectedOperation.length">
+    <div class="back-link"><a class="btn btn-warning btn-sm" href="#/contactsId"><i class="fa fa-arrow-circle-left"></i> Back</a></div>
+    <h3>{{profileName}} Profile</h3>
+    <div class="profile-form-wrapper">
+      <form class="profile-form form-horizontal">
+        <div class="form-group">
+          <label class="col-sm-2 control-label" for="nameGiven">Given Name</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" name="nameGiven" ng-model="profile.nameGiven" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label" for="nameFamily">Family Name</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" name="nameFamily" ng-model="profile.nameFamily" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <h4>Organizational Information</h4>
+          <label class="col-sm-2 control-label" for="jobtitle">Title</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" name="jobtitle" ng-model="profile.jobtitle" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label" for="organization[0][name]">Organization</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" name="organization[0][name]" ng-model="profile.organization[0].name" />
+          </div>
+  <!-- TODO: add id field -->
+        </div>
+
+        <div class="form-group" ng-repeat="bundle in profile.bundle track by $index" ng-if="profile.type === 'local'">
+          <label class="col-sm-2 control-label" for="bundle[{{$index}}]">Bundle</label>
+          <div class="col-sm-10">
+            <select class="form-control" name="bundle[{{$index}}]" ng-model="profile.bundle[$index]" ng-options="bundleName for (bundleId, bundleName) in placesOperations[selectedPlace][selectedOperation].bundles" ng-change="checkMultiFields()">
+              <option value=""></option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group container">
+          <h4>Phone Numbers</h4>
+          <div ng-repeat="phone in profile.phone track by $index">
+            <div class="row">
+              <label class="col-sm-2 control-label" for="phone[{{$index}}][type]">Phone Number Description</label>
+              <div class="col-sm-4">
+                <input class="form-control" type="text" name="phone[{{$index}}][type]" ng-model="profile.phone[$index].type" />
+              </div>
+
+              <label class="col-sm-2 control-label" for="phone[{{$index}}][number]">Phone Number</label>
+              <div class="col-sm-4">
+                <input class="form-control" type="text" name="phone[{{$index}}][number]" ng-model="profile.phone[$index].number" ng-change="checkMultiFields()" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group container">
+          <h4>Email Addresses</h4>
+          <div ng-repeat="email in profile.email track by $index">
+            <div class="row">
+              <label class="col-sm-2 control-label" for="email[{{$index}}][type]">Email Description</label>
+              <div class="col-sm-4">
+                <input class="form-control" type="text" name="email[{{$index}}][type]" ng-model="profile.email[$index].type" />
+              </div>
+
+              <label class="col-sm-2 control-label" for="email[{{$index}}][address]">Email</label>
+              <div class="col-sm-4">
+                <input class="form-control" type="text" name="email[{{$index}}][address]" ng-model="profile.email[$index].address" ng-change="checkMultiFields()" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group container">
+          <h4>VOIP</h4>
+          <div ng-repeat="voip in profile.voip track by $index">
+            <div class="row">
+              <label class="col-sm-2 control-label" for="voip[{{$index}}][desc]">VOIP Description</label>
+              <div class="col-sm-4">
+                <input class="form-control" type="text" name="voip[{{$index}}][type]" ng-model="profile.voip[$index].type" />
+              </div>
+
+              <label class="col-sm-2 control-label" for="voip[{{$index}}][number]">VOIP</label>
+              <div class="col-sm-4">
+                <input class="form-control" type="text" name="voip[{{$index}}][number]" ng-model="profile.voip[$index].number" ng-change="checkMultiFields()" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <h4>Location</h4>
+          <label class="col-sm-2 control-label" for="address[0][country]">Country</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" name="address[0][country]" ng-model="profile.address[0].country" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label" for="address[0][administrative_area]">State/Province/Region</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" name="address[0][administrative_area]" ng-model="profile.address[0].administrative_area" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label" for="address[0][locality]">City</label>
+          <div class="col-sm-10">
+            <input class="form-control" type="text" name="address[0][locality]" ng-model="profile.address[0].locality" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <h4>Websites &amp; Social Media</h4>
+          <div ng-repeat="uri in profile.uri track by $index">
+            <label class="col-sm-2 control-label" for="uri[{{$index}}]">URL</label>
+            <div class="col-sm-10">
+              <input class="form-control" type="text" name="uri[{{$index}}]" ng-model="profile.uri[$index]" ng-change="checkMultiFields()" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <h4>Notes</h4>
+          <label class="col-sm-2 control-label" for="notes">Notes</label>
+          <div class="col-sm-10">
+            <textarea class="form-control" name="notes" ng-model="profile.notes" rows="2"></textarea>
+          </div>
+        </div>
+
+        <input class="btn btn-primary btn-lg" type="submit" ng-click="submitProfile()" value="Update Profile" />
+      </form>
+    </div>
+  </div>
+</div>

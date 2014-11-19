@@ -1,0 +1,42 @@
+
+<div class="masthead">
+  <h2>{{title}}</h2>
+  <div class="back-link" ng-show="!isRouteLoading"><a class="btn btn-warning btn-sm" href ng-click="back();"><i class="fa fa-arrow-circle-left"></i> Back</a></div>
+</div>
+
+<div class="contact"  ng-show="!isRouteLoading">
+  <h3>{{contact.nameGiven}} {{contact.nameFamily}} ({{contact.location}})</h3>
+  <div class="title">{{contact.jobtitle}}</div>
+  <div class="organization">{{contact.organization[0].name}}</div>
+  <div class="bundles">
+    <p><span class="title"><ng-pluralize count="contact.bundle.length" when="{'one': 'Bundle', 'other': 'Bundles'}"></ng-pluralize>:</span> {{contact.bundle.join(', ')}}</p>
+  </div>
+  <div class="phone" ng-repeat="phone in contact.phone">
+    <div class="label">{{phone.type}}</div>
+    <div class="phone-number"><a href="tel:{{phone.number}}">{{phone.number}}</a></div>
+  </div>
+  <div class="email" ng-repeat="email in contact.email">
+    <div class="label">{{email.type}}</div>
+    <div class="email-address"><a href="mailto:{{email.address}}">{{email.address}}</a></div>
+  </div>
+  <div class="voip" ng-repeat="voip in contact.voip">
+    <div class="label">{{voip.type}}</div>
+    <div class="voip-number">{{voip.number}}</div>
+  </div>
+  <div class="location">
+    <div class="label">Country</div>
+    <div class="location-country">{{contact.address[0].country}}</div>
+    <div class="label">State/Province/Region</div>
+    <div class="location-region">{{contact.address[0].administrative_area}}</div>
+    <div class="label">City</div>
+    <div class="location-city">{{contact.address[0].locality}}</div>
+  </div>
+  <div class="uri">
+    <div class="label">Website/Social Media</div>
+    <div class="uri" ng-repeat="uri in contact.uri"><a href="{{uri}}">{{uri}}</a></div>
+  </div>
+  <div class="notes">
+    <div class="label">Notes</div>
+    <div class="notes">{{contact.notes}}</div>
+  </div>
+</div>
