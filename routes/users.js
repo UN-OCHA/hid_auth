@@ -21,6 +21,10 @@ module.exports.account = function(req, res, next) {
           message = "Could not load user account. Please try again or contact an administrator.";
           return cb(true);
         }
+        else if (!user.active) {
+          message = "This account has not been verified. Please check your email or contact an administrator.";
+          return cb(true);
+        }
 
         data = user;
         return cb();
@@ -262,6 +266,16 @@ module.exports.resetpwuse = function(req, res, next) {
 
       // log operation
       console.log('valid password link for ' + email + '. initiating session');
+
+      // activate user since the account seems to be valid
+      if (!user.active) {
+        User.findOne({ user_id: user.user_id }, function (err, user){
+          user.active = 1;
+          user.save();
+        });
+        // redirect the user once they have been activated
+        res.redirect(req.session.returnURI);
+      }
 
       // register session
       req.session.userId = user.email;

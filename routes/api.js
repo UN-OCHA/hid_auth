@@ -6,6 +6,7 @@ exports.register = function(req, res, next) {
     email,
     nameLast,
     nameFirst,
+    active,
     data = {};
   async.series([
     function (cb) {
@@ -17,6 +18,7 @@ exports.register = function(req, res, next) {
       email = req.body.email;
       nameLast = req.body.nameLast || '';
       nameFirst = req.body.nameFirst || '';
+      active = req.body.active || 0;
 
       // Check if email is already registered.
       User.findOne({email: req.body.email}, function (err, user) {
@@ -44,10 +46,11 @@ exports.register = function(req, res, next) {
       var options = {
         email: email,
         name_given: nameFirst,
-        name_family: nameLast
-        },
-        password = User.hashPassword(email + Date.now() + nameLast + nameFirst),
-        pos = Math.floor(Math.random() * (password.length - 12));
+        name_family: nameLast,
+        active: active
+      },
+      password = User.hashPassword(email + Date.now() + nameLast + nameFirst),
+      pos = Math.floor(Math.random() * (password.length - 12));
       password = password.substr(pos, 12);
       options.password = password;
 

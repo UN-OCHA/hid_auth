@@ -54,6 +54,10 @@ block content
           .form-group
             input.form-control(name='name_family', type='text', placeholder='Family name (optional)')
           .form-group
+            input.form-control(name='pass_new', type='password', placeholder='Password', required)
+          .form-group
+            input.form-control(name='pass_confirm', type='password', placeholder='Password (confirm)', required)
+          .form-group
             button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign Up
             input(type='hidden', name='redirect', value='#{redirect}')
             input(type='hidden', name='client_id', value='#{client_id}')
@@ -62,6 +66,7 @@ block content
             input(type='hidden', name='state', value='#{state}')
             input(type='hidden', name='scope', value='#{scope}')
             input(type='hidden', name='_csrf', value='#{csrf}')
+            input(type='hidden', name='active', value=0)
 
       div.tab-pane(id='help')
 
