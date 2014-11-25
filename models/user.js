@@ -13,7 +13,8 @@ var OAuthUsersSchema = new Schema({
   reset_token_expires: Date,
   name_given: String,
   name_family: String,
-  authorized_services: Schema.Types.Mixed
+  authorized_services: Schema.Types.Mixed,
+  active: Number
 });
 
 function hashPassword(password) {
