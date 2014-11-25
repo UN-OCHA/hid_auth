@@ -118,8 +118,24 @@ function notFoundHandler(req, res, next) {
   });
 }
 
+function getReturnURLFromApp(returnApp) {
+  Client.findOne({ clientId: returnApp }, function(err, client) {
+    if (err) return next(err);
+    return client.redirectUri;
+  });
+}
+
+function getAppFromReturnURL(clientId) {
+  Client.findOne({ redirectUri: clientId }, function(err, client) {
+    if (err) return next(err);
+    return client.clientId;
+  });
+}
+
 module.exports.requiresUser = requiresUser;
 module.exports.requiresKeySecret = requiresKeySecret;
 module.exports.loadUser = loadUser;
 module.exports.isValidationError = isValidationError;
 module.exports.notFoundHandler = notFoundHandler;
+module.exports.getReturnURLFromApp = getReturnURLFromApp;
+module.exports.getAppFromReturnURL = getAppFromReturnURL;
