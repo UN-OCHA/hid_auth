@@ -4,6 +4,7 @@ exports.index = function(req, res) {
   }
   else {
     req.session.returnURI = req.query.return_uri || '';
+    req.session.returnApp = req.query.return_app || '';
     res.render('index', {
       redirect: req.query.redirect || '',
       client_id: req.query.client_id,
