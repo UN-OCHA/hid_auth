@@ -48,6 +48,11 @@ module.exports.form = function(req, res, next) {
       // Set up email content
       var now = Date.now(),
         reset_url = req.protocol + "://" + req.get('host') + "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64')).toString('base64');
+
+      if (String(req.session.returnApp).length) {
+        reset_url += '?return_app=' + req.session.returnApp;
+      }
+
       var mailText = 'Thanks for registering for a ' + req.app.get('title') + ' account! Please follow this link to verify your account: ' + reset_url;
       var mailOptions = {
         from: req.app.get('title') + ' <' + req.app.get('emailFrom') + '>',
