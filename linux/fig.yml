@@ -1,7 +1,5 @@
 mongo:
   image: unocha/mongodb
-  volumes:
-    - /data/contactsid_auth/mongo:/data/db
   environment:
     DNSDOCK_NAME: mongo
     DNSDOCK_IMAGE: contactsid
@@ -9,10 +7,12 @@ mongo:
 auth:
   image: unocha/nginx16-nodejs
   volumes:
-    - /code/contactsid_auth:/var/www/html
+    - ..:/var/www/html
   environment:
     DNSDOCK_NAME: auth
     DNSDOCK_IMAGE: contactsid
     NODE_ENV: dockerdev
+  ports:
+    - 8989:80
   links:
     - mongo:mongo
