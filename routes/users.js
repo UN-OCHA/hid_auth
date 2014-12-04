@@ -108,7 +108,7 @@ module.exports.account = function(req, res, next) {
             data = item;
             message = 'Settings successfully saved.';
             if (req.session.returnApp) {
-              message += ' Return to  <a href="' + req.session.returnApp + '">' + req.session.returnApp + '</a>.';
+              res.redirect('/oauth/authorize?redirect_uri=' + req.session.redirectUri + '&client_id=' + req.session.clientId);
             }
             return cb();
           }
@@ -159,11 +159,6 @@ module.exports.resetpw = function(req, res, next) {
     message = null,
     data;
 
-  // req.session.redirect = req.session.redirect || req.query.redirect || '';
-  // req.session.clientId = req.session.clientId || req.query.client_id || '';
-  // req.session.redirectUri = req.session.redirectUri || req.query.redirect_uri || '';
-  console.log(" * * * I initially might have all 3 values I should need to redirect: " + req.session.redirect + ' - ' + req.session.clientId + ' - ' + req.session.redirectUri);
-
   async.series([
     function (cb) {
       // Validate the email address
@@ -206,7 +201,7 @@ module.exports.resetpw = function(req, res, next) {
         reset_url = req.protocol + "://" + req.get('host') + "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64')).toString('base64');
 
       if (String(req.session.redirect).length && String(req.session.clientId).length && String(req.session.redirectUri).length) {
-        reset_url += '?redirect=' + req.session.redirect + '&client_id=' + req.session.clientId + '&redirect_uri=' + req.session.redirectUri;
+        reset_url += '?redirect=account&client_id=' + req.session.clientId + '&redirect_uri=' + req.session.redirectUri;
       }
 
       // Set up email content
@@ -253,7 +248,8 @@ module.exports.resetpwuse = function(req, res, next) {
       email = parts[0],
       timestamp = parts[1],
       hash = new Buffer(parts[2], 'base64').toString('ascii'),
-      now = Date.now();
+      now = Date.now(),
+      newUser = 0;
 
     // verify timestamp is not too old (allow up to 1 day in milliseconds)
     if (timestamp < (now - 86400000) || timestamp > now) {
@@ -283,14 +279,27 @@ module.exports.resetpwuse = function(req, res, next) {
       // register session
       req.session.userId = user.email;
 
-      // set session variable to allow password resets
-      req.session.allowPasswordReset = timestamp;
-
-      if (req.session.returnApp) {
-        Client.findOne({clientId: req.session.returnApp}, function(err, client) {
+      if (String(req.session.redirect).length && String(req.session.clientId).length && String(req.session.redirectUri).length) {
+        Client.findOne({ clientId: req.session.clientId}, function(err, client) {
+          if (err) {
+            console.dir(err);
+          }
           if (client && client.redirectUri) {
-            var returnURL = client.redirectUri;
-            res.redirect(returnURL);
+            // If this is a new user, just let them authorize and redirect back to the main site
+            if (newUser) {
+              var returnURL = req.session.redirect + '?redirect_uri=' + client.redirectUri + '&client_id=' + client.clientId;
+              res.redirect(returnURL);
+            }
+            else {
+              // set session variable to allow password resets
+              req.session.allowPasswordReset = timestamp;
+
+              var redirectDest = '/account';
+              if (String(req.session.redirect).length && String(client.clientId).length && String(client.redirectUri).length) {
+                req.session.returnApp = 1;
+              }
+              res.redirect(redirectDest);
+            }
           }
           else {
             res.redirect('account');
@@ -299,6 +308,8 @@ module.exports.resetpwuse = function(req, res, next) {
       }
       else {
         res.redirect('account');
+        // redirect to account page to change password
+        res.redirect('/account');
       }
     });
   }
