@@ -13,13 +13,13 @@ This will set up Docker and the fig tool that spins up the sets of container nee
 
 This setup will let you use .vm addresses to access every container directly instead of with port forwarding.
 
-This is how the Mac development setup works as well.
+(This is how the Mac development setup works as well.)
 
 1. Install libnss-resolver from https://github.com/azukiapp/libnss-resolver/releases .
-1. Set up where .vm hostnames should be resolved with `echo 'nameserver 172.17.42.1:53' | sudo tee /etc/resolver/vm`
+1. Set up .vm hostname resolution with `echo 'nameserver 172.17.42.1:53' | sudo tee /etc/resolver/vm`
 1. Run the dnsdock container with `docker run -d --name=dnsdock -e DNSDOCK_NAME=dnsdock -e DNSDOCK_IMAGE=dnsdock -p 172.17.42.1:53:53/udp -v /var/run/docker.sock:/var/run/docker.sock phase2/dnsdock`
-1. Now, test that DNS resolution is working first with dig with `dig @172.17.42.1 dnsdock.dnsdock.vm`
-1. Finally, try `ping dnsdock.dnsdock.vm` to verify that the normal libnss stack works using libnss-resolver.
+1. Now, test that DNS resolution is working first with dig with `dig @172.17.42.1 dnsdock.dnsdock.vm`. You should get a 172.17.0.0/16 address.
+1. Finally, try `ping dnsdock.dnsdock.vm` to verify that the normal libnss stack works using libnss-resolver. You should get the same address back.
 
 ## Running the app
 
@@ -39,4 +39,3 @@ docker exec -it linux_auth_1 bash
 ## Troubleshooting
 
 If http://auth.contactsid.vm does not work, you can also try accessing the app at http://localhost:8989.
-
