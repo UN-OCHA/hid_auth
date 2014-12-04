@@ -49,8 +49,8 @@ module.exports.form = function(req, res, next) {
       var now = Date.now(),
         reset_url = req.protocol + "://" + req.get('host') + "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64')).toString('base64');
 
-      if (String(req.session.returnApp).length) {
-        reset_url += '?return_app=' + req.session.returnApp;
+      if (String(req.session.redirect).length && String(req.session.clientId).length && String(req.session.redirectUri).length) {
+        reset_url += '?redirect=' + req.session.redirect + '&client_id=' + req.session.clientId + '&redirect_uri=' + req.session.redirectUri;
       }
 
       var mailText = 'Thanks for registering for a ' + req.app.get('title') + ' account! Please follow this link to verify your account: ' + reset_url;
@@ -71,6 +71,7 @@ module.exports.form = function(req, res, next) {
         else {
           console.log('Message sent: ' + info.response);
           message = 'Verify email sent successful! Check your email and follow the included link to verify your account.';
+          // message += "\nLINK: " + reset_url;
           options = {};
           return cb();
         }
