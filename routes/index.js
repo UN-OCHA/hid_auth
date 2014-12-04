@@ -3,8 +3,9 @@ exports.index = function(req, res) {
     res.redirect('account');
   }
   else {
-    req.session.returnURI = req.query.return_uri || '';
-    req.session.returnApp = req.query.return_app || '';
+    req.session.redirect = req.session.redirect || req.query.redirect || '';
+    req.session.clientId = req.session.clientId || req.query.client_id || '';
+    req.session.redirectUri = req.session.redirectUri || req.query.redirect_uri || '';
     res.render('index', {
       redirect: req.query.redirect || '',
       client_id: req.query.client_id,

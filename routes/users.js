@@ -159,7 +159,10 @@ module.exports.resetpw = function(req, res, next) {
     message = null,
     data;
 
-  req.session.returnApp = req.session.returnApp || req.query.return_app || '';
+  // req.session.redirect = req.session.redirect || req.query.redirect || '';
+  // req.session.clientId = req.session.clientId || req.query.client_id || '';
+  // req.session.redirectUri = req.session.redirectUri || req.query.redirect_uri || '';
+  console.log(" * * * I initially might have all 3 values I should need to redirect: " + req.session.redirect + ' - ' + req.session.clientId + ' - ' + req.session.redirectUri);
 
   async.series([
     function (cb) {
@@ -202,8 +205,8 @@ module.exports.resetpw = function(req, res, next) {
         // TODO Add return_app to this link
         reset_url = req.protocol + "://" + req.get('host') + "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64')).toString('base64');
 
-      if (String(req.session.returnApp).length) {
-        reset_url += '?return_app=' + req.session.returnApp;
+      if (String(req.session.redirect).length && String(req.session.clientId).length && String(req.session.redirectUri).length) {
+        reset_url += '?redirect=' + req.session.redirect + '&client_id=' + req.session.clientId + '&redirect_uri=' + req.session.redirectUri;
       }
 
       // Set up email content
@@ -225,6 +228,7 @@ module.exports.resetpw = function(req, res, next) {
         else {
           console.log('Message sent: ' + info.response);
           message = 'Sending password successful! Check your email and follow the included link to reset your password.';
+          // message += "\nLINK: " + reset_url;
           return cb();
         }
       });
@@ -240,6 +244,7 @@ module.exports.resetpwuse = function(req, res, next) {
   var encodedKey = (req.params && req.params.key) ? req.params.key : undefined;
 
   req.session.returnApp = req.session.returnApp || req.query.return_app || '';
+  req.session.clientId = req.session.clientId || req.query.client_id || req.session.returnApp;
 
   if (encodedKey != undefined && String(encodedKey).length) {
     // decode key
@@ -268,7 +273,7 @@ module.exports.resetpwuse = function(req, res, next) {
       // log operation
       console.log('valid password link for ' + email + '. initiating session');
 
-      // activate user since the account seems to be valid
+      // activate user since the account seems to be valid (if inactive)
       if (!user.active) {
         user.active = 1;
         user.save();
