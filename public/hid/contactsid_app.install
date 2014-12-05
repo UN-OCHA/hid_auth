@@ -1,7 +1,0 @@
-<?php
-
-/**
- * Implements hook_install().
- */
-function contactsid_app_install() {
-}
