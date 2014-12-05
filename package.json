@@ -5,6 +5,7 @@
   "description": "Node.js Oauth2/OpenID Connect provider for the ContactsID system.",
   "scripts": {
     "start": "./node_modules/.bin/nodemon server.js",
+    "_start": "./node_modules/.bin/nodemon ./node_modules/.bin/node-debug server.js",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha -R spec test/init.js test/**/*_test.js"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
     "supertest": "^0.9.0",
     "mocha": "^1.17.1",
     "nodemon": "^1.0.15",
+    "node-inspector": "^0.7.4",
     "should": "^3.3.0"
   }
 }
