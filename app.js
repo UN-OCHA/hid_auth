@@ -5,8 +5,9 @@ var path = require('path');
 var models = require('./models');
 var middleware = require('./middleware');
 var csrf = require('csurf')();
+var cors = require('cors');
 var app = express();
-var oauthserver = require('node-oauth2-server');
+var oauthserver = require('oauth2-server');
 var User = models.User;
 
 app.set('env', process.env.NODE_ENV || 'development');
@@ -35,7 +36,7 @@ var formCSRF = function (req, res, next) {
   } else {
     csrf(req, res, next);
   }
-}
+};
 app.use(formCSRF);
 
 app.oauth = oauthserver({
@@ -82,6 +83,7 @@ app.get('/oauth/authorize', function(req, res, next) {
   res.render('authorize', {
     client_id: req.query.client_id,
     redirect_uri: req.query.redirect_uri,
+    response_type: req.query.response_type || 'code',
     csrf: req.csrfToken()
   });
 });
@@ -104,7 +106,7 @@ app.post('/oauth/authorize', function(req, res, next) {
 app.use(app.oauth.errorHandler());
 
 app.all('/account', middleware.requiresUser, routes.users.account);
-app.get('/account.json', middleware.requiresUser, routes.users.showjson);
+app.get('/account.json', cors(), middleware.requiresUser, routes.users.showjson);
 
 app.post('/register', routes.register.form);
 app.post('/login', routes.session.create);
