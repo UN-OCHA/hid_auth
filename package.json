@@ -10,7 +10,7 @@
   "dependencies": {
     "express": "^3.4.8",
     "jade": "^1.5.0",
-    "oauth2-server": "git+https://github.com/vagmi/node-oauth2-server.git#master",
+    "oauth2-server": "https://github.com/arithmetric/node-oauth2-server/archive/hid/1.x.tar.gz",
     "mongoose": "^3.8.8",
     "async": "^0.9.0",
     "bcrypt": "^0.7.7",
