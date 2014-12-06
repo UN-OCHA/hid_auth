@@ -27,11 +27,13 @@ module.exports.form = function(req, res, next) {
       });
     },
     function (cb) {
-      // Generate a random password
-      var password = User.hashPassword(options.email + Date.now() + JSON.stringify(options)),
-        pos = Math.floor(Math.random() * (password.length - 12));
-      password = password.substr(pos, 12);
-      options.password = password;
+      // Ensure the password fields match
+      if (options.pass_new == undefined || options.pass_confirm == undefined || options.pass_new !== options.pass_confirm) {
+        message = 'The password and password (confirm) fields must match.';
+        return cb(true);
+      }
+      options.password = options.pass_new;
+      options.active = 0;
 
       // Register the account
       User.register(options, function (err, user) {
@@ -47,7 +49,12 @@ module.exports.form = function(req, res, next) {
       // Set up email content
       var now = Date.now(),
         reset_url = req.protocol + "://" + req.get('host') + "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64')).toString('base64');
-      var mailText = 'Thanks for registering for a ' + req.app.get('title') + ' account! Please follow this link to verify your account and set your password: ' + reset_url;
+
+      if (String(req.session.redirect).length && String(req.session.clientId).length && String(req.session.redirectUri).length) {
+        reset_url += '?redirect=' + req.session.redirect + '&client_id=' + req.session.clientId + '&redirect_uri=' + req.session.redirectUri;
+      }
+
+      var mailText = 'Thanks for registering for a ' + req.app.get('title') + ' account! Please follow this link to verify your account: ' + reset_url;
       var mailOptions = {
         from: req.app.get('title') + ' <' + req.app.get('emailFrom') + '>',
         to: data.email,
@@ -64,7 +71,8 @@ module.exports.form = function(req, res, next) {
         }
         else {
           console.log('Message sent: ' + info.response);
-          message = 'Verify email sent successful! Check your email and follow the included link to reset your password.';
+          message = 'Verify email sent successful! Check your email and follow the included link to verify your account.';
+          // message += "\nLINK: " + reset_url;
           options = {};
           return cb();
         }
