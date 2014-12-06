@@ -27,11 +27,12 @@ module.exports.form = function(req, res, next) {
       });
     },
     function (cb) {
-      // Generate a random password
-      var password = User.hashPassword(options.email + Date.now() + JSON.stringify(options)),
-        pos = Math.floor(Math.random() * (password.length - 12));
-      password = password.substr(pos, 12);
-      options.password = password;
+      // Ensure the password fields match
+      if (options.pass_new == undefined || options.pass_confirm == undefined || options.pass_new !== options.pass_confirm) {
+        message = 'The password and password (confirm) fields must match.';
+        return cb(true);
+      }
+      options.password = options.pass_new;
       options.active = 0;
 
       // Register the account
