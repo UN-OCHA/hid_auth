@@ -43,7 +43,7 @@ OAuthUsersSchema.static('getUser', function(email, password, cb) {
 OAuthUsersSchema.static('authenticate', function(email, password, cb) {
   this.findOne({ email: email }, function(err, user) {
     if (err || !user) return cb(err);
-    cb(null, bcrypt.compareSync(password, user.hashed_password) ? user : null);
+    cb(null, bcrypt.compareSync(password, user.hashed_password) && user.active ? user : null);
   });
 });
 
