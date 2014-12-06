@@ -3,9 +3,10 @@ var errors = require('./../errors');
 var mail = require('./../mail');
 var async = require('async');
 var bcrypt = require('bcrypt');
+var Client = require('./../models').OAuthClientsModel;
 
 module.exports.account = function(req, res, next) {
-  req.session.returnURI = req.session.returnURI || req.query.return_uri || '';
+  req.session.returnApp = req.session.returnApp || req.query.return_app || '';
 
   var options = req.body || {},
     redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
@@ -19,6 +20,10 @@ module.exports.account = function(req, res, next) {
       User.findOne({email: req.session.userId}, function(err, user) {
         if (err || !user) {
           message = "Could not load user account. Please try again or contact an administrator.";
+          return cb(true);
+        }
+        else if (!user.active) {
+          message = "This account has not been verified. Please check your email or contact an administrator.";
           return cb(true);
         }
 
@@ -102,8 +107,8 @@ module.exports.account = function(req, res, next) {
           else {
             data = item;
             message = 'Settings successfully saved.';
-            if (req.session.returnURI) {
-              message += ' Return to  <a href="' + req.session.returnURI + '">' + req.session.returnURI + '</a>.';
+            if (req.session.returnApp) {
+              res.redirect('/oauth/authorize?redirect_uri=' + req.session.redirectUri + '&client_id=' + req.session.clientId);
             }
             return cb();
           }
@@ -116,16 +121,16 @@ module.exports.account = function(req, res, next) {
       res.redirect(redirect_uri);
     }
     else {
-      if (!data.email_recovery || typeof data.email_recovery != 'String') {
+      if (!data.email_recovery || typeof data.email_recovery !== 'string') {
         data.email_recovery = '';
       }
-      if (!data.name_given || typeof data.name_given != 'String') {
+      if (!data.name_given || typeof data.name_given !== 'string') {
         data.name_given = '';
       }
-      if (!data.name_family || typeof data.name_family != 'String') {
+      if (!data.name_family || typeof data.name_family !== 'string') {
         data.name_family = '';
       }
-      res.render('account', {user: data, message: message, redirect: req.session.returnURI, client_id: '', redirect_uri: redirect_uri, csrf: req.csrfToken(), allowPasswordReset: req.session.allowPasswordReset || 0});
+      res.render('account', {user: data, message: message, redirect: req.session.returnApp, client_id: '', redirect_uri: redirect_uri, csrf: req.csrfToken(), allowPasswordReset: req.session.allowPasswordReset || 0});
     }
     next();
   });
@@ -153,8 +158,6 @@ module.exports.resetpw = function(req, res, next) {
     options = {},
     message = null,
     data;
-
-  req.session.returnURI = req.session.returnURI || req.query.return_uri || '';
 
   async.series([
     function (cb) {
@@ -194,11 +197,11 @@ module.exports.resetpw = function(req, res, next) {
       // email address.
       var redirect_uri = req.body.redirect_uri || '',
         now = Date.now(),
-        // TODO Add return_uri to this link
+        // TODO Add return_app to this link
         reset_url = req.protocol + "://" + req.get('host') + "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64')).toString('base64');
 
-      if (String(req.session.returnURI).length) {
-        reset_url += '?return_uri=' + req.session.returnURI;
+      if (String(req.session.redirect).length && String(req.session.clientId).length && String(req.session.redirectUri).length) {
+        reset_url += '?redirect=account&client_id=' + req.session.clientId + '&redirect_uri=' + req.session.redirectUri;
       }
 
       // Set up email content
@@ -220,6 +223,7 @@ module.exports.resetpw = function(req, res, next) {
         else {
           console.log('Message sent: ' + info.response);
           message = 'Sending password successful! Check your email and follow the included link to reset your password.';
+          // message += "\nLINK: " + reset_url;
           return cb();
         }
       });
@@ -234,7 +238,8 @@ module.exports.resetpw = function(req, res, next) {
 module.exports.resetpwuse = function(req, res, next) {
   var encodedKey = (req.params && req.params.key) ? req.params.key : undefined;
 
-  req.session.returnURI = req.session.returnURI || req.query.return_uri || '';
+  req.session.returnApp = req.session.returnApp || req.query.return_app || '';
+  req.session.clientId = req.session.clientId || req.query.client_id || req.session.returnApp;
 
   if (encodedKey != undefined && String(encodedKey).length) {
     // decode key
@@ -243,7 +248,8 @@ module.exports.resetpwuse = function(req, res, next) {
       email = parts[0],
       timestamp = parts[1],
       hash = new Buffer(parts[2], 'base64').toString('ascii'),
-      now = Date.now();
+      now = Date.now(),
+      newUser = 0;
 
     // verify timestamp is not too old (allow up to 1 day in milliseconds)
     if (timestamp < (now - 86400000) || timestamp > now) {
@@ -263,14 +269,47 @@ module.exports.resetpwuse = function(req, res, next) {
       // log operation
       console.log('valid password link for ' + email + '. initiating session');
 
+      // activate user since the account seems to be valid (if inactive)
+      if (!user.active) {
+        user.active = 1;
+        user.save();
+        console.log("User %s has been activated.", user.user_id);
+      }
+
       // register session
       req.session.userId = user.email;
 
-      // set session variable to allow password resets
-      req.session.allowPasswordReset = timestamp;
+      if (String(req.session.redirect).length && String(req.session.clientId).length && String(req.session.redirectUri).length) {
+        Client.findOne({ clientId: req.session.clientId}, function(err, client) {
+          if (err) {
+            console.dir(err);
+          }
+          if (client && client.redirectUri) {
+            // If this is a new user, just let them authorize and redirect back to the main site
+            if (newUser) {
+              var returnURL = req.session.redirect + '?redirect_uri=' + client.redirectUri + '&client_id=' + client.clientId;
+              res.redirect(returnURL);
+            }
+            else {
+              // set session variable to allow password resets
+              req.session.allowPasswordReset = timestamp;
 
-      // redirect to account page to change password
-      res.redirect('account');
+              var redirectDest = '/account';
+              if (String(req.session.redirect).length && String(client.clientId).length && String(client.redirectUri).length) {
+                req.session.returnApp = 1;
+              }
+              res.redirect(redirectDest);
+            }
+          }
+          else {
+            res.redirect('account');
+          }
+        });
+      }
+      else {
+        // redirect to account page to change password
+        res.redirect('/account');
+      }
     });
   }
 };

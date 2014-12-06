@@ -13,7 +13,8 @@ var OAuthUsersSchema = new Schema({
   reset_token_expires: Date,
   name_given: String,
   name_family: String,
-  authorized_services: Schema.Types.Mixed
+  authorized_services: Schema.Types.Mixed,
+  active: Number
 });
 
 function hashPassword(password) {
@@ -42,7 +43,7 @@ OAuthUsersSchema.static('getUser', function(email, password, cb) {
 OAuthUsersSchema.static('authenticate', function(email, password, cb) {
   this.findOne({ email: email }, function(err, user) {
     if (err || !user) return cb(err);
-    cb(null, bcrypt.compareSync(password, user.hashed_password) ? user : null);
+    cb(null, bcrypt.compareSync(password, user.hashed_password) && user.active ? user : null);
   });
 });
 

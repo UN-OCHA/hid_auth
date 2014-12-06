@@ -18,7 +18,7 @@ module.exports.create = function(req, res, next) {
     else {
       console.log('Authentication failed for ' + req.body.email);
       res.status(401).render('index', {
-        message: 'Authentication failed',
+        message: 'Authentication failed. Do you need to confirm your account or reset your password?',
         client_id: req.body.client_id || '',
         redirect: req.body.redirect || '',
         redirect_uri: req.body.redirect_uri || '',
