@@ -12,7 +12,8 @@ var OAuthUsersSchema = new Schema({
   password_reset_token: { type: String },
   reset_token_expires: Date,
   name_given: String,
-  name_family: String
+  name_family: String,
+  authorized_services: Schema.Types.Mixed
 });
 
 function hashPassword(password) {

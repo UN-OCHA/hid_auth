@@ -70,25 +70,49 @@ app.get('/', middleware.loadUser, routes.index);
 app.all('/oauth/access_token', app.oauth.grant());
 
 app.get('/oauth/authorize', function(req, res, next) {
-  if (req.query.nonce && req.query.nonce.length) {
-    req.session.nonce = req.query.nonce;
-  }
-
+  // If the user is not authenticated, redirect to the login page and preserve
+  // all relevant query parameters.
   if (!req.session.userId) {
     console.log('Accessing /oauth/authorize without session. Redirecting to the login page.');
     return res.redirect('/?redirect=' + req.path + '&client_id=' + req.query.client_id + '&redirect_uri=' + req.query.redirect_uri + '&response_type=' + req.query.response_type + '&state=' + req.query.state + '&scope=' + req.query.scope);
   }
 
-  res.render('authorize', {
-    client_id: req.query.client_id,
-    redirect_uri: req.query.redirect_uri,
-    response_type: req.query.response_type || 'code',
-    scope: req.query.scope || '',
-    csrf: req.csrfToken()
+  // If the user is authenticated, then check whether the user has confirmed
+  // authorization for this client/scope combination.
+  User.findOne({email: req.session.userId}, function (err, doc) {
+    var clientId = req.query.client_id,
+      scope = req.query.scope;
+
+    if (err) {
+      next(new Error('Error occurred while fetching the user record for ' + req.session.userId));
+    }
+    else if (doc && doc.authorized_services && doc.authorized_services.hasOwnProperty(clientId) && doc.authorized_services[clientId].indexOf(scope) !== -1) {
+      // The user has confirmed authorization for this client/scope.
+      // Proceed with issuing an auth code (see POST /oauth/authorize).
+      app.oauth.authCodeGrant(function (_req, verify) {
+        verify(null, true, _req.session.userId);
+      })(req, res, next);
+    }
+    else {
+      // The user has not confirmed authorization, so present the
+      // authorization page.
+      if (req.query.nonce && req.query.nonce.length) {
+        req.session.nonce = req.query.nonce;
+      }
+
+      res.render('authorize', {
+        client_id: req.query.client_id,
+        redirect_uri: req.query.redirect_uri,
+        response_type: req.query.response_type || 'code',
+        scope: req.query.scope || '',
+        csrf: req.csrfToken()
+      });
+    }
   });
 });
 
 app.post('/oauth/authorize', function(req, res, next) {
+  // If the user is not authenticated, redirect to the login page.
   if (!req.session.userId) {
     console.log('Posting to /oauth/authorize without session. Redirecting to the login page.');
     return res.redirect('/');
@@ -96,10 +120,37 @@ app.post('/oauth/authorize', function(req, res, next) {
 
   next();
 }, app.oauth.authCodeGrant(function(req, next) {
-  // The first param should to indicate an error
-  // The second param should a bool to indicate if the user did authorize the app
-  // The third param should for the user/uid (only used for passing to saveAuthCode)
-  next(null, req.body.allow === 'yes', req.session.userId, null);
+  // Invoke next() to return the authorization decision.
+  // The first param should indicate an error
+  // The second param should indicate if the user did authorize the app
+  // The third param should be the user/uid (only used for passing to saveAuthCode)
+  if (req.body.allow === 'yes') {
+    // If the user confirmed authorization for this client/scope, then add
+    // this authorization to the user's record so this can be skipped.
+    User.findOne({email: req.session.userId}, function (err, doc) {
+      var clientId = req.body.client_id,
+        scope = req.body.scope;
+
+      if (!doc.authorized_services) {
+        doc.authorized_services = {};
+      }
+      if (!doc.authorized_services.hasOwnProperty(clientId)) {
+        doc.authorized_services[clientId] = [];
+      }
+      if (scope && scope.length && doc.authorized_services[clientId].indexOf(scope) === -1) {
+        //TODO: validate scope values
+        doc.authorized_services[clientId].push(scope);
+        doc.markModified('authorized_services');
+        doc.save();
+      }
+      next(null, true, req.session.userId);
+    });
+  }
+  else {
+    // If the user did not confirm authorization for the client/scope, then
+    // cancel the authorization process.
+    next(null, false, req.session.userId);
+  }
 }));
 
 app.use(app.oauth.errorHandler());
