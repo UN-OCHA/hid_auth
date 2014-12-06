@@ -76,14 +76,14 @@ app.get('/oauth/authorize', function(req, res, next) {
 
   if (!req.session.userId) {
     console.log('Accessing /oauth/authorize without session. Redirecting to the login page.');
-    return res.redirect('/?redirect=' + req.path + '&client_id=' +
-      req.query.client_id + '&redirect_uri=' + req.query.redirect_uri + '&response_type=' + req.query.response_type + '&state=' + req.query.state);
+    return res.redirect('/?redirect=' + req.path + '&client_id=' + req.query.client_id + '&redirect_uri=' + req.query.redirect_uri + '&response_type=' + req.query.response_type + '&state=' + req.query.state + '&scope=' + req.query.scope);
   }
 
   res.render('authorize', {
     client_id: req.query.client_id,
     redirect_uri: req.query.redirect_uri,
     response_type: req.query.response_type || 'code',
+    scope: req.query.scope || '',
     csrf: req.csrfToken()
   });
 });
@@ -91,8 +91,7 @@ app.get('/oauth/authorize', function(req, res, next) {
 app.post('/oauth/authorize', function(req, res, next) {
   if (!req.session.userId) {
     console.log('Posting to /oauth/authorize without session. Redirecting to the login page.');
-    return res.redirect('/?redirect=' + req.path + 'client_id=' +
-      req.query.client_id +'&redirect_uri=' + req.query.redirect_uri);
+    return res.redirect('/');
   }
 
   next();

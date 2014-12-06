@@ -11,6 +11,7 @@ module.exports.create = function(req, res, next) {
       redirect += "&redirect_uri=" + req.body.redirect_uri;
       redirect += "&response_type=" + req.body.response_type;
       redirect += "&state=" + req.body.state;
+      redirect += "&scope=" + req.body.scope;
       console.log('Authentication successful for ' + req.body.email + '. Redirecting to: ' + redirect);
       res.redirect(redirect);
     }
@@ -23,6 +24,7 @@ module.exports.create = function(req, res, next) {
         redirect_uri: req.body.redirect_uri || '',
         response_type: req.body.response_type || '',
         state: req.body.state || '',
+        scope: req.body.scope || '',
         csrf: req.csrfToken()
       });
     }
