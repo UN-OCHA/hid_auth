@@ -22,10 +22,16 @@ block content
         input.form-control(name='email', type='email', placeholder='Email address', value='#{user.email}', required)
       .form-group
         input.form-control(name='email_recovery', type='email', placeholder='Recovery email address', value='#{user.email_recovery}')
-      .form-group
-        input.form-control(name='pass_new', type='password', placeholder='New password')
-      .form-group
-        input.form-control(name='pass_confirm', type='password', placeholder='New password (confirm)')
+      if allowPasswordReset
+        .form-group
+          input.form-control(name='pass_new', type='password', placeholder='New password', required)
+        .form-group
+          input.form-control(name='pass_confirm', type='password', placeholder='New password (confirm)', required)
+      else
+        .form-group
+          input.form-control(name='pass_new', type='password', placeholder='New password')
+        .form-group
+          input.form-control(name='pass_confirm', type='password', placeholder='New password (confirm)')
       .form-group
         input.form-control(name='name_given', type='text', placeholder='Given name', value='#{user.name_given}')
       .form-group

@@ -274,7 +274,7 @@ module.exports.resetpwuse = function(req, res, next) {
         user.active = 1;
         user.save();
         console.log("User %s has been activated.", user.user_id);
-      });
+      }
 
       // register session
       req.session.userId = user.email;
