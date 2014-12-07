@@ -23,17 +23,19 @@ This setup will let you use .vm addresses to access every container directly ins
 
 ## Running the app
 
-1. Run `fig up`. This will pull the containers down and set them up.
-1. Once `fig up` has completed, visit http://auth.contactsid.vm in your browser to access the site. The logs will also appear in the foreground. To stop the services, just type Ctrl-c.
+To invoke the Linux configuration, you must either pass `-f linux.yml` to the fig command, or you may set the FIG_FILE environmental variable to the value 'linux.yml'. All instructions here will be shown with the -f option.
+
+1. Run `fig -f linux.yml up`. This will pull the containers down and set them up.
+1. Once `fig -f linux.yml up` has completed, visit http://auth.contactsid.vm in your browser to access the site. The logs will also appear in the foreground. To stop the services, just type Ctrl-c.
 
 The web server will be accessible at auth.contactsid.vm and the mongo server will be available at mongo.contactsid.vm.
 
 You may use the `docker exec` command to get a root shell on either container if you need to log in directly. The main server in the container will run as process ID 1, and when it terminates, so will the container.
 
-The following command will open a root shell on the main auth container, which fig will name `linux_auth_1`. You can always get a list of running containers by running the `docker ps` command.
+The following command will open a root shell on the main auth container, which fig will name `hid_auth_auth_1`. You can always get a list of running containers by running the `docker ps` command.
 
 ```
-docker exec -it linux_auth_1 bash
+docker exec -it hid_auth_auth_1 bash
 ```
 
 ## Troubleshooting
