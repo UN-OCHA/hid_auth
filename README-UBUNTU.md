@@ -32,10 +32,10 @@ The web server will be accessible at auth.contactsid.vm and the mongo server wil
 
 You may use the `docker exec` command to get a root shell on either container if you need to log in directly. The main server in the container will run as process ID 1, and when it terminates, so will the container.
 
-The following command will open a root shell on the main auth container, which fig will name `contactsid_auth_auth_1`. You can always get a list of running containers by running the `docker ps` command.
+The following command will open a root shell on the main auth container, which fig will name `contactsidauth_auth_1`. You can always get a list of running containers by running the `docker ps` command.
 
 ```
-docker exec -it contactsid_auth_auth_1 bash
+docker exec -it contactsidauth_auth_1 bash
 ```
 
 ## Troubleshooting
