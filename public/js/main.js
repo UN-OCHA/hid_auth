@@ -25,6 +25,8 @@
   }
 
   $(document).ready(function () {
+    $('.nav-tabs').stickyTabs();
+
     restrictedFieldKeys.forEach(function (val, idx, arr) {
       var el = $('input[name="' + val + '"]');
       if (el.length) {
