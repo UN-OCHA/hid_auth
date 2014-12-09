@@ -48,11 +48,8 @@ module.exports.form = function(req, res, next) {
     function (cb) {
       // Set up email content
       var now = Date.now(),
-        reset_url = req.protocol + "://" + req.get('host') + "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64')).toString('base64');
-
-      if (String(req.session.redirect).length && String(req.session.clientId).length && String(req.session.redirectUri).length) {
-        reset_url += '?redirect=' + req.session.redirect + '&client_id=' + req.session.clientId + '&redirect_uri=' + req.session.redirectUri;
-      }
+        clientId = req.body.client_id || '';
+        reset_url = req.protocol + "://" + req.get('host') + "/register/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
 
       var mailText = 'Thanks for registering for a ' + req.app.get('title') + ' account! Please follow this link to verify your account: ' + reset_url;
       var mailOptions = {
@@ -80,7 +77,17 @@ module.exports.form = function(req, res, next) {
     }
   ],
   function (err, results) {
-    res.render('index', {options: options, message: message, redirect: '', client_id: '', redirect_uri: '', csrf: req.csrfToken()});
+    res.render('index', {
+      options: options,
+      message: message,
+      redirect: options.redirect || '',
+      client_id: options.client_id || '',
+      redirect_uri: options.redirect_uri || '',
+      response_type: options.response_type || '',
+      state: options.state || '',
+      scope: options.scope || '',
+      csrf: req.csrfToken()
+    });
     next();
   });
 };
