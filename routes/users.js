@@ -195,14 +195,9 @@ module.exports.resetpw = function(req, res, next) {
     function (cb) {
       // Generate password reset link and send it in an email to the requested
       // email address.
-      var redirect_uri = req.body.redirect_uri || '',
-        now = Date.now(),
-        // TODO Add return_app to this link
-        reset_url = req.protocol + "://" + req.get('host') + "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64')).toString('base64');
-
-      if (String(req.session.redirect).length && String(req.session.clientId).length && String(req.session.redirectUri).length) {
-        reset_url += '?redirect=account&client_id=' + req.session.clientId + '&redirect_uri=' + req.session.redirectUri;
-      }
+      var now = Date.now(),
+        clientId = req.body.client_id || ''
+        reset_url = req.protocol + "://" + req.get('host') + "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
 
       // Set up email content
       var mailText = 'A password reset link for ' + req.app.get('title') + ' was requested for the account linked to the email address ' + data.email + '. Please follow this link to regain access to your account and reset your password: ' + reset_url;
@@ -236,10 +231,8 @@ module.exports.resetpw = function(req, res, next) {
 };
 
 module.exports.resetpwuse = function(req, res, next) {
-  var encodedKey = (req.params && req.params.key) ? req.params.key : undefined;
-
-  req.session.returnApp = req.session.returnApp || req.query.return_app || '';
-  req.session.clientId = req.session.clientId || req.query.client_id || req.session.returnApp;
+  var encodedKey = (req.params && req.params.key) ? req.params.key : undefined,
+    isRegistration = (req.url.match(/^\/register/) !== null) ? true : false;
 
   if (encodedKey != undefined && String(encodedKey).length) {
     // decode key
@@ -248,8 +241,8 @@ module.exports.resetpwuse = function(req, res, next) {
       email = parts[0],
       timestamp = parts[1],
       hash = new Buffer(parts[2], 'base64').toString('ascii'),
-      now = Date.now(),
-      newUser = 0;
+      clientId = parts[3] || '',
+      now = Date.now();
 
     // verify timestamp is not too old (allow up to 1 day in milliseconds)
     if (timestamp < (now - 86400000) || timestamp > now) {
@@ -279,34 +272,29 @@ module.exports.resetpwuse = function(req, res, next) {
       // register session
       req.session.userId = user.email;
 
-      if (String(req.session.redirect).length && String(req.session.clientId).length && String(req.session.redirectUri).length) {
-        Client.findOne({ clientId: req.session.clientId}, function(err, client) {
+      // if registration flow, and client ID is present, then redirect to client app
+      // otherwise, redirect to account page, but add session variable to track client app
+      if (isRegistration && clientId.length) {
+        Client.findOne({clientId: clientId}, function(err, client) {
           if (err) {
             console.dir(err);
           }
           if (client && client.redirectUri) {
-            // If this is a new user, just let them authorize and redirect back to the main site
-            if (newUser) {
-              var returnURL = req.session.redirect + '?redirect_uri=' + client.redirectUri + '&client_id=' + client.clientId;
-              res.redirect(returnURL);
-            }
-            else {
-              // set session variable to allow password resets
-              req.session.allowPasswordReset = timestamp;
-
-              var redirectDest = '/account';
-              if (String(req.session.redirect).length && String(client.clientId).length && String(client.redirectUri).length) {
-                req.session.returnApp = 1;
-              }
-              res.redirect(redirectDest);
-            }
+            return res.redirect(client.redirectUri);
           }
           else {
-            res.redirect('account');
+            // set session variable to allow password resets
+            req.session.allowPasswordReset = timestamp;
+
+            // redirect to account page to change password
+            res.redirect('/account');
           }
         });
       }
       else {
+        // set session variable to allow password resets
+        req.session.allowPasswordReset = timestamp;
+
         // redirect to account page to change password
         res.redirect('/account');
       }

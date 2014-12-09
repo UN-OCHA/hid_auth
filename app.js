@@ -162,6 +162,7 @@ app.post('/register', routes.register.form);
 app.post('/login', routes.session.create);
 app.post('/resetpw', routes.users.resetpw);
 app.get('/resetpw/:key', routes.users.resetpwuse);
+app.get('/register/:key', routes.users.resetpwuse);
 
 app.all('/logout', function (req, res) {
   console.log('Clearing session to log out user ' + req.session.userId);
