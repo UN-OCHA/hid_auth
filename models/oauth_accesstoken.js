@@ -19,7 +19,10 @@ module.exports.getAccessToken = function(bearerToken, callback) {
 module.exports.saveAccessToken = function(token, clientId, expires, userId, callback) {
   var fields = {
     clientId: clientId,
-    userId: userId,
+    // This is required due to an inconsistency in the arguments passed to
+    // saveAccessToken in oauth-server/lib/grant.js and
+    // oauth-server/lib/authCodeGrant.js
+    userId: userId.hasOwnProperty('id') ? userId.id : userId,
     expires: expires
   };
 
