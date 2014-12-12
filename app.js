@@ -70,6 +70,12 @@ app.get('/', middleware.loadUser, routes.index);
 app.all('/oauth/access_token', app.oauth.grant());
 
 app.get('/oauth/authorize', function(req, res, next) {
+  // If a nonce value is provided, add it to the session to support either
+  // authorization route as well as the redirect through login.
+  if (req.query.nonce && req.query.nonce.length) {
+    req.session.nonce = req.query.nonce;
+  }
+
   // If the user is not authenticated, redirect to the login page and preserve
   // all relevant query parameters.
   if (!req.session.userId) {
@@ -96,10 +102,6 @@ app.get('/oauth/authorize', function(req, res, next) {
     else {
       // The user has not confirmed authorization, so present the
       // authorization page.
-      if (req.query.nonce && req.query.nonce.length) {
-        req.session.nonce = req.query.nonce;
-      }
-
       res.render('authorize', {
         client_id: req.query.client_id,
         redirect_uri: req.query.redirect_uri,
