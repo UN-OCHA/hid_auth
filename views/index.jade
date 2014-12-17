@@ -1,26 +1,42 @@
 extends layout
 
 block content
-  .container
-    h1= title
 
-    ul.nav.nav-tabs(role='tablist')
+  .main
 
-      li.active
-        a(href='#login', role='tab', data-toggle='tab') Sign In
-      li
-        a(href='#register', role='tab', data-toggle='tab') Register
-      li
-        a(href='#help', role='tab', data-toggle='tab') Help
+    div.header
+      div.utility
+        div.affiliate-logos
+          div.affiliate-logo-wrapper
+            div.affiliate-logo.humanitarian-response
+          div.affiliate-logo-wrapper
+            div.affiliate-logo.relief-web
+          div.affiliate-logo-wrapper
+            div.affiliate-logo.hdx
 
-    div.tab-content
-
-      div.tab-pane.active(id='login')
-
+    div.heading
+      h1= title
+      img(src= "/images/logo.png")
+      div.message
         p Welcome to #{title}, a sign on service for HumanitarianResponse.info and other OCHA community sites.
-
+      div.buttons
+        button.btn.btn-lg.btn-primary.btn-arrow.btn-block(id="loginBtn") Login
+          span.fa.fa-angle-right
+        button.btn.btn-lg.btn-primary.btn-arrow.btn-block(id="registerBtn") Register
+          span.fa.fa-angle-right
+        button.btn.btn-lg.btn-primary.btn-arrow.btn-block(id="aboutBtn") About
+          span.fa.fa-angle-right
+      div.notice
         if message
           div.messages(class='alert alert-warning', role='alert') #{message}
+
+    div
+
+      div(id='login')
+
+        a.close-modal(href='#')
+          span.fa.fa-angle-left
+        h2 login
 
         form.form-signin(method='post', action='login', role='form')
           .form-group
@@ -28,7 +44,10 @@ block content
           .form-group
             input.form-control(name='password', type='password', placeholder='Password', required)
           .form-group
-            button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign In
+            a.forgot-password(href='#') Forgot your password?
+          .form-group
+            button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit',id='signInBtn') Proceed
+              span.fa.fa-angle-right
             input(type='hidden', name='redirect', value='#{redirect}')
             input(type='hidden', name='client_id', value='#{client_id}')
             input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
@@ -37,12 +56,13 @@ block content
             input(type='hidden', name='scope', value='#{scope}')
             input(type='hidden', name='_csrf', value='#{csrf}')
 
-      div.tab-pane(id='register')
+      div(id='register')
+
+        a.close-modal(href='#')
+          span.fa.fa-angle-left
+        h2 register
 
         p Sign up for a #{title} account, which will let you access HumanitarianResponse.info and other OCHA community sites.
-
-        if message
-          div.messages(class='alert alert-warning', role='alert') #{message}
 
         form.form-signin(method='post', action='register', role='form')
           .form-group
@@ -58,7 +78,8 @@ block content
           .form-group
             input.form-control(name='pass_confirm', type='password', placeholder='Password (confirm)', required)
           .form-group
-            button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign Up
+            button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Sign Up
+              span.fa.fa-angle-right
             input(type='hidden', name='redirect', value='#{redirect}')
             input(type='hidden', name='client_id', value='#{client_id}')
             input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
@@ -68,18 +89,29 @@ block content
             input(type='hidden', name='_csrf', value='#{csrf}')
             input(type='hidden', name='active', value=0)
 
-      div.tab-pane(id='help')
+
+      div(id='about')
+
+        a.close-modal(href='#')
+          span.fa.fa-angle-left
+
+        h2 About
+
+        p About text goes here.
+
+      div(id='forgotPass')
+
+        a.close-modal(href='#')
+          span.fa.fa-angle-left
 
         p If you forget the password for your #{title} account, you can request that a password reset link is sent to your primary or recovery email address.
-
-        if message
-          div.messages(class='alert alert-warning', role='alert') #{message}
 
         form.form-signin(method='post', action='resetpw', role='form')
           .form-group
             input.form-control(name='email', type='email', placeholder='Email address (primary or recovery)', required)
           .form-group
-            button.btn.btn-lg.btn-primary.btn-block(type='submit') Reset Password
+            button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Reset Password
+              span.fa.fa-angle-right
             input(type='hidden', name='redirect', value='#{redirect}')
             input(type='hidden', name='client_id', value='#{client_id}')
             input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
