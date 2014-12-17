@@ -25,7 +25,57 @@
   }
 
   $(document).ready(function () {
-    $('.nav-tabs').stickyTabs();
+
+    $('#loginBtn').click(function (e) {
+      $("#login").modal({
+        opacity:87,
+        containerCss:{
+          //minHeight: 422,
+          width: 288
+        },
+        overlayCss: {backgroundColor:"#438ea0"}
+      });
+      return false;
+    });
+
+    $('#registerBtn').click(function (e) {
+      $("#register").modal({
+        opacity:87,
+        containerCss:{
+          width: 288
+        },
+        overlayCss: {backgroundColor:"#438ea0"}
+      });
+      return false;
+    });
+
+    $('#aboutBtn').click(function (e) {
+      $("#about").modal({
+        opacity:87,
+        containerCss:{
+          width: 288
+        },
+        overlayCss: {backgroundColor:"#438ea0"}
+      });
+      return false;
+    });
+
+    $('.forgot-password').click(function (e) {
+      $.modal.close();
+
+      $("#forgotPass").modal({
+        opacity:87,
+        containerCss:{
+          width: 288
+        },
+        overlayCss: {backgroundColor:"#438ea0"}
+      });
+      return false;
+    });
+
+    $('.close-modal').click(function (e) {
+      $.modal.close();
+    });
 
     restrictedFieldKeys.forEach(function (val, idx, arr) {
       var el = $('input[name="' + val + '"]');
