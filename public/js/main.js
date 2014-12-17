@@ -30,7 +30,6 @@
       $("#login").modal({
         opacity:87,
         containerCss:{
-          //minHeight: 422,
           width: 288
         },
         overlayCss: {backgroundColor:"#438ea0"}
@@ -42,7 +41,8 @@
       $("#register").modal({
         opacity:87,
         containerCss:{
-          width: 288
+          width: 288,
+          minHeight: 520
         },
         overlayCss: {backgroundColor:"#438ea0"}
       });
