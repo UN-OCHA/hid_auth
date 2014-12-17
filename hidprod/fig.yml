@@ -5,7 +5,7 @@ auth:
   environment:
     DNSDOCK_NAME: auth
     DNSDOCK_IMAGE: contactsid
-    NODE_ENV: prod
+    NODE_ENV: dockerprod
   hostname: auth.contactsid.vm
 mongo1:
   image: unocha/mongodb
