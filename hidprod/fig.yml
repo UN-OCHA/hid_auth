@@ -1,0 +1,36 @@
+auth:
+  image: unocha/nginx16-nodejs
+  volumes:
+    - /code/contactsid_auth:/var/www/html
+  environment:
+    DNSDOCK_NAME: auth
+    DNSDOCK_IMAGE: contactsid
+    NODE_ENV: prod
+  hostname: auth.contactsid.vm
+mongo1:
+  image: unocha/mongodb
+  volumes:
+    - /data/contactsid_auth/mongo1:/data/db
+  environment:
+    DNSDOCK_NAME: mongo1
+    DNSDOCK_IMAGE: contactsid
+    MONGO_OPTIONS: --journal --noprealloc --smallfiles --oplogSize 20 --replSet hid
+  hostname: mongo1.contactsid.vm
+mongo2:
+  image: unocha/mongodb
+  volumes:
+    - /data/contactsid_auth/mongo2:/data/db
+  environment:
+    DNSDOCK_NAME: mongo2
+    DNSDOCK_IMAGE: contactsid
+    MONGO_OPTIONS: --journal --noprealloc --smallfiles --oplogSize 20 --replSet hid
+  hostname: mongo2.contactsid.vm
+mongo3:
+  image: unocha/mongodb
+  volumes:
+    - /data/contactsid_auth/mongo3:/data/db
+  environment:
+    DNSDOCK_NAME: mongo3
+    DNSDOCK_IMAGE: contactsid
+    MONGO_OPTIONS: --nojournal --noprealloc --smallfiles --oplogSize 20 --replSet hid
+  hostname: mongo3.contactsid.vm
