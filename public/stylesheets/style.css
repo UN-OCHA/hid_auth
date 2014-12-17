@@ -246,3 +246,16 @@ a:hover {
 .hdx {
   background-position: 10px -78px;
 }
+
+.nav-tabs>li>a {
+  border: none;
+}
+
+.nav-tabs>li>a:hover {
+  background-color: #2a5d81;
+  border: none;
+}
+
+.account-lead-in {
+  padding: 10px 0;
+}
