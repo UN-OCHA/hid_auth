@@ -80,7 +80,7 @@ app.get('/oauth/authorize', function(req, res, next) {
   // all relevant query parameters.
   if (!req.session.userId) {
     console.log('Accessing /oauth/authorize without session. Redirecting to the login page.');
-    return res.redirect('/?redirect=' + req.path + '&client_id=' + req.query.client_id + '&redirect_uri=' + req.query.redirect_uri + '&response_type=' + req.query.response_type + '&state=' + req.query.state + '&scope=' + req.query.scope);
+    return res.redirect('/?redirect=' + req.path + '&client_id=' + req.query.client_id + '&redirect_uri=' + req.query.redirect_uri + '&response_type=' + req.query.response_type + '&state=' + req.query.state + '&scope=' + req.query.scope + '#login');
   }
 
   // If the user is authenticated, then check whether the user has confirmed
