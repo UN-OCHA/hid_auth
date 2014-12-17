@@ -2,7 +2,7 @@
 
 ## Bringing the environment up
 
-To start this environment up, run `sh start.sh -d` to remove all old data and start the containers in the background.
+To start this environment up, run `sh start.sh -d` to remove all old data, remove all old containers, and start the containers in the background.
 
 That will get you the following containers:
 
@@ -19,10 +19,11 @@ Startup of the Node applications will likely initially fail because the replica 
  - If you have MongoDB installed on your host machine, do a `mongo mongo1.contactsid.vm`.
  - Otherwise, a `docker exec -it hidprod_mongo1_1 mongo` should work to do so from the mongo1 container.
 - Start the replSet with `rs.initiate()`.
-- Add mongo2 as a full member with `rs.add('mongo2.contactsid.vm')`.
+- Add mongo2 as a full member with `rs.add('mongo2.contactsid.vm')`. Be sure to wait to let the replica set acknowledge this before continuing.
 - Add mongo3 as an arbiter (dataless node used only to vote in quorum calculations) with `rs.addArb('mongo3.contactsid.vm')`.
+- Restart the auth container with a `docker restart hidprod_auth_1` and seed it with a `docker exec -it hidprod_auth_1 node /var/www/html/seed.js`.
 
-At that point, you should have a fully-functioning replica set with 3 members.
+At that point, you should have a fully-functioning replica set with 3 members and the auth app should be restarted
 
 When you connect to any node, it will show you its status (PRIMARY, SECONDARY, ARBITER, or STARTUP2 are the most common.)
 
