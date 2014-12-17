@@ -216,3 +216,44 @@ a:hover {
   border-radius: 8px;
   border: none;
 }
+
+.header {
+  background-color: #f9f9f9;
+}
+.header .utility {
+  height: 59px;
+  padding: 9px 20px;
+}
+
+.affiliate-logo-wrapper {
+  border-right: 1px solid #fff;
+  display: inline-block;
+}
+.affiliate-logo-wrapper:last-child {
+  border: none;
+}
+.affiliate-logo-wrapper:last-child .affiliate-logo {
+  border: none;
+}
+
+.affiliate-logo {
+  height: 36px;
+  width: 77px;
+  border-right: 1px solid #e4e4e4;
+  display: inline-block;
+  background: url(../images/sprite.png) no-repeat;
+  margin: 0;
+}
+
+.humanitarian-response {
+  background-position: 0 6px;
+}
+
+.relief-web {
+  background-position: 10px -36px;
+  width: 94px;
+}
+
+.hdx {
+  background-position: 10px -78px;
+}
