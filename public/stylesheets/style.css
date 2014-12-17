@@ -199,17 +199,6 @@ a:hover {
   color: #bbb;
 }
 
-/*#signInBtn {*/
-  /*background: rgb(138,202,234);*/
-  /*color: white;*/
-/*}*/
-
-/*#signInBtn .fa {*/
-  /*background: white;*/
-  /*color: #8acae9;*/
-
-/*}*/
-
 .form-control {
   -webkit-box-shadow: inset 1px 1px 5px rgba(0,0,0,.3);
   box-shadow: inset 1px 1px 5px rgba(0,0,0,.3);
