@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  .container
+  .container.main
     h1= title
     h2 Welcome, 
       span.name= user.name_given
@@ -13,7 +13,7 @@ block content
         a(href='/logout') Logout
 
     form.form-account(method='post', action='', role='form')
-      p Update your account settings for #{title}.
+      p.account-lead-in Update your account settings for #{title}.
 
       if message
         div.messages(class='alert alert-warning', role='alert') #{message}
@@ -42,7 +42,8 @@ block content
           em You must provide your current password to change your email address, recovery email, or password.
 
       .form-group
-        button.btn.btn-lg.btn-primary.btn-block(type='submit') Update Account
+        button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Update Account
+          span.fa.fa-angle-right
         input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
         input(type='hidden', name='user_id', value='#{user.user_id}')
         input(type='hidden', name='_csrf', value='#{csrf}')
