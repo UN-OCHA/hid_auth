@@ -25,53 +25,42 @@
   }
 
   $(document).ready(function () {
+    // Load up modal if there is a hash.
+    var hash = window.location.hash;
+
+    if (hash) {
+      hash_height = (hash === '#register') ? 520 : 478;
+      build_modal(hash, 288, hash_height);
+    }
 
     $('#loginBtn').click(function (e) {
-      $("#login").modal({
-        opacity:87,
-        containerCss:{
-          width: 288
-        },
-        overlayCss: {backgroundColor:"#438ea0"}
-      });
-      return false;
+      build_modal('#login', 288, 478);
     });
 
     $('#registerBtn').click(function (e) {
-      $("#register").modal({
-        opacity:87,
-        containerCss:{
-          width: 288,
-          minHeight: 520
-        },
-        overlayCss: {backgroundColor:"#438ea0"}
-      });
-      return false;
+      build_modal('#register', 288, 520);
     });
 
     $('#aboutBtn').click(function (e) {
-      $("#about").modal({
-        opacity:87,
-        containerCss:{
-          width: 288
-        },
-        overlayCss: {backgroundColor:"#438ea0"}
-      });
-      return false;
+      build_modal('#about', 288, 478);
     });
 
     $('.forgot-password').click(function (e) {
       $.modal.close();
+      build_modal('#forgotPass', 288, 478);
+    });
 
-      $("#forgotPass").modal({
+    function build_modal(modal_id, w, h) {
+      $(modal_id).modal({
         opacity:87,
         containerCss:{
-          width: 288
+          width: w,
+          height: h
         },
         overlayCss: {backgroundColor:"#438ea0"}
       });
       return false;
-    });
+    }
 
     $('.close-modal').click(function (e) {
       $.modal.close();
