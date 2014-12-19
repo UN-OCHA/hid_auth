@@ -279,7 +279,10 @@ module.exports.resetpwuse = function(req, res, next) {
           if (err) {
             console.dir(err);
           }
-          if (client && client.redirectUri) {
+          if (client && client.loginUri && client.loginUri.length) {
+            return res.redirect(client.loginUri);
+          }
+          else if (client && client.redirectUri && client.redirectUri.length) {
             return res.redirect(client.redirectUri);
           }
           else {

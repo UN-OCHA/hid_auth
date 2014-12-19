@@ -7,7 +7,8 @@ var OAuthClientsSchema = new Schema({
   clientName: String,
   clientId: String,
   clientSecret: String,
-  redirectUri: String
+  redirectUri: String,
+  loginUri: String
 });
 
 OAuthClientsSchema.static('getClient', function(clientId, clientSecret, callback) {
