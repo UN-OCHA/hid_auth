@@ -9,6 +9,7 @@ var cors = require('cors');
 var app = express();
 var oauthserver = require('oauth2-server');
 var User = models.User;
+var Client = models.OAuthClientsModel;
 
 app.set('env', process.env.NODE_ENV || 'development');
 app.set('port', process.env.PORT || 3000);
@@ -90,24 +91,31 @@ app.get('/oauth/authorize', function(req, res, next) {
       scope = req.query.scope;
 
     if (err) {
-      next(new Error('Error occurred while fetching the user record for ' + req.session.userId));
+      return next(new Error('Error occurred while fetching the user record for ' + req.session.userId));
     }
     else if (doc && doc.authorized_services && doc.authorized_services.hasOwnProperty(clientId) && doc.authorized_services[clientId].indexOf(scope) !== -1) {
       // The user has confirmed authorization for this client/scope.
       // Proceed with issuing an auth code (see POST /oauth/authorize).
-      app.oauth.authCodeGrant(function (_req, verify) {
+      return app.oauth.authCodeGrant(function (_req, verify) {
         verify(null, true, _req.session.userId);
       })(req, res, next);
     }
     else {
-      // The user has not confirmed authorization, so present the
-      // authorization page.
-      res.render('authorize', {
-        client_id: req.query.client_id,
-        redirect_uri: req.query.redirect_uri,
-        response_type: req.query.response_type || 'code',
-        scope: req.query.scope || '',
-        csrf: req.csrfToken()
+      Client.findOne({clientId: clientId}, function (err, doc) {
+        if (err || !doc || !doc.clientId) {
+          return res.send(403, 'Could not find client ' + clientId);
+        }
+
+        // The user has not confirmed authorization, so present the
+        // authorization page.
+        return res.render('authorize', {
+          client_id: req.query.client_id,
+          client_name: doc.clientName,
+          redirect_uri: req.query.redirect_uri,
+          response_type: req.query.response_type || 'code',
+          scope: req.query.scope || '',
+          csrf: req.csrfToken()
+        });
       });
     }
   });

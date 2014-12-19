@@ -3,9 +3,9 @@ extends layout
 block content
   .container.main
     form.form-signin(method='post', action='', role='form')
-      h2.form-signin-heading Authorize
+      h2.form-signin-heading Authorize #{client_name}
       .form-group
-        .div Do you want to authorize access to your account?
+        .div Do you want to authorize #{client_name} access to your Humanitarian ID account?
       .form-group
         input(type='hidden', name='allow', value='yes')
         input(type='hidden', name='client_id', value='#{client_id}')
@@ -14,3 +14,4 @@ block content
         input(type='hidden', name='scope', value='#{scope}')
         input(type='hidden', name='_csrf', value='#{csrf}')
         button.btn.btn-lg.btn-primary.btn-block(type='submit') Authorize
+        a.btn.btn-lg.btn-block(href='#{redirect_uri}') Cancel
