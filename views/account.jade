@@ -4,7 +4,10 @@ block content
   .container.main
     h1= title
     h2 Welcome, 
-      span.name= user.name_given
+      if user.name_given
+        span.name= user.name_given
+      else
+        span.name= user.email
 
     ul.nav.nav-tabs(role='tablist')
       li.active
