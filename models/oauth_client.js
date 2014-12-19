@@ -4,6 +4,7 @@ var Schema = mongoose.Schema;
 var authorizedClientIds = ['drupal-proto', 'hid-local', 'hid-dev', 'hid-stage', 'hid-prod', 'hrinfo-local', 'hrinfo-dev', 'hrinfo-dev1', 'hrinfo-stage', 'hrinfo-prod'];
 
 var OAuthClientsSchema = new Schema({
+  clientName: String,
   clientId: String,
   clientSecret: String,
   redirectUri: String
