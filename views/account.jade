@@ -36,9 +36,9 @@ block content
         .form-group
           input.form-control(name='pass_confirm', type='password', placeholder='New password (confirm)')
       .form-group
-        input.form-control(name='name_given', type='text', placeholder='Given name', value='#{user.name_given}')
+        input.form-control(name='name_given', type='text', placeholder='Given name', value='#{user.name_given}', required)
       .form-group
-        input.form-control(name='name_family', type='text', placeholder='Family name', value='#{user.name_family}')
+        input.form-control(name='name_family', type='text', placeholder='Family name', value='#{user.name_family}', required)
       unless allowPasswordReset
         .form-group.bg-warning.hidden
           input.form-control(name='pass_current', type='password', placeholder='Current password')

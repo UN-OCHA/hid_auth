@@ -15,6 +15,18 @@ module.exports.form = function(req, res, next) {
         return cb(true);
       }
 
+      // Validate the given name
+      if (options.name_given == undefined || String(options.name_given).length < 1) {
+        message = 'A given name is required to register a new account.';
+        return cb(true);
+      }
+
+      // Validate the family name
+      if (options.name_family == undefined || String(options.name_family).length < 1) {
+        message = 'A family name is required to register a new account.';
+        return cb(true);
+      }
+
       // Ensure the email address isn't already registered
       User.findOne({email: options.email}, function(err, user) {
         if (err || (user && user.user_id)) {

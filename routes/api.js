@@ -15,9 +15,17 @@ exports.register = function(req, res, next) {
         console.log('api/register method called without email address by client ' + req.client_key);
         return cb(true);
       }
+      if (!req.body.nameLast || !req.body.nameLast.length) {
+        console.log('api/register method called without last name by client ' + req.client_key);
+        return cb(true);
+      }
+      if (!req.body.nameFirst || !req.body.nameFirst.length) {
+        console.log('api/register method called without first name by client ' + req.client_key);
+        return cb(true);
+      }
       email = req.body.email;
-      nameLast = req.body.nameLast || '';
-      nameFirst = req.body.nameFirst || '';
+      nameLast = req.body.nameLast;
+      nameFirst = req.body.nameFirst;
       active = req.body.active || 0;
 
       // Check if email is already registered.
