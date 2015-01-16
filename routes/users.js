@@ -32,10 +32,18 @@ module.exports.account = function(req, res, next) {
       });
     },
     function (cb) {
-      // Validate the submitted form values.
-
       // If the email address is missing, then this form isn't submitted yet.
       if (options.email == undefined) {
+        return cb(true);
+      }
+
+      // Validate the submitted form values.
+      if (options.name_given == undefined || options.name_given.length < 1) {
+        message = "Given name is required.";
+        return cb(true);
+      }
+      if (options.name_family == undefined || options.name_family.length < 1) {
+        message = "Family name is required.";
         return cb(true);
       }
 
