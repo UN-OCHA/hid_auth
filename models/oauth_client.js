@@ -1,7 +1,5 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-//TODO Move this to a config file.
-var authorizedClientIds = ['drupal-proto', 'hid-local', 'hid-dev', 'hid-stage', 'hid-prod', 'hrinfo-local', 'hrinfo-dev', 'hrinfo-dev1', 'hrinfo-stage', 'hrinfo-prod'];
 
 var OAuthClientsSchema = new Schema({
   clientName: String,
@@ -20,11 +18,16 @@ OAuthClientsSchema.static('getClient', function(clientId, clientSecret, callback
 });
 
 OAuthClientsSchema.static('grantTypeAllowed', function(clientId, grantType, callback) {
-  if (grantType === 'password' || grantType === 'authorization_code') {
-    return callback(false, authorizedClientIds.indexOf(clientId) >= 0);
-  }
-
-  callback(false, true);
+  var params = {
+    clientId: clientId
+    //TODO: add query parameters for allowed grant type
+  };
+  OAuthClientsModel.findOne(params, function (err, client) {
+    if (!err && client && client.clientId === clientId) {
+      return callback(false, true);
+    }
+    return callback(err, false);
+  });
 });
 
 mongoose.model('oauth_clients', OAuthClientsSchema);
