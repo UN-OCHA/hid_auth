@@ -6,17 +6,23 @@ var models = require('./models');
 var middleware = require('./middleware');
 var csrf = require('csurf')();
 var cors = require('cors');
-var app = express();
+var MongoStore = require('connect-mongo')(express);
 var oauthserver = require('oauth2-server');
 var User = models.User;
 var Client = models.OAuthClientsModel;
 
+var app = express();
 app.set('env', process.env.NODE_ENV || 'development');
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-app.use(express.cookieParser('ncie0fnft6wjfmgtjz8i'));
-app.use(express.cookieSession());
+app.use(express.cookieParser());
+var mstore = new MongoStore({mongooseConnection: models.mongoose.connection});
+app.use(express.session({
+  key: 'hid.auth',
+  store: mstore,
+  secret: 'LGVU$S&uI3JqRJ%yyp%^N0RC'
+}));
 
 app.set('title', 'Humanitarian ID');
 app.locals.title = 'Humanitarian ID';
@@ -176,10 +182,12 @@ app.get('/register/:key', routes.users.resetpwuse);
 
 app.all('/logout', function (req, res) {
   console.log('Clearing session to log out user ' + req.session.userId);
-  req.session = null;
+  req.session.destroy(function () {
+    req.session = null;
 //TODO: add validation for redirect based on client ID
-  var redirect = (req.query.redirect && String(req.query.redirect).length) ? req.query.redirect : '/';
-  res.redirect(redirect);
+    var redirect = (req.query.redirect && String(req.query.redirect).length) ? req.query.redirect : '/';
+    res.redirect(redirect);
+  });
 });
 
 app.post('/api/register', middleware.requiresKeySecret, routes.api.register);
