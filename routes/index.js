@@ -8,7 +8,7 @@ exports.index = function(req, res) {
     req.session.redirectUri = req.session.redirectUri || req.query.redirect_uri || '';
     res.render('index', {
       redirect: req.query.redirect || '',
-      client_id: req.query.client_id,
+      client_id: req.query.client_id || '',
       redirect_uri: req.query.redirect_uri || '',
       response_type: req.query.response_type || '',
       state: req.query.state || '',
