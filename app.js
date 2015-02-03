@@ -46,10 +46,33 @@ var formCSRF = function (req, res, next) {
 };
 app.use(formCSRF);
 
+function oauthAlterResponse(oauth, response, cb) {
+  if (response.access_token) {
+    var d = Math.round(new Date().getTime()/1000),
+      jwt = require('jwt-simple'),
+      crypto = require('crypto'),
+      base64url = require('base64url'),
+      id_token = {
+        iss: config.rootURL || oauth.req.protocol + '://' + oauth.req.headers.host,
+        sub: oauth.user.id,
+        aud: oauth.req.body.client_id,
+        exp: d + 3600,
+        iat: d,
+        nonce: oauth.nonce || ''
+      };
+    response.id_token = id_token;
+    var hbuf = crypto.createHmac('sha256', oauth.client.clientSecret).update(oauth.accessToken).digest();
+    response.id_token.ht_hash = base64url(hbuf.toString('ascii', 0, hbuf.length/2));
+    response.id_token = jwt.encode(response.id_token, oauth.client.clientSecret);
+  }
+  cb(response);
+}
+
 app.oauth = oauthserver({
   model: models.oauth,
   grants: ['password', 'authorization_code', 'refresh_token'],
-  debug: true
+  debug: true,
+  alterResponse: oauthAlterResponse
 });
 
 app.use(app.router);
