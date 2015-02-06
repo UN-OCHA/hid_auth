@@ -23,11 +23,11 @@ block content
       div.message
         p Welcome to #{title}, a sign on service for Humanitarian.ID, HumanitarianResponse.info, and other OCHA community sites.
       div.buttons
-        button.btn.btn-lg.btn-primary.btn-arrow.btn-block(id="loginBtn") Login
+        a.btn.btn-lg.btn-primary.btn-arrow.btn-block(href="#login") Login
           span.fa.fa-angle-right
-        button.btn.btn-lg.btn-primary.btn-arrow.btn-block(id="registerBtn") Register
+        a.btn.btn-lg.btn-primary.btn-arrow.btn-block(href="#register") Register
           span.fa.fa-angle-right
-        button.btn.btn-lg.btn-primary.btn-arrow.btn-block(id="aboutBtn") About
+        a.btn.btn-lg.btn-primary.btn-arrow.btn-block(href="#about") About
           span.fa.fa-angle-right
       div.notice
         if message
@@ -57,7 +57,8 @@ block content
             input(type='hidden', name='scope', value='#{scope}')
             input(type='hidden', name='_csrf', value='#{csrf}')
           .form-group
-            a.btn.btn-lg.btn-block.forgot-password(href='#') Forgot your password?
+            a.btn.btn-lg.btn-block.forgot-password(href='#forgotPass') Forgot your password?
+            a.btn.btn-lg.btn-block.register(href='#register') Need to register?
 
       div(id='register')
 
