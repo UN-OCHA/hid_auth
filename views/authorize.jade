@@ -2,16 +2,18 @@ extends layout
 
 block content
   .container.main
-    form.form-signin(method='post', action='', role='form')
-      h2.form-signin-heading Authorize #{client_name}
-      .form-group
-        .div Do you want to authorize #{client_name} access to your Humanitarian ID account?
-      .form-group
-        input(type='hidden', name='allow', value='yes')
-        input(type='hidden', name='client_id', value='#{client_id}')
-        input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
-        input(type='hidden', name='response_type', value='#{response_type}')
-        input(type='hidden', name='scope', value='#{scope}')
-        input(type='hidden', name='_csrf', value='#{csrf}')
-        button.btn.btn-lg.btn-primary.btn-block(type='submit') Authorize
-        a.btn.btn-lg.btn-block(href='#{redirect_uri}') Cancel
+    .row
+      .col-sm-8.col-sm-offset-2.col-md-6.col-md-offset-3
+        form.form-signin(method='post', action='', role='form')
+          h2.form-signin-heading Authorize #{client_name}
+          .form-group
+            .div Do you want to authorize #{client_name} access to your Humanitarian ID account?
+          .form-group
+            input(type='hidden', name='allow', value='yes')
+            input(type='hidden', name='client_id', value='#{client_id}')
+            input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
+            input(type='hidden', name='response_type', value='#{response_type}')
+            input(type='hidden', name='scope', value='#{scope}')
+            input(type='hidden', name='_csrf', value='#{csrf}')
+            button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Authorize
+              span.fa.fa-angle-right
