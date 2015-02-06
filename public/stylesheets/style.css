@@ -75,6 +75,11 @@ a:hover {
   }
 }
 
+.alert a {
+  color: #51adc6;
+  text-decoration: underline;
+}
+
 .buttons:after {
   content: "";
   display: table;
@@ -165,6 +170,10 @@ a:hover {
 #aboutBtn:hover,
 #aboutBtn:active {
   background-color: #2a5d81;
+}
+
+.forgot-password.btn:hover {
+  color:#fff;
 }
 
 .btn-arrow:hover .fa {
