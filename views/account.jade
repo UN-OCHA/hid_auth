@@ -19,7 +19,7 @@ block content
       p.account-lead-in Update your account settings for #{title}.
 
       if message
-        div.messages(class='alert alert-warning', role='alert') #{message}
+        div.messages(class='alert alert-warning', role='alert') !{message}
 
       .form-group
         input.form-control(name='email', type='email', placeholder='Email address', value='#{user.email}', required)

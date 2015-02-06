@@ -6,8 +6,6 @@ var bcrypt = require('bcrypt');
 var Client = require('./../models').OAuthClientsModel;
 
 module.exports.account = function(req, res, next) {
-  req.session.returnApp = req.session.returnApp || req.query.return_app || '';
-
   var options = req.body || {},
     redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
     submitted = false,
@@ -114,11 +112,18 @@ module.exports.account = function(req, res, next) {
           }
           else {
             data = item;
-            message = 'Settings successfully saved.';
-            if (req.session.returnApp) {
-              res.redirect('/oauth/authorize?redirect_uri=' + req.session.redirectUri + '&client_id=' + req.session.clientId);
+            message = "Settings successfully saved.";
+            if (req.session.returnClientId) {
+              Client.findOne({"clientId": req.session.returnClientId}, function (err, doc) {
+                if (!err && doc.clientName && doc.loginUri) {
+                  message += ' Continue to <a href="' + doc.loginUri + '">sign in to ' + doc.clientName + '</a>.';
+                }
+                return cb();
+              });
             }
-            return cb();
+            else {
+              return cb();
+            }
           }
         });
       }
@@ -138,7 +143,7 @@ module.exports.account = function(req, res, next) {
       if (!data.name_family || typeof data.name_family !== 'string') {
         data.name_family = '';
       }
-      res.render('account', {user: data, message: message, redirect: req.session.returnApp, client_id: '', redirect_uri: redirect_uri, csrf: req.csrfToken(), allowPasswordReset: req.session.allowPasswordReset || 0});
+      res.render('account', {user: data, message: message, redirect_uri: redirect_uri, csrf: req.csrfToken(), allowPasswordReset: req.session.allowPasswordReset || 0});
     }
     next();
   });
@@ -305,6 +310,9 @@ module.exports.resetpwuse = function(req, res, next) {
       else {
         // set session variable to allow password resets
         req.session.allowPasswordReset = timestamp;
+
+        // set session variable to allow link to originating client app
+        req.session.returnClientId = clientId.length ? clientId : null;
 
         // redirect to account page to change password
         res.redirect('/account');
