@@ -2,7 +2,7 @@ var User = require('./../models').User;
 var mail = require('./../mail');
 var async = require('async');
 
-module.exports.form = function(req, res, next) {
+module.exports.form = function(req, res) {
   var options = req.body || {},
     message = null,
     data;
@@ -100,6 +100,5 @@ module.exports.form = function(req, res, next) {
       scope: options.scope || '',
       csrf: req.csrfToken()
     });
-    next();
   });
 };

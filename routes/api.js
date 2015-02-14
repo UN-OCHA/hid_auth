@@ -1,7 +1,7 @@
 var async = require('async'),
   User = require('./../models').User;
 
-exports.register = function(req, res, next) {
+exports.register = function(req, res) {
   var status = 'error',
     email,
     nameLast,
@@ -80,6 +80,5 @@ exports.register = function(req, res, next) {
     },
   ], function (err) {
     res.send(JSON.stringify({status: status, data: data}));
-    return next();
   });
 }
