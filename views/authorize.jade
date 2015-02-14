@@ -8,6 +8,26 @@ block content
           h2.form-signin-heading Authorize #{client_name}
           .form-group
             .div Do you want to authorize #{client_name} access to your Humanitarian ID account?
+            h4 This application WILL be able to:
+            ul.authorize-list
+              li
+                i.glyphicon.glyphicon-ok
+                span View your profile information
+              li
+                i.glyphicon.glyphicon-ok
+                span Update your profile information
+              li
+                i.glyphicon.glyphicon-ok
+                span View your check-in information
+              li
+                i.glyphicon.glyphicon-ok
+                span Update your check-in information
+            h4 This application WILL NOT be able to:
+            ul.authorize-list
+              li
+                i.glyphicon.glyphicon-remove
+                span View your password
+
           .form-group
             input(type='hidden', name='allow', value='yes')
             input(type='hidden', name='client_id', value='#{client_id}')
