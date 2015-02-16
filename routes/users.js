@@ -5,7 +5,7 @@ var async = require('async');
 var bcrypt = require('bcrypt');
 var Client = require('./../models').OAuthClientsModel;
 
-module.exports.account = function(req, res, next) {
+module.exports.account = function(req, res) {
   var options = req.body || {},
     redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
     submitted = false,
@@ -131,28 +131,30 @@ module.exports.account = function(req, res, next) {
   ],
   function (err, results) {
     if (submitted && redirect_uri && redirect_uri != undefined && String(redirect_uri).length) {
-      res.redirect(redirect_uri);
+      return res.redirect(redirect_uri);
     }
-    else {
-      if (!data.email_recovery || typeof data.email_recovery !== 'string') {
-        data.email_recovery = '';
-      }
-      if (!data.name_given || typeof data.name_given !== 'string') {
-        data.name_given = '';
-      }
-      if (!data.name_family || typeof data.name_family !== 'string') {
-        data.name_family = '';
-      }
-      res.render('account', {user: data, message: message, redirect_uri: redirect_uri, csrf: req.csrfToken(), allowPasswordReset: req.session.allowPasswordReset || 0});
+
+    if (!data.email_recovery || typeof data.email_recovery !== 'string') {
+      data.email_recovery = '';
     }
-    next();
+    if (!data.name_given || typeof data.name_given !== 'string') {
+      data.name_given = '';
+    }
+    if (!data.name_family || typeof data.name_family !== 'string') {
+      data.name_family = '';
+    }
+    res.render('account', {user: data, message: message, redirect_uri: redirect_uri, csrf: req.csrfToken(), allowPasswordReset: req.session.allowPasswordReset || 0});
   });
 };
 
 module.exports.showjson = function(req, res, next) {
   User.findOne({email: req.user.id}, function(err, user) {
-    if (err) return next(err);
-    if (!user) return next(new errors.NotFound('showjson: User not found for ' + req.session.userId, req.session));
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return next(new errors.NotFound('showjson: User not found for ' + req.session.userId, req.session));
+    }
 
     // Remove sensitive fields. The delete operator did not work.
     user.hashed_password = undefined;
@@ -162,11 +164,10 @@ module.exports.showjson = function(req, res, next) {
 
     // Return the JSON serialized user object
     res.send(JSON.stringify(user));
-    return next();
   });
 };
 
-module.exports.resetpw = function(req, res, next) {
+module.exports.resetpw = function(req, res) {
   var email = (req.body && req.body.email) ? req.body.email : undefined,
     options = {},
     message = null,
@@ -239,7 +240,6 @@ module.exports.resetpw = function(req, res, next) {
   ],
   function (err, results) {
     res.render('index', {action: 'help', options: options, message: message, redirect: req.body.redirect || '', client_id: req.body.client_id || '', redirect_uri: req.body.redirect_uri || '', csrf: req.csrfToken()});
-    next();
   });
 };
 
@@ -264,8 +264,12 @@ module.exports.resetpwuse = function(req, res, next) {
 
     // look up user
     User.findOne({email: email}, function(err, user) {
-      if (err) return next(err);
-      if (!user) return next(new errors.NotFound('User not found'));
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return next(new errors.NotFound('User not found'));
+      }
 
       // verify hash
       if (!bcrypt.compareSync(user.hashed_password + timestamp + user.user_id, hash)) {
