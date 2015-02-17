@@ -1,7 +1,8 @@
-var bunyan = require("bunyan"),
+var bunyan = require('bunyan'),
+  config = require('./config'),
   log = bunyan.createLogger({
-  	name: 'contactsid_auth',
-  	streams: [
+    name: config.name,
+    streams: [
       {
         level: 'info',
         stream: process.stdout
