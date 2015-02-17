@@ -32,7 +32,7 @@ module.exports.form = function(req, res) {
       User.findOne({email: options.email}, function(err, user) {
         if (err || (user && user.user_id)) {
           message = 'The email address supplied is already registered with an account. Do you need to reset your password?';
-          log.info({'type': 'register:error', 'message': 'User registration attempted with email address ' + options.email + ' which is already in use by user ' + user.user_id + '.', 'fields': options});
+          log.warn({'type': 'register:error', 'message': 'User registration attempted with email address ' + options.email + ' which is already in use by user ' + user.user_id + '.', 'fields': options});
           return cb(true);
         }
         else {
@@ -84,7 +84,7 @@ module.exports.form = function(req, res) {
         }
         else {
           message = 'Verify email sent successful! Check your email and follow the included link to verify your account.';
-          log.warn({'type': 'registerEmail:success', 'message': 'Registration verification email sending successful to ' + data.email + '.', 'info': info, 'resetUrl': reset_url});
+          log.info({'type': 'registerEmail:success', 'message': 'Registration verification email sending successful to ' + data.email + '.', 'info': info, 'resetUrl': reset_url});
           options = {};
           return cb();
         }
