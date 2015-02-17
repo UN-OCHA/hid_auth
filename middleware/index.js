@@ -1,5 +1,6 @@
 var async = require('async');
 var models = require('./../models');
+var log = require('../log');
 var User = models.User;
 var Client = models.OAuthClientsModel;
 
@@ -33,14 +34,14 @@ function requiresKeySecret(req, res, next) {
   async.series([
     function (cb) {
       if (!client_id || !client_id.length || !access_key || !access_key.length || !data) {
-        console.log('API request submitted without client ID, access key, or data.');
+        log.warn({'type': 'apiKeySecret:error', 'message': 'API request submitted without client ID, access key, or data.', 'body': req.body, 'query': req.query});
         return cb(true);
       }
 
       // Step 1: Validate that the client app is allowed
       Client.findOne({clientId: client_id}, function (err, data) {
         if (err) {
-          console.log('Error occurred while looking up client ' + client_id);
+          log.warn({'type': 'apiKeySecret:error', 'message': 'Error occurred while looking up client ' + client_id});
           return cb(err);
         }
         else if (data && data.clientSecret) {
@@ -49,7 +50,7 @@ function requiresKeySecret(req, res, next) {
         }
         else {
           // Client not found.
-          console.log('API key validation failed. Client ' + client_id + ' not found.');
+          log.warn({'type': 'apiKeySecret:error', 'message': 'API key validation failed. Client ' + client_id + ' not found.'});
           return cb(true);
         }
       });
@@ -65,12 +66,12 @@ function requiresKeySecret(req, res, next) {
       var re_access_key = SHA256(valuesList);
 
       if (access_key === re_access_key.toString()) {
-        console.log('API key/secret validated.');
+        log.info({'type': 'apiKeySecret:success', 'message': 'API key/secret validated.'});
         req.client_key = client_id;
         return cb();
       }
       else {
-        console.log('API key/secret validation failed.');
+        log.warn({'type': 'apiKeySecret:error', 'message': 'API key/secret validation failed.'});
         return cb(true);
       }
     }

@@ -1,6 +1,7 @@
 var express = require('express');
 var routes = require('./routes');
 var config = require('./config');
+var log = require('./log');
 var path = require('path');
 var models = require('./models');
 var middleware = require('./middleware');
@@ -79,13 +80,15 @@ app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function(err, req, res, next) {
-  if (process.env.NODE_ENV !== 'test')
-    console.error('Error:', err);
+  if (process.env.NODE_ENV !== 'test') {
+    log.warn({'type': 'error', 'message': 'Error: ' + JSON.stingify(err)});
+  }
 
   if (middleware.isValidationError(err)) {
     res.status(400);
     res.send(err.errors);
-  } else {
+  }
+  else {
     res.status(err.code || 500);
     res.send('Error');
   }
@@ -109,7 +112,7 @@ app.get('/oauth/authorize', function(req, res, next) {
   // If the user is not authenticated, redirect to the login page and preserve
   // all relevant query parameters.
   if (!req.session.userId) {
-    console.log('Accessing /oauth/authorize without session. Redirecting to the login page.');
+    log.info({'type': 'authorize', 'message': 'Get request to /oauth/authorize without session. Redirecting to the login page.'});
     return res.redirect('/?redirect=' + req.path + '&client_id=' + req.query.client_id + '&redirect_uri=' + req.query.redirect_uri + '&response_type=' + req.query.response_type + '&state=' + req.query.state + '&scope=' + req.query.scope + '#login');
   }
 
@@ -120,18 +123,21 @@ app.get('/oauth/authorize', function(req, res, next) {
       scope = req.query.scope;
 
     if (err) {
-      return next(new Error('Error occurred while fetching the user record for ' + req.session.userId));
+      log.warn({'type': 'authorize:error', 'message': 'An error occurred in /oauth/authorize while trying to fetch the user record for ' + req.session.userId + ' who is an active session.'});
+      return next(new Error('Error occurred while fetching user record'));
     }
     else if (doc && doc.authorized_services && doc.authorized_services.hasOwnProperty(clientId) && doc.authorized_services[clientId].indexOf(scope) !== -1) {
       // The user has confirmed authorization for this client/scope.
       // Proceed with issuing an auth code (see POST /oauth/authorize).
       return app.oauth.authCodeGrant(function (_req, verify) {
+        log.info({'type': 'authorize:success', 'message': 'User ' + _req.session.userId + ' has already authorized access to client ' + clientId + '. Continuing auth process.'});
         verify(null, true, _req.session.userId);
       })(req, res, next);
     }
     else {
       Client.findOne({clientId: clientId}, function (err, doc) {
         if (err || !doc || !doc.clientId) {
+          log.warn({'type': 'authorize:error', 'message': 'Authorization requested for client with ID ' + clientId + ' which cannot be found.'});
           return res.send(403, 'Could not find client ' + clientId);
         }
 
@@ -153,7 +159,7 @@ app.get('/oauth/authorize', function(req, res, next) {
 app.post('/oauth/authorize', function(req, res, next) {
   // If the user is not authenticated, redirect to the login page.
   if (!req.session.userId) {
-    console.log('Posting to /oauth/authorize without session. Redirecting to the login page.');
+    log.info({type: 'authorize', 'message': 'Posting to /oauth/authorize without session. Redirecting to the login page.'});
     return res.redirect('/');
   }
 
@@ -170,6 +176,15 @@ app.post('/oauth/authorize', function(req, res, next) {
       var clientId = req.body.client_id,
         scope = req.body.scope;
 
+      if (err) {
+        log.warn({'type': 'authorize:error', 'message': 'Error occurred while trying to fetch user record for user with email ' + req.session.userId + ' after a successful authorization.'});
+        return next(err, false);
+      }
+      else if (!doc || !doc.user_id) {
+        log.warn({'type': 'authorize:error', 'message': 'Could not find a user record for user with email ' + req.session.userId + ' after a successful authorization.'});
+        return next(null, false);
+      }
+
       if (!doc.authorized_services) {
         doc.authorized_services = {};
       }
@@ -181,6 +196,7 @@ app.post('/oauth/authorize', function(req, res, next) {
         doc.authorized_services[clientId].push(scope);
         doc.markModified('authorized_services');
         doc.save();
+        log.info({'type': 'authorize:success', 'message': 'User ' + req.session.userId + ' authorized access to client ' + clientId + '.'});
       }
       next(null, true, req.session.userId);
     });
@@ -188,6 +204,7 @@ app.post('/oauth/authorize', function(req, res, next) {
   else {
     // If the user did not confirm authorization for the client/scope, then
     // cancel the authorization process.
+    log.info({'type': 'authorize:declined', 'message': 'User ' + req.session.userId + ' declined to authorize access to client ' + clientId + '.'});
     next(null, false, req.session.userId);
   }
 }));
@@ -204,7 +221,7 @@ app.get('/resetpw/:key', routes.users.resetpwuse);
 app.get('/register/:key', routes.users.resetpwuse);
 
 app.all('/logout', function (req, res) {
-  console.log('Clearing session to log out user ' + req.session.userId);
+  log.info({'type': 'logout', 'message': 'Clearing session to log out user ' + req.session.userId});
   req.session.destroy(function () {
     req.session = null;
 //TODO: add validation for redirect based on client ID
