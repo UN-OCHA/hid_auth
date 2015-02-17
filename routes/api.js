@@ -1,4 +1,5 @@
 var async = require('async'),
+  log = require('../log'),
   User = require('./../models').User;
 
 exports.register = function(req, res) {
@@ -12,15 +13,15 @@ exports.register = function(req, res) {
     function (cb) {
       // Check inputs
       if (!req.body.email || !req.body.email.length) {
-        console.log('api/register method called without email address by client ' + req.client_key);
+        log.warn({'type': 'apiRegister:error', 'message': 'api/register method called without email address by client ' + req.client_key});
         return cb(true);
       }
       if (!req.body.nameLast || !req.body.nameLast.length) {
-        console.log('api/register method called without last name by client ' + req.client_key);
+        log.warn({'type': 'apiRegister:error', 'message': 'api/register method called without last name by client ' + req.client_key});
         return cb(true);
       }
       if (!req.body.nameFirst || !req.body.nameFirst.length) {
-        console.log('api/register method called without first name by client ' + req.client_key);
+        log.warn({'type': 'apiRegister:error', 'message': 'api/register method called without first name by client ' + req.client_key});
         return cb(true);
       }
       email = req.body.email;
@@ -31,7 +32,7 @@ exports.register = function(req, res) {
       // Check if email is already registered.
       User.findOne({email: req.body.email}, function (err, user) {
         if (err) {
-          console.log('api/register encountered error on User.findOne for email ' + req.body.email + ' by client ' + req.client_key);
+          log.warn({'type': 'apiRegister:error', 'message': 'api/register encountered error on User.findOne for email ' + req.body.email + ' by client ' + req.client_key});
           return cb(true);
         }
 
@@ -41,7 +42,7 @@ exports.register = function(req, res) {
             user_id: user.user_id,
             is_new: 0
           };
-          console.log('api/register called for registered user with email ' + req.body.email + ' by client ' + req.client_key);
+          log.info({'type': 'apiRegister', 'message': 'api/register called for registered user with email ' + req.body.email + ' by client ' + req.client_key});
           return cb(true);
         }
         else {
@@ -66,6 +67,7 @@ exports.register = function(req, res) {
       User.register(options, function (err, user) {
         if (err || !user) {
           message = 'api/register Account registration failed. Please try again or contact administrators.';
+          log.warn({'type': 'apiRegister:error', 'message': 'api/register Account registration failed on User.register for email ' + email + ' by client ' + req.client_key});
           return cb(true);
         }
         status = 'ok';
@@ -73,7 +75,7 @@ exports.register = function(req, res) {
           user_id: user.user_id,
           is_new: 1
         };
-        console.log('api/register called for new user with email ' + req.body.email + ' by client ' + req.client_key);
+        log.info({'type': 'apiRegister:success', 'message': 'api/register Account registration success for user with email ' + email + ' by client ' + req.client_key});
         return cb();
       });
       
