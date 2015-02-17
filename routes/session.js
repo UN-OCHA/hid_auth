@@ -1,4 +1,5 @@
 var User = require('./../models').User;
+var log = require('./../log');
 
 module.exports.create = function(req, res) {
   User.authenticate(req.body.email, req.body.password, function(err, user) {
@@ -14,11 +15,10 @@ module.exports.create = function(req, res) {
       redirect += "&response_type=" + req.body.response_type;
       redirect += "&state=" + req.body.state;
       redirect += "&scope=" + req.body.scope;
-      console.log('Authentication successful for ' + req.body.email + '. Redirecting to: ' + redirect);
       res.redirect(redirect);
+      log.info({'type': 'authenticate:success', 'message': 'Authentication successful for ' + req.body.email + '. Redirecting to ' + redirect, 'user': user});
     }
     else {
-      console.log('Authentication failed for ' + req.body.email);
       res.status(401).render('index', {
         message: 'Authentication failed. Do you need to confirm your account or <a class="forgot-password" href="#forgotPass">reset your password?</a>',
         client_id: req.body.client_id || '',
@@ -29,6 +29,7 @@ module.exports.create = function(req, res) {
         scope: req.body.scope || '',
         csrf: req.csrfToken()
       });
+      log.info({'type': 'authenticate:error', 'message': 'Authentication failed for ' + req.body.email + '.', 'user': user});
     }
   });
 };

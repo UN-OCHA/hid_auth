@@ -1,6 +1,7 @@
 var User = require('./../models').User;
 var errors = require('./../errors');
 var mail = require('./../mail');
+var log = require('./../log');
 var async = require('async');
 var bcrypt = require('bcrypt');
 var Client = require('./../models').OAuthClientsModel;
@@ -18,10 +19,12 @@ module.exports.account = function(req, res) {
       User.findOne({email: req.session.userId}, function(err, user) {
         if (err || !user) {
           message = "Could not load user account. Please try again or contact an administrator.";
+          log.warn({'type': 'account:error', 'message': 'Tried to load user account for editing with session ID ' + req.session.userId + ' but an error occurred or none was found.', 'err': err, 'user': user});
           return cb(true);
         }
         else if (!user.active) {
           message = "This account has not been verified. Please check your email or contact an administrator.";
+          log.warn({'type': 'account:error', 'message': 'Tried to load user account for editing with session ID ' + req.session.userId + ' but the user is not active.', 'user': user});
           return cb(true);
         }
 
@@ -48,6 +51,7 @@ module.exports.account = function(req, res) {
       // Verify form user_id matches session user_id
       if (options.email !== req.session.userId) {
         message = "Invalid account settings submission. Please try again or contact an administrator.";
+        log.warn({'type': 'account:error', 'message': 'User with session ID ' + req.session.userId + ' attempted to change user account with email ' + options.email + '.', 'session': req.session, 'user': user});
         return cb(true);
       }
 
@@ -63,17 +67,20 @@ module.exports.account = function(req, res) {
       // Make an exception if the user is following a password reset link.
       if (req.session.allowPasswordReset && Date.now() < (req.session.allowPasswordReset + 5184000)) {
         req.session.allowPasswordReset = 0;
+        log.info({'type': 'account', 'message': 'Session token for allowing password reset used by user ' + req.session.userId + '.'});
         return cb();
       }
       else if (options.email !== data.email || options.email_recovery !== data.email_recovery || (options.pass_new && String(options.pass_new).length)) {
         User.authenticate(data.email, options.pass_current, function(err, result) {
           if (result) {
             // Current password is correct. Allow save to continue.
+            log.info({'type': 'account', 'message': 'Email address or password change requested for user ' + req.session.userId + ' and correct current password supplied.', 'currentUser': data, 'newFields': options});
             return cb();
           }
           else {
             // Current password is incorrect. Abort the submission.
             message = "The current password provided is incorrect. Please try again.";
+            log.warn({'type': 'account', 'message': 'Email address or password change requested for user ' + req.session.userId + ' but password verification failed.', 'currentUser': data, 'newFields': options});
             return cb(true);
           }
         });
@@ -108,11 +115,13 @@ module.exports.account = function(req, res) {
         return data.save(function (err, item) {
           if (err || !item) {
             message = "Error updating the user account.";
+            log.warn({'type': 'account:error', 'message': 'Error occurred trying to update user account for email address ' + req.session.userId + '.', 'data': data, 'err': err});
             return cb(true);
           }
           else {
             data = item;
             message = "Settings successfully saved.";
+            log.info({'type': 'account:success', 'message': 'User account updated for email address ' + req.session.userId + '.', 'data': data});
             if (req.session.returnClientId) {
               Client.findOne({"clientId": req.session.returnClientId}, function (err, doc) {
                 if (!err && doc.clientName && doc.loginUri) {
@@ -225,14 +234,13 @@ module.exports.resetpw = function(req, res) {
       // Send mail
       mail.sendMail(mailOptions, function(error, info){
         if (error) {
-          console.log(error);
           message = 'Password reset email sending failed. Please try again or contact administrators.';
+          log.warn({'type': 'resetPassword:error', 'message': 'Error occurred while sending password reset email for ' + req.body.email + '.', 'error': error, 'info': info});
           return cb(true);
         }
         else {
-          console.log('Message sent: ' + info.response);
           message = 'Sending password successful! Check your email and follow the included link to reset your password.';
-          // message += "\nLINK: " + reset_url;
+          log.warn({'type': 'resetPassword:success', 'message': 'Reset password email sent successfully to ' + req.body.email + '.', 'info': info, 'resetUrl': reset_url});
           return cb();
         }
       });
@@ -259,6 +267,7 @@ module.exports.resetpwuse = function(req, res, next) {
 
     // verify timestamp is not too old (allow up to 1 day in milliseconds)
     if (timestamp < (now - 86400000) || timestamp > now) {
+      log.warn({'type': 'resetPassword:error', 'message': 'Password reset link expired.'});
       return next(new errors.BadRequest('Password reset link expired.'));
     }
 
@@ -268,22 +277,24 @@ module.exports.resetpwuse = function(req, res, next) {
         return next(err);
       }
       if (!user) {
+        log.warn({'type': 'resetPassword:error', 'message': 'Password reset link used but user could not be found.'});
         return next(new errors.NotFound('User not found'));
       }
 
       // verify hash
       if (!bcrypt.compareSync(user.hashed_password + timestamp + user.user_id, hash)) {
+        log.warn({'type': 'resetPassword:error', 'message': 'Password reset link has invalid hash.'});
         return next(new errors.BadRequest('Invalid password reset link.'));
       }
 
       // log operation
-      console.log('valid password link for ' + email + '. initiating session');
+      log.info({'type': 'resetPassword:success', 'message': 'Valid password link used for email ' + email + '. Initiating session.'});
 
       // activate user since the account seems to be valid (if inactive)
       if (!user.active) {
         user.active = 1;
         user.save();
-        console.log("User %s has been activated.", user.user_id);
+        log.info({'type': 'resetPassword', 'message': 'Valid password link used for user who was not active. Activating user with email ' + email + '.'});
       }
 
       // register session
@@ -293,9 +304,6 @@ module.exports.resetpwuse = function(req, res, next) {
       // otherwise, redirect to account page, but add session variable to track client app
       if (isRegistration && clientId.length) {
         Client.findOne({clientId: clientId}, function(err, client) {
-          if (err) {
-            console.dir(err);
-          }
           if (client && client.loginUri && client.loginUri.length) {
             return res.redirect(client.loginUri);
           }

@@ -1,4 +1,5 @@
 var User = require('./../models').User;
+var log = require('./../log');
 var mail = require('./../mail');
 var async = require('async');
 
@@ -31,6 +32,7 @@ module.exports.form = function(req, res) {
       User.findOne({email: options.email}, function(err, user) {
         if (err || (user && user.user_id)) {
           message = 'The email address supplied is already registered with an account. Do you need to reset your password?';
+          log.info({'type': 'register:error', 'message': 'User registration attempted with email address ' + options.email + ' which is already in use by user ' + user.user_id + '.', 'fields': options});
           return cb(true);
         }
         else {
@@ -51,9 +53,11 @@ module.exports.form = function(req, res) {
       User.register(options, function (err, user) {
         if (err) {
           message = 'Account registration failed. Please try again or contact administrators.';
+          log.warn({'type': 'register:error', 'message': 'Error occurred while trying to register user with email address ' + options.email + '.', 'fields': options});
           return cb(true);
         }
         data = user;
+        log.info({'type': 'register:success', 'message': 'User registered with email address ' + options.email + ' and generated user ID ' + user.user_id, 'fields': options});
         return cb();
       });
     },
@@ -74,14 +78,13 @@ module.exports.form = function(req, res) {
       // Send mail
       mail.sendMail(mailOptions, function (err, info) {
         if (err) {
-          console.log(err);
           message = 'Verify email sending failed. Please try again or contact administrators.';
+          log.warn({'type': 'registerEmail:error', 'message': 'Registration verification email sending failed to ' + data.email + '.', 'err': err, 'info': info});
           return cb(true);
         }
         else {
-          console.log('Message sent: ' + info.response);
           message = 'Verify email sent successful! Check your email and follow the included link to verify your account.';
-          // message += "\nLINK: " + reset_url;
+          log.warn({'type': 'registerEmail:success', 'message': 'Registration verification email sending successful to ' + data.email + '.', 'info': info, 'resetUrl': reset_url});
           options = {};
           return cb();
         }
