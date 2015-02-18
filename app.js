@@ -89,7 +89,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function(err, req, res, next) {
   if (process.env.NODE_ENV !== 'test') {
-    log.warn({'type': 'error', 'message': 'Error: ' + JSON.stingify(err)});
+    log.warn({'type': 'error', 'message': 'Error: ' + JSON.stringify(err)});
   }
 
   if (middleware.isValidationError(err)) {
