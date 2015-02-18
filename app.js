@@ -1,16 +1,24 @@
-var express = require('express');
 var routes = require('./routes');
 var config = require('./config');
 var log = require('./log');
 var path = require('path');
 var models = require('./models');
 var middleware = require('./middleware');
+var User = models.User;
+var Client = models.OAuthClientsModel;
+
+// Set http and https default maxSockets to Infinity to avoid artificial
+// constraints in Node < 0.12.
+var http = require('http');
+http.globalAgent.maxSockets = Infinity;
+var https = require('https');
+https.globalAgent.maxSockets = Infinity;
+
+var express = require('express');
 var csrf = require('csurf')();
 var cors = require('cors');
 var MongoStore = require('connect-mongo')(express);
 var oauthserver = require('oauth2-server');
-var User = models.User;
-var Client = models.OAuthClientsModel;
 
 var app = express();
 app.set('env', process.env.NODE_ENV || 'development');
