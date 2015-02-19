@@ -11,8 +11,9 @@ module.exports.form = function(req, res) {
   async.series([
     function (cb) {
       // Validate the email address
-      if (options.email == undefined || String(options.email).length < 1) {
-        message = 'An email address is required to register a new account.';
+      var emailRegEx = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (options.email == undefined || String(options.email).length < 1 || !emailRegEx.test(options.email)) {
+        message = 'A valid email address is required to register a new account.';
         return cb(true);
       }
 
