@@ -12,6 +12,8 @@ exports.register = function(req, res) {
     emailFlag,
     data = {};
 
+  var hashed_password = "";
+
   async.series([
     function (cb) {
       // Check inputs
@@ -31,7 +33,7 @@ exports.register = function(req, res) {
       nameLast = req.body.nameLast;
       nameFirst = req.body.nameFirst;
       active = req.body.active || 0
-      emailFlag = req.body.emailFlag || 0;
+      emailFlag = req.body.emailFlag || false;
 
       // Check if email is already registered.
       User.findOne({email: req.body.email}, function (err, user) {
@@ -75,9 +77,9 @@ exports.register = function(req, res) {
           return cb(true);
         }
         status = 'ok';
+        hashed_password = user.hashed_password;
         data = {
           user_id: user.user_id,
-          hashed_password : user.hashed_password,
           is_new: 1
         };
         log.info({'type': 'apiRegister:success', 'message': 'api/register Account registration success for user with email ' + email + ' by client ' + req.client_key});
@@ -87,11 +89,11 @@ exports.register = function(req, res) {
     },
     function (cb){
       //Send email for ghost accounts
-      if (emailFlag === 1){
+      if (emailFlag == '1'){
         // Set up email content
         var now = Date.now(),
           clientId = req.body.client_id || '';
-          reset_url = req.protocol + "://" + req.get('host') + "/register/" + new Buffer(email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
+          reset_url = req.protocol + "://" + req.get('host') + "/register/" + new Buffer(email + "/" + now + "/" + new Buffer(User.hashPassword(hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
 
         var mailText = 'Dear ' + nameFirst + ', \r\n\r\nYou have been invited to join Humanitarian ID -  a neutral humanitarian login and contact management system for humanitarian responders. In order to add your details and connect with other responders, please register using the link below.';
         mailText += '\r\n\r\nBonjour ' + nameFirst + ', \r\n\r\nVous avez été invitez à joindre Humanitarian ID – un système autonome pour gérer les contacts des acteurs humanitaires. Pour ajouter vos détails et pour rentrer en contact avec autres humanitaires, on vous prie de bien vouloir vous enregistrer en utilisant le lien ci-dessous.';
