@@ -43,8 +43,10 @@ block content
 
         form.form-signin(method='post', action='login', role='form')
           .form-group
+            label.ie-label(for='email') Email address
             input.form-control(name='email', type='email', placeholder='Email address', required, autofocus)
           .form-group
+            label.ie-label(for='Password') Password
             input.form-control(name='password', type='password', placeholder='Password', required)
           .form-group
             button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit',id='signInBtn') Proceed
@@ -70,16 +72,22 @@ block content
 
         form.form-signin(method='post', action='register', role='form')
           .form-group
+            label.ie-label(for='email') Email address
             input.form-control(name='email', type='email', placeholder='Email address', required)
           .form-group
+            label.ie-label(for='email_recovery') Recovery email address (optional)
             input.form-control(name='email_recovery', type='email', placeholder='Recovery email address (optional)')
           .form-group
+            label.ie-label(for='name_given') Given name
             input.form-control(name='name_given', type='text', placeholder='Given name', required)
           .form-group
+            label.ie-label(for='name_family') Family name
             input.form-control(name='name_family', type='text', placeholder='Family name', required)
           .form-group
+            label.ie-label(for='pass_new') Password
             input.form-control(name='pass_new', type='password', placeholder='Password', required)
           .form-group
+            label.ie-label(for='pass_confirm') Password (confirm)
             input.form-control(name='pass_confirm', type='password', placeholder='Password (confirm)', required)
           .form-group
             button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Sign Up
