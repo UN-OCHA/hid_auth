@@ -281,3 +281,7 @@ ul.authorize-list {
 ul.authorize-list i {
   margin-right: 10px;
 }
+
+label.ie-label {
+  display: none;
+}
