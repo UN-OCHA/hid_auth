@@ -62,7 +62,7 @@ function oauthAlterResponse(oauth, response, cb) {
       crypto = require('crypto'),
       base64url = require('base64url'),
       id_token = {
-        iss: config.rootURL || oauth.req.protocol + '://' + oauth.req.headers.host,
+        iss: config.rootURL || (oauth.req.protocol + '://' + oauth.req.headers.host),
         sub: oauth.user.id,
         aud: oauth.req.body.client_id,
         exp: d + 3600,
