@@ -1,4 +1,5 @@
 var User = require('./../models').User;
+var config = require('./../config');
 var log = require('./../log');
 var mail = require('./../mail');
 var async = require('async');
@@ -65,8 +66,10 @@ module.exports.form = function(req, res) {
     function (cb) {
       // Set up email content
       var now = Date.now(),
-        clientId = req.body.client_id || '';
-        reset_url = req.protocol + "://" + req.get('host') + "/register/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
+        clientId = req.body.client_id || '',
+        reset_url = config.rootURL || (req.protocol + "://" + req.get('host'));
+
+      reset_url += "/register/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
 
       var mailText = 'Thanks for registering for a ' + req.app.get('title') + ' account! Please follow this link to verify your account: ' + reset_url;
       var mailOptions = {
