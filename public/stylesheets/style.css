@@ -295,7 +295,8 @@ label.ie-label {
     top:0!important;
     left:0!important;
     bottom: 0;
-    padding-right: 30px;
+    padding-right: 60px;
+    padding-left: 60px;
     border-radius: 0;
     background-color: transparent;
     border: none;
