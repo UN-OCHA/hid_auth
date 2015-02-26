@@ -2,6 +2,7 @@ var User = require('./../models').User;
 var errors = require('./../errors');
 var mail = require('./../mail');
 var log = require('./../log');
+var config = require('./../config');
 var async = require('async');
 var bcrypt = require('bcrypt');
 var Client = require('./../models').OAuthClientsModel;
@@ -219,8 +220,10 @@ module.exports.resetpw = function(req, res) {
       // Generate password reset link and send it in an email to the requested
       // email address.
       var now = Date.now(),
-        clientId = req.body.client_id || ''
-        reset_url = req.protocol + "://" + req.get('host') + "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
+        clientId = req.body.client_id || '',
+        reset_url = config.rootURL || (req.protocol + "://" + req.get('host'));
+
+      reset_url += "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
 
       // Set up email content
       var mailText = 'A password reset link for ' + req.app.get('title') + ' was requested for the account linked to the email address ' + data.email + '. Please follow this link to regain access to your account and reset your password: ' + reset_url;
