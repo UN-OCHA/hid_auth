@@ -285,3 +285,30 @@ ul.authorize-list i {
 label.ie-label {
   display: none;
 }
+
+@media (max-width: 767px) {
+  #simplemodal-container {
+    position: absolute !important;
+    height: auto !important;
+    min-height: 100%;
+    width: 100% !important;
+    top:0!important;
+    left:0!important;
+    bottom: 0;
+    padding-right: 30px;
+    border-radius: 0;
+    background-color: transparent;
+    border: none;
+  }
+  #simplemodal-overlay {
+    opacity: 1 !important;
+  }
+
+  .simplemodal-wrap {
+    padding-right: 0;
+  }
+  .close-modal {
+    top:30px;
+    left:30px;
+  }
+}
