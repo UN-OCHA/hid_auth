@@ -11,6 +11,7 @@ exports.register = function(req, res) {
     nameFirst,
     active,
     emailFlag,
+    adminName,
     data = {};
 
   var hashed_password = "";
@@ -33,6 +34,7 @@ exports.register = function(req, res) {
       email = req.body.email;
       nameLast = req.body.nameLast;
       nameFirst = req.body.nameFirst;
+      adminName = req.body.adminName || null;
       active = req.body.active || 0
       emailFlag = req.body.emailFlag || false;
 
@@ -92,6 +94,7 @@ exports.register = function(req, res) {
       //Send email for ghost accounts
       if (emailFlag == '1'){
         // Set up email content
+        var subject = '';
         var now = Date.now(),
           clientId = req.body.client_id || '';
           reset_url = config.rootURL || (req.protocol + "://" + req.get('host'));
@@ -103,10 +106,16 @@ exports.register = function(req, res) {
         mailText += '\r\n\r\n' + reset_url;
         mailText += '\r\n\r\nThe Humanitarian ID team\r\nhttp://humanitarian.id';
         
+        if (!adminName){
+          subject = 'Account verify link for ' + req.app.get('title');
+        }
+        else{
+          subject = adminName + ' has invited you to join Humanitarian ID';
+        }
         var mailOptions = {
           from: req.app.get('title') + ' <' + req.app.get('emailFrom') + '>',
           to: email,
-          subject: 'Account verify link for ' + req.app.get('title'),
+          subject: subject,
           text: mailText
         };
 
