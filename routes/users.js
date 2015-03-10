@@ -226,14 +226,26 @@ module.exports.resetpw = function(req, res) {
       reset_url += "/resetpw/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
 
       // Set up email content
-      var mailText = 'A password reset link for ' + req.app.get('title') + ' was requested for the account linked to the email address ' + data.email + '. Please follow this link to regain access to your account and reset your password: ' + reset_url;
+      var mailText = 'Dear ' + data.name_given + ',\n\n';
+      mailText += 'We received a request to reset your password on ' + req.app.get('title') + '. To make the change, simply follow the link below and provide your new password.\n\n';
+      mailText += 'If you did not request a password reset, kindly forward this email to ' + req.app.get('emailFrom') + '.\n\n';
+      mailText += reset_url + '\n\n';
+      mailText += 'The ' + req.app.get('title') + 'team\n';
+      mailText += 'http://humanitarian.id\n\n\n';
+
+      mailText += 'Bonjour ' + data.name_given + ',\n\n';
+      mailText += 'On a reçu une requête indiquant que vous voulez renouveler votre mot de passe sur ' + req.app.get('title') + '. En cliquant sur le lien ci-dessous vous pouvez changer votre mot de passe.\n\n';
+      mailText += 'Si vous n’avez pas faites cette requête, on vous prie de nous faire suivre ce courriel à l’adresse de ' + req.app.get('emailFrom') + '.\n\n';
+      mailText += 'L’équipe ' + req.app.get('title') + '\n';
+      mailText += 'http://humanitarian.id';
+
       var mailOptions = {
         from: req.app.get('title') + ' <' + req.app.get('emailFrom') + '>',
         to: email,
         subject: 'Password reset for ' + req.app.get('title'),
         text: mailText
       };
-  
+
       // Send mail
       mail.sendMail(mailOptions, function(error, info){
         if (error) {
