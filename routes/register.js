@@ -71,7 +71,20 @@ module.exports.form = function(req, res) {
 
       reset_url += "/register/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
 
-      var mailText = 'Thanks for registering for a ' + req.app.get('title') + ' account! Please follow this link to verify your account: ' + reset_url;
+      var mailText = 'Dear ' + data.name_given + ',\n\n';
+      mailText += 'We are very excited that you have joined the ' + req.app.get('title') + ' community. As a first step, we need you to verify your account by simply following the link below.\n\n';
+      mailText += 'As we expand integration with humanitarian websites, your account will gain you access to a wide range of resources. But, of course, it will also give you access to the ' + req.app.get('title') + ' contact management solution!\n\n';
+      mailText += reset_url + '\n\n';
+      mailText += 'The ' + req.app.get('title') + ' team\n';
+      mailText += 'http://humanitarian.id\n\n\n';
+
+      mailText += 'Bonjour ' + data.name_given + ',\n\n';
+      mailText += 'Nous sommes ravis que vous ayez joint la communauté d’' + req.app.get('title') + '. On vous prie de bien vouloir vérifier votre compte en cliquant sur le lien ci-dessous.\n\n';
+      mailText += 'Vu qu’on est en train d’élargir l’intégration avec d’autres sites humanitaires, votre compte aura accès à encore plus de ressources. En outre, vous allez avoir accès à la solution de la gestion des contacts ' + req.app.get('title') + '!\n\n';
+      mailText += reset_url + '\n\n';
+      mailText += 'Votre équipe ' + req.app.get('title') + '\n';
+      mailText += 'http://humanitarian.id';
+
       var mailOptions = {
         from: req.app.get('title') + ' <' + req.app.get('emailFrom') + '>',
         to: data.email,
