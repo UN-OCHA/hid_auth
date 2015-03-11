@@ -80,7 +80,7 @@ module.exports.form = function(req, res) {
 
       mailText += 'Bonjour ' + data.name_given + ',\n\n';
       mailText += 'Nous sommes ravis que vous ayez joint la communauté d’' + req.app.get('title') + '. On vous prie de bien vouloir vérifier votre compte en cliquant sur le lien ci-dessous.\n\n';
-      mailText += 'Vu qu’on est en train d’élargir l’intégration avec d’autres sites humanitaires, votre compte aura accès à encore plus de ressources. En outre, vous allez avoir accès à la solution de la gestion des contacts ' + req.app.get('title') + '!\n\n';
+      mailText += 'Vu qu’on est en train d’élargir l’intégration avec d’autres sites humanitaires, votre compte aura accès à encore plus de ressources. En outre, vous allez avoir accès à la solution de la gestion des contacts "' + req.app.get('title') + '" !\n\n';
       mailText += reset_url + '\n\n';
       mailText += 'Votre équipe ' + req.app.get('title') + '\n';
       mailText += 'http://humanitarian.id';
