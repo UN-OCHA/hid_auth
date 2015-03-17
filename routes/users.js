@@ -192,7 +192,7 @@ module.exports.resetpw = function(req, res) {
       }
       else {
         // Use lib/passwordReset.js and specify the "reset" version of the email.
-        return require('../lib/passwordReset.js').passwordReset(email, clientId, 'reset', cb);
+        return require('../lib/passwordReset.js').passwordReset(email, null, clientId, 'reset', cb);
       }
     },
   ],

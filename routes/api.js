@@ -147,6 +147,7 @@ exports.resetpw = function(req, res) {
   var status = 'error',
     email,
     emailFlag,
+    adminName,
     clientId,
     data = {};
 
@@ -160,11 +161,12 @@ exports.resetpw = function(req, res) {
       }
       email = req.body.email;
       emailFlag = req.body.emailFlag || false;
+      adminName = req.body.adminName || false;
       return cb();
     },
     function (cb) {
       // Use lib/passwordReset.js and pass through the email flag if given.
-      require('./../lib/passwordReset').passwordReset(email, clientId, emailFlag, cb);
+      require('./../lib/passwordReset').passwordReset(email, adminName, clientId, emailFlag, cb);
     },
   ], function (err, results) {
     res.send(JSON.stringify(results[1] || {'status': 'error', 'message': 'An error occurred processing the request.'}));
