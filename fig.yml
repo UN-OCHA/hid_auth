@@ -10,6 +10,7 @@ auth:
   image: unocha/nginx16-nodejs
   volumes:
     - /code/contactsid_auth:/var/www/html
+    - /code/contactsid_auth/env/etc/nginx/conf.d:/etc/nginx/conf.d
   environment:
     DNSDOCK_NAME: auth
     DNSDOCK_IMAGE: contactsid
