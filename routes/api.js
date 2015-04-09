@@ -12,6 +12,8 @@ exports.register = function(req, res) {
     active,
     emailFlag,
     adminName,
+    adminEmail,
+    location,
     data = {};
 
   var hashed_password = "";
@@ -34,8 +36,10 @@ exports.register = function(req, res) {
       email = req.body.email;
       nameLast = req.body.nameLast;
       nameFirst = req.body.nameFirst;
+      location = req.body.location;
       adminName = req.body.adminName || null;
-      active = req.body.active || 0
+      adminEmail = req.body.adminEmail || null;
+      active = req.body.active || 0;
       emailFlag = req.body.emailFlag || false;
 
       // Check if email is already registered.
@@ -101,11 +105,24 @@ exports.register = function(req, res) {
 
         reset_url += "/register/" + new Buffer(email + "/" + now + "/" + new Buffer(User.hashPassword(hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
 
-        var mailText = 'Dear ' + nameFirst + ', \r\n\r\nYou have been invited to join Humanitarian ID -  a neutral humanitarian login and contact management system for humanitarian responders. In order to add your details and connect with other responders, please register using the link below.';
-        mailText += '\r\n\r\nBonjour ' + nameFirst + ', \r\n\r\nVous avez été invitez à joindre Humanitarian ID – un système autonome pour gérer les contacts des acteurs humanitaires. Pour ajouter vos détails et pour rentrer en contact avec autres humanitaires, on vous prie de bien vouloir vous enregistrer en utilisant le lien ci-dessous.';
+        var mailText = 'Dear ' + nameFirst + ',';
+        mailText += '\r\n\r\n' + adminName + ' has added you to the ' + location + ' contact list on Humanitarian ID - a contact management system for the humanitarian community.';
+        mailText += '\r\n\r\nTo update or add more details and connect with other responders, please register using the link below. Humanitarian ID gives you control of your details on humanitarian contact lists.';
         mailText += '\r\n\r\n' + reset_url;
-        mailText += '\r\n\r\nThe Humanitarian ID team\r\nhttp://humanitarian.id';
-        
+        mailText += '\r\n\r\nIf you do not want to register and would like your details removed, please submit the Removal Request form and we will remove your details from Humanitarian ID and all associated contact lists.';
+        mailText += '\r\n\r\nRemoval request: http://humanitarian.id/removal_request/';
+        mailText += '\r\n\r\nIf you would like to learn more about Humanitarian ID and be the first to hear about new features, visit http://humanitarian.id, join our mailing list (http://humanitarian.id/subscribe) and follow us on social media.';
+        mailText += '\r\n\r\nThe Humanitarian ID team\r\nSite: http://humanitarian.id\r\nAnimation: http://humanitarian.id/animation\r\nTwitter: https://twitter.com/humanitarianid\r\nYouTube: http://humanitarian.id/youtube';
+
+        mailText += '\r\n\r\nCher(e) ' + nameFirst;
+        mailText += '\r\n\r\n' + adminName + ' vous a ajouté à la ' + location + ' liste de contacts sur Humanitarian ID - un système de gestion de contact pour la communauté humanitaire.';
+        mailText += '\r\n\r\nPour mettre à jour ou ajouter plus de détails et se connecter avec d\'autres intervenants, veuillez s\'il vous plaît vous inscrire en utilisant le lien ci-dessous. Humanitarian ID vous donne le contrôle de vos données sur des listes de contacts humanitaires.';
+        mailText += '\r\n\r\n' + reset_url;
+        mailText += '\r\n\r\nSi vous ne souhaitez pas vous inscrire et vous aimeriez supprimer vos coordonnées, veuillez s’il vous plaît soumettre le formulaire de demande de suppression de vos coordonnées de Humanitarian ID et toutes les listes de contact associées.';
+        mailText += '\r\n\r\nFormulaire de demande de suppression: http://humanitarian.id/removal_request/';
+        mailText += '\r\n\r\nSi vous souhaitez en savoir plus sur Humanitarian ID et être le premier à entendre parler de nouvelles fonctionnalités, visitez le site : http://humanitarian.id, rejoignez notre liste de diffusion (http://humanitarian.id/subscribe) et suivez-nous sur les médias sociaux.';
+        mailText += '\r\n\r\nL\'équipe de Humanitarian ID\r\nSite: http://humanitarian.id\r\nAnimation: http://humanitarian.id/animation\r\nTwitter: https://twitter.com/humanitarianid\r\nYouTube: http://humanitarian.id/youtube';
+
         if (!adminName){
           subject = 'Account verify link for ' + req.app.get('title');
         }
@@ -118,6 +135,9 @@ exports.register = function(req, res) {
           subject: subject,
           text: mailText
         };
+        if (adminEmail) {
+          mailOptions.cc = !adminName ? adminEmail : adminName + '<' + adminEmail + '>';
+        }
 
         // Send mail
         mail.sendMail(mailOptions, function (err, info) {
