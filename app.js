@@ -92,7 +92,7 @@ app.use(function(err, req, res, next) {
     log.warn({'type': 'error', 'message': 'Error: ' + JSON.stringify(err)});
   }
 
-  if (middleware.isValidationError(err)) {
+  if (err && err.name === 'ValidationError') {
     res.status(400);
     res.send(err.errors);
   }
@@ -106,7 +106,7 @@ if ('development' === app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.get('/', middleware.loadUser, routes.index);
+app.get('/', routes.index);
 
 app.all('/oauth/access_token', app.oauth.grant());
 
