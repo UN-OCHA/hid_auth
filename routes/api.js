@@ -43,7 +43,7 @@ exports.register = function(req, res) {
       emailFlag = req.body.emailFlag || false;
 
       // Check if email is already registered.
-      User.findOne({email: req.body.email}, function (err, user) {
+      User.findOne({email: new RegExp(req.body.email, 'i')}, function (err, user) {
         if (err) {
           log.warn({'type': 'apiRegister:error', 'message': 'api/register encountered error on User.findOne for email ' + req.body.email + ' by client ' + req.client_key});
           return cb(true);
