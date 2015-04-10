@@ -31,7 +31,7 @@ module.exports.form = function(req, res) {
       }
 
       // Ensure the email address isn't already registered
-      User.findOne({email: options.email}, function(err, user) {
+      User.findOne({email: new RegExp(options.email, 'i')}, function(err, user) {
         if (err || (user && user.user_id)) {
           message = 'The email address supplied is already registered with an account. Do you need to reset your password?';
           log.warn({'type': 'register:error', 'message': 'User registration attempted with email address ' + options.email + ' which is already in use by user ' + user.user_id + '.', 'fields': options});
