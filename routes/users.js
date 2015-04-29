@@ -160,10 +160,12 @@ module.exports.account = function(req, res) {
 module.exports.showjson = function(req, res, next) {
   User.findOne({email: req.user.id}, function(err, user) {
     if (err) {
-      return next(err);
+      log.warn({'type': 'accountJson:error', 'message': 'Error occurred trying to look up user account for email address ' + req.user.id + ': ' + err.message, 'req': req, 'err': err})
+      return next(new errors.BadRequest('An error occurred. Please <a href="/#login">Sign In</a> to continue.'));
     }
     if (!user) {
-      return next(new errors.NotFound('showjson: User not found for ' + req.session.userId, req.session));
+      log.warn({'type': 'accountJson:error', 'message': 'Could not find user with email address ' + req.user.id, 'req': req})
+      return next(new errors.BadRequest('An error occurred. Please <a href="/#login">Sign In</a> to continue.'));
     }
 
     // Remove sensitive fields. The delete operator did not work.
@@ -218,34 +220,35 @@ module.exports.resetpwuse = function(req, res, next) {
 
     // verify timestamp is not too old (allow up to 1 day in milliseconds)
     if (timestamp < (now - 86400000) || timestamp > now) {
-      log.warn({'type': 'resetPassword:error', 'message': 'Password reset link expired.'});
-      return next(new errors.BadRequest('Password reset link expired.'));
+      log.warn({'type': 'resetPassword:error', 'message': 'Password reset link expired.', 'req': req});
+      return next(new errors.BadRequest('This verification link is expired. Please <a href="/#forgotPass">Reset Your Password</a> to continue.'));
     }
 
     // look up user
     User.findOne({email: email}, function(err, user) {
       if (err) {
-        return next(err);
+        log.warn({'type': 'resetPassword:error', 'message': 'An error occurred trying to find the user by email ' + email + ': ' + err.message, 'req': req, 'err': err});
+        return next(new errors.BadRequest('An error occurred processing the verification link. Please <a href="/#forgotPass">Reset Your Password</a> to continue.'));
       }
       if (!user) {
-        log.warn({'type': 'resetPassword:error', 'message': 'Password reset link used but user could not be found.'});
-        return next(new errors.NotFound('User not found'));
+        log.warn({'type': 'resetPassword:error', 'message': 'Password reset link used but user could not be found with email ' + email, 'req': req});
+        return next(new errors.BadRequest('An error occurred handling the verification link. Please <a href="/#forgotPass">Reset Your Password</a> to continue.'));
       }
 
       // verify hash
       if (!bcrypt.compareSync(user.hashed_password + timestamp + user.user_id, hash)) {
-        log.warn({'type': 'resetPassword:error', 'message': 'Password reset link has invalid hash.'});
-        return next(new errors.BadRequest('Invalid password reset link.'));
+        log.warn({'type': 'resetPassword:error', 'message': 'Password reset link has invalid hash.', 'req': req});
+        return next(new errors.BadRequest('This verification link has already been used or is invalid. Please <a href="/#forgotPass">Reset Your Password</a> to continue.'));
       }
 
       // log operation
-      log.info({'type': 'resetPassword:success', 'message': 'Valid password link used for email ' + email + '. Initiating session.'});
+      log.info({'type': 'resetPassword:success', 'message': 'Valid password link used for email ' + email + '. Initiating session.', 'req': req});
 
       // activate user since the account seems to be valid (if inactive)
       if (!user.active) {
         user.active = 1;
         user.save();
-        log.info({'type': 'resetPassword', 'message': 'Valid password link used for user who was not active. Activating user with email ' + email + '.'});
+        log.info({'type': 'resetPassword', 'message': 'Valid password link used for user who was not active. Activating user with email ' + email + '.', 'req': req});
       }
 
       // register session
