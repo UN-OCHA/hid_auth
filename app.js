@@ -1,5 +1,6 @@
 var routes = require('./routes');
 var config = require('./config');
+var errors = require('./errors');
 var log = require('./log');
 var path = require('path');
 var models = require('./models');
@@ -98,7 +99,10 @@ app.use(function(err, req, res, next) {
   }
   else {
     res.status(err.code || 500);
-    res.send('Error');
+    var message = err.message || "The application has encountered an error. Please try again.";
+    res.render('error', {
+      message: message
+    });
   }
 });
 
@@ -132,7 +136,7 @@ app.get('/oauth/authorize', function(req, res, next) {
 
     if (err) {
       log.warn({'type': 'authorize:error', 'message': 'An error occurred in /oauth/authorize while trying to fetch the user record for ' + req.session.userId + ' who is an active session.'});
-      return next(new Error('Error occurred while fetching user record'));
+      return next(new errors.BadRequest('An error occurred while processing request. Please try logging in again.'));
     }
     else if (doc && doc.authorized_services && doc.authorized_services.hasOwnProperty(clientId) && doc.authorized_services[clientId].indexOf(scope) !== -1) {
       // The user has confirmed authorization for this client/scope.
@@ -146,7 +150,7 @@ app.get('/oauth/authorize', function(req, res, next) {
       Client.findOne({clientId: clientId}, function (err, doc) {
         if (err || !doc || !doc.clientId) {
           log.warn({'type': 'authorize:error', 'message': 'Authorization requested for client with ID ' + clientId + ' which cannot be found.'});
-          return res.send(403, 'Could not find client ' + clientId);
+          return next(new errors.BadRequest('An error occurred while processing the request. Please try logging in again.'));
         }
 
         // The user has not confirmed authorization, so present the
