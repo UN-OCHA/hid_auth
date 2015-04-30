@@ -38,6 +38,9 @@ app.set('title', 'Humanitarian ID');
 app.locals.title = 'Humanitarian ID';
 app.set('emailFrom', 'info@humanitarian.id');
 
+// Define Oauth token expiration time to 8 hours.
+var oauthTokenExpires = 28800;
+
 app.configure('development', 'production', function() {
   app.use(express.logger('dev'));
 });
@@ -66,7 +69,7 @@ function oauthAlterResponse(oauth, response, cb) {
         iss: config.rootURL || (oauth.req.protocol + '://' + oauth.req.headers.host),
         sub: oauth.user.id,
         aud: oauth.req.body.client_id,
-        exp: d + 3600,
+        exp: d + oauthTokenExpires,
         iat: d,
         nonce: oauth.nonce || ''
       };
@@ -82,7 +85,8 @@ app.oauth = oauthserver({
   model: models.oauth,
   grants: ['password', 'authorization_code', 'refresh_token'],
   debug: true,
-  alterResponse: oauthAlterResponse
+  alterResponse: oauthAlterResponse,
+  accessTokenLifetime: oauthTokenExpires
 });
 
 app.use(app.router);
