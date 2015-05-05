@@ -16,6 +16,7 @@ var https = require('https');
 https.globalAgent.maxSockets = Infinity;
 
 var express = require('express');
+var helmet = require('helmet');
 var csrf = require('csurf')();
 var cors = require('cors');
 var MongoStore = require('connect-mongo')(express);
@@ -29,6 +30,9 @@ app.set('view engine', 'jade');
 app.use(express.cookieParser());
 var mstore = new MongoStore({mongooseConnection: models.mongoose.connection});
 app.use(express.session({
+  cookie: {
+    secure: config.requireSSL ? true : false
+  },
   key: 'hid.auth',
   store: mstore,
   secret: 'LGVU$S&uI3JqRJ%yyp%^N0RC'
@@ -47,6 +51,10 @@ app.configure('development', 'production', function() {
 
 app.use(express.bodyParser());
 app.use(express.methodOverride());
+
+app.use(helmet());
+// Set Strict-Transport-Security header to 4 weeks (in milliseconds)
+server.use(helmet.hsts({maxAge: 2419200000, force: config.requireSSL ? true : false}));
 
 var formCSRF = function (req, res, next) {
   // Skip CSRF validation on the /oauth/access_token callback, as it's not based
