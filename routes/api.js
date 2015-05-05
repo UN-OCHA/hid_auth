@@ -101,7 +101,7 @@ exports.register = function(req, res) {
         // Set up email content
         var subject = '';
         var now = Date.now(),
-          clientId = req.body.client_id || '';
+          clientId = req.body.client_id || req.client_key || '';
           reset_url = config.rootURL || (req.protocol + "://" + req.get('host'));
 
         reset_url += "/register/" + new Buffer(email + "/" + now + "/" + new Buffer(User.hashPassword(hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
