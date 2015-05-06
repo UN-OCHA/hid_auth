@@ -54,7 +54,7 @@ app.use(express.methodOverride());
 
 app.use(helmet());
 // Set Strict-Transport-Security header to 4 weeks (in milliseconds)
-server.use(helmet.hsts({maxAge: 2419200000, force: config.requireSSL ? true : false}));
+app.use(helmet.hsts({maxAge: 2419200000, force: config.requireSSL ? true : false}));
 
 var formCSRF = function (req, res, next) {
   // Skip CSRF validation on the /oauth/access_token callback, as it's not based
