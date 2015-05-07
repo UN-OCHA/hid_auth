@@ -26,7 +26,7 @@ If you are interested in integrating Humanitarian ID authentication on your plat
 To request these keys, you will need to provide the following information:
 
 - The purpose of your application, and how to relates to humanitarian work.
-- Acknowledgement that you have read the [Code of Conduct](http://humanitarian.id/codeofconduct), and that your use of this service will comply to the best of your ability with the guidelines in the code.
+- Acknowledgement that you have read the [Code of Conduct](http://humanitarian.id/code-of-conduct), and that your use of this service will comply to the best of your ability with the guidelines in the code.
 - Name of site (displayed to regular user on authorize page, also descriptive for H.ID admins who manage API access)
 - Base URL of site (needed for any environment that needs auth integration, so we have records for HR.info prod, dev, and local envs)
 - Login URL: The URL on the client site that triggers a login via H.ID auth. This is needed to allow automatic login after registration/password reset. This can be set to any URL if needed. Only needed if you are integrating with the H.ID Drupal Auth module.
