@@ -30,9 +30,6 @@ app.set('view engine', 'jade');
 app.use(express.cookieParser());
 var mstore = new MongoStore({mongooseConnection: models.mongoose.connection});
 app.use(express.session({
-  cookie: {
-    secure: config.requireSSL ? true : false
-  },
   key: 'hid.auth',
   store: mstore,
   secret: 'LGVU$S&uI3JqRJ%yyp%^N0RC'
