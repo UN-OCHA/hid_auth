@@ -72,6 +72,16 @@ module.exports.form = function(req, res) {
 
       reset_url += "/register/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
 
+      if (req.app.get('env') == 'development' || req.app.get('env') == 'dockerdev') {
+        // Log the confirmation URL now that we have it.
+        log.info({'type': 'registerEmail:confirm', 'message': reset_url});
+      }
+
+      if (req.app.get('env') == 'dockerdev') {
+        // In local development sending email is failing with a 504 Gateway Timeout.
+        return cb(true);
+      }
+
       var mailText = 'Dear ' + data.name_given + ',\n\n';
       mailText += 'We are very excited that you have joined the ' + req.app.get('title') + ' community. As a first step, we need you to verify your account by simply following the link below.\n\n';
       mailText += 'As we expand integration with humanitarian websites, your account will gain you access to a wide range of resources. But, of course, it will also give you access to the ' + req.app.get('title') + ' contact management solution!\n\n';
@@ -102,7 +112,7 @@ module.exports.form = function(req, res) {
         }
         else {
           message = 'Verify email sent successful! Check your email and follow the included link to verify your account.';
-          log.info({'type': 'registerEmail:success', 'message': 'Registration verification email sending successful to ' + data.email + '.', 'info': info, 'resetUrl': reset_url});
+          log.info({'type': 'registerEmail:success', 'message': 'Registration verification email sending successful to ' + data.email + '.', 'info': info});
           options = {};
           return cb();
         }
