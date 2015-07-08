@@ -240,6 +240,19 @@ app.post('/login', routes.session.create);
 app.post('/resetpw', routes.users.resetpw);
 app.get('/resetpw/:key', routes.users.resetpwuse);
 app.get('/register/:key', routes.users.resetpwuse);
+app.get('/admin', middleware.requiresWebUser, middleware.requiresAdminUser, routes.admin.index);
+app.get('/admin/users', middleware.requiresWebUser, middleware.requiresAdminUser, routes.admin.userList);
+app.get('/admin/apps', middleware.requiresWebUser, middleware.requiresAdminUser, routes.admin.appList);
+app.get('/admin/users/:id', middleware.requiresWebUser, middleware.requiresAdminUser, routes.admin.userView);
+app.get('/admin/users/:id/promote', middleware.requiresWebUser, middleware.requiresAdminUser, routes.admin.userPromote);
+
+/*
+
+app.get('/admin/users/:id/demote', middleware.requiresUser, routes.admin.demoteUser);
+app.get('/admin/apps/:id/view', middleware.requiresUser, routes.admin.viewApp);
+app.get('/admin/apps/:id/edit', middleware.requiresUser, routes.admin.editApp);
+app.get('/admin/apps/:id/delete', middleware.requiresUser, routes.admin.deleteApp);
+*/
 
 app.all('/logout', function (req, res) {
   log.info({'type': 'logout', 'message': 'Clearing session to log out user ' + req.session.userId});

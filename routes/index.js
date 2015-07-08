@@ -22,4 +22,5 @@ exports.index = function(req, res) {
 exports.register = require('./register');
 exports.session = require('./session');
 exports.users = require('./users');
+exports.admin = require('./admin');
 exports.api = require('./api');
