@@ -1,0 +1,46 @@
+extends layout
+
+block content
+  p You are logged in as #{user.name_given} #{user.name_family}
+  .container.main
+    h1= title
+    h2 Administration
+
+    ul.nav.nav-tabs(role='tablist')
+      li
+        a(href='/admin/users') Administer Users
+      li.active
+        a(href='/admin/apps') Administer Client Keys
+
+    .container.main
+      .row
+       p.admin-lead-in Manage all applications integrated with #{title}.
+
+       if message
+        div.messages(class='alert alert-warning', role='alert') !{message}
+
+       div
+        table(class='table')
+          thead
+            tr
+              th Applications
+              th Operations
+          tbody
+           each item, i in apps
+            tr
+              td
+                a(href='/admin/apps/#{item.clientName}')
+                  strong #{item.clientName} (#{item.clientId})
+                p #{item.description}
+              td
+                div(class='btn-group')
+                  button(type='button' class='btn btn-primary') View App
+                  button(type='button' class='btn btn-primary dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+                    span(class='caret')
+                    span(class='sr-only') Toggle Dropdown
+                  ul(class='dropdown-menu')
+                    li
+                      a(href='#') View App
+                    li
+                      a(href='#') Edit App
+
