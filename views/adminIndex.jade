@@ -1,7 +1,6 @@
 extends layout
 
 block content
-  p You are logged in as #{user.name_given} #{user.name_family}
   .container.main
     h1= title
     h2 Administration
@@ -14,5 +13,5 @@ block content
           each item, i in pages
             li
               a(href='/#{item.path}')
-                strong #{item.label}:
-              span  #{item.description}
+                strong #{item.label}
+              span :&nbsp;#{item.description}

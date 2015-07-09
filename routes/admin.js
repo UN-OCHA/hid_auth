@@ -92,8 +92,11 @@ function removeRole(account, role) {
 }
 
 module.exports.index = function(req, res) {
+  var message = '';
+
   res.render('adminIndex', {
     user: req.user,
+    message: message,
     pages: [
       {
         label: 'Administrate Users',
@@ -126,6 +129,7 @@ module.exports.userList = function(req, res) {
         else {
           data = users.map(function(item) {
             item.ops = userOperations(item, false);
+            item.authorized_services = item.authorized_services || {};
             return item;
           });
         }
@@ -163,6 +167,7 @@ module.exports.userView = function(req, res) {
         }
 
         user.roles = user.roles || [];
+        user.authorized_services = user.authorized_services || {};
         data = user;
         return cb();
       });
