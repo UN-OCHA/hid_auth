@@ -232,23 +232,29 @@ app.post('/oauth/authorize', function(req, res, next) {
 
 app.use(app.oauth.errorHandler());
 
-app.all('/account', middleware.requiresUser, routes.users.account);
-app.get('/account.json', cors(), middleware.requiresUser, routes.users.showjson);
+app.all('/account', middleware.requiresWebOrApiUser, routes.users.account);
+app.get('/account.json', cors(), middleware.requiresWebOrApiUser, routes.users.showjson);
 
 app.post('/register', routes.register.form);
 app.post('/login', routes.session.create);
 app.post('/resetpw', routes.users.resetpw);
 app.get('/resetpw/:key', routes.users.resetpwuse);
 app.get('/register/:key', routes.users.resetpwuse);
-app.get('/admin', middleware.requiresWebUser, middleware.requiresAdminUser, routes.admin.index);
-app.get('/admin/users', middleware.requiresWebUser, middleware.requiresAdminUser, routes.admin.userList);
-app.get('/admin/apps', middleware.requiresWebUser, middleware.requiresAdminUser, routes.admin.appList);
-app.get('/admin/users/:id', middleware.requiresWebUser, middleware.requiresAdminUser, routes.admin.userView);
-app.get('/admin/users/:id/promote', middleware.requiresWebUser, middleware.requiresAdminUser, routes.admin.userPromote);
-
+app.get('/admin', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.index);
+app.get('/admin/users', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userList);
+app.get('/admin/apps', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.appList);
+app.get('/admin/users/:id', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userView);
+app.get('/admin/users/:id/promote', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userPromote);
+app.post('/admin/users/:id/promote', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userPromote);
+app.get('/admin/users/:id/demote', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userDemote);
+app.post('/admin/users/:id/demote', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userDemote);
+app.get('/admin/users/:id/enable', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userEnable);
+app.get('/admin/users/:id/disable', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userDisable);
+app.get('/admin/users/:id/delete', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userDelete);
+app.post('/admin/users/:id/enable', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userEnable);
+app.post('/admin/users/:id/disable', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userDisable);
+app.post('/admin/users/:id/delete', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userDelete);
 /*
-
-app.get('/admin/users/:id/demote', middleware.requiresUser, routes.admin.demoteUser);
 app.get('/admin/apps/:id/view', middleware.requiresUser, routes.admin.viewApp);
 app.get('/admin/apps/:id/edit', middleware.requiresUser, routes.admin.editApp);
 app.get('/admin/apps/:id/delete', middleware.requiresUser, routes.admin.deleteApp);

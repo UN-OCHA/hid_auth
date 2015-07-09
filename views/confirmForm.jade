@@ -16,9 +16,20 @@ block content
         div
           p #{action.description}
 
-        div(class='btn-toolbar' role='toolbar')
-          div(class='btn-group' role='group')
-            button(type='button' class='btn btn-primary') Confirm #{action.shortName}
-          div(class='btn-group' role='group')
-            a(href='#{redirect_uri}' class='btn btn-default') Cancel
+        if !complete
+          form.form-account(method='post', action='', role='form')
+            input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
+            input(type='hidden', name='_csrf', value='#{csrf}')
+
+            div(class='btn-toolbar' role='toolbar')
+              div(class='btn-group' role='group')
+                button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Confirm #{action.shortName}
+              div(class='btn-group' role='group')
+                a(href='#{cancel_uri}' class='btn btn-default') Cancel
+
+        else
+          div(class='btn-toolbar' role='toolbar')
+            each op, i in next
+              div(class='btn-group' role='group')
+                a(href='#{i}' class='btn btn-default') #{op}
 
