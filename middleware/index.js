@@ -30,7 +30,7 @@ function requiresWebUser(req, res, next) {
 function requiresAdminAccess(req, res, next) {
   if (req.user && req.user.roles && req.user.roles.indexOf('admin') == -1) {
     log.warn({'type': 'admin:error', 'message': 'Non-administrator attempted access to protected resources.', 'user': user})
-    //res.status(403).send('Access Denied').end();
+    res.status(403).send('Access Denied').end();
   }
 
   next();

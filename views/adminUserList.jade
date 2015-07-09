@@ -32,6 +32,7 @@ block content
                 th(data-field='email' data-sortable='true') Email
                 th(data-field='status' data-sortable='true') Status
                 th Roles
+                th Services
                 th Operations
             tbody
              each item, i in accounts
@@ -51,6 +52,10 @@ block content
                   each role, i in item.roles
                     ul
                       li #{role}
+                td
+                  each profiles, name in item.authorized_services
+                    ul
+                      li #{name}
                 td
                   div(class='btn-group')
                     a(href='/admin/users/#{item.email}' class='btn btn-primary') View Account

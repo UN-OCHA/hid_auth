@@ -47,6 +47,12 @@ block content
                   each role, i in account.roles
                     ul
                       li #{role}
+              if account.authorized_services
+                li
+                  strong Authorized Applications:&nbsp;
+                  each profiles, name in account.authorized_services
+                    ul
+                      li #{name}
 
           div(class='btn-toolbar' role='toolbar')
             each op, i in actions
