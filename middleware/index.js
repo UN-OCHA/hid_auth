@@ -6,37 +6,37 @@ var Client = models.OAuthClientsModel;
 
 function requiresWebUser(req, res, next) {
   if (req.session.userId) {
-    req.user = {id: req.session.userId}
-    next();
+    User.findOne({email: req.session.userId}, function(err, user) {
+      if (err || !user) {
+        log.warn({'type': 'admin:error', 'message': 'Could not load user object for user ' + req.user.id, 'err': err, 'user': user});
+        res.status(403).send('Access Denied').end();
+      }
+      else if (!user.active) {
+        log.warn({'type': 'admin:error', 'message': 'Currently authenticated user is inactive.', 'user': user});
+        res.status(403).send('Access Denied').end();
+      }
+      req.user = user;
+    });
   }
   else {
     log.warn({'type': 'access:unauthorized', 'message': 'Unauthorized access attempt.'});
     res.status(403).send('Access Denied').end();
   }
+
+  next();
 }
 
-function requiresAdminUser(req, res, next) {
-  User.findOne({email: req.user.id}, function(err, user) {
-    if (err || !user) {
-      log.warn({'type': 'admin:error', 'message': 'Could not load user object for user ' + req.user.id, 'err': err, 'user': user});
-      res.status(403).send('Access Denied').end();
-    }
-    else if (!user.active) {
-      log.warn({'type': 'admin:error', 'message': 'Currently authenticated user is inactive.', 'user': user});
-      res.status(403).send('Access Denied').end();
-    }
-    /*
-    else if (user.roles.indexOf('admin') == -1) {
-      log.warn({'type': 'admin:error', 'message': 'Non-administrator attempted access to protected resources.', 'user': user})
-      res.status(403).send('Access Denied').end();
-    }
-*/
-    req.admin = user;
-    next();
-  });
+
+function requiresAdminAccess(req, res, next) {
+  if (req.user && req.user.roles && req.user.roles.indexOf('admin') == -1) {
+    log.warn({'type': 'admin:error', 'message': 'Non-administrator attempted access to protected resources.', 'user': user})
+    //res.status(403).send('Access Denied').end();
+  }
+
+  next();
 }
 
-function requiresUser(req, res, next) {
+function requiresWebOrApiUser(req, res, next) {
   if (req.session.userId) {
     req.user = {id: req.session.userId}
     next();
@@ -127,7 +127,7 @@ function flattenValues(q, strlist) {
   return tempList;
 }
 
-module.exports.requiresUser = requiresUser;
+module.exports.requiresWebOrApiUser = requiresWebOrApiUser;
 module.exports.requiresWebUser = requiresWebUser;
-module.exports.requiresAdminUser = requiresAdminUser;
+module.exports.requiresAdminAccess = requiresAdminAccess;
 module.exports.requiresKeySecret = requiresKeySecret;
