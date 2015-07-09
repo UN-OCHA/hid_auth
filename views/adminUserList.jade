@@ -3,7 +3,7 @@ extends layout
 block content
   .main
     div.header
-      a(href='/admin/users/#{user.email}' class='btn btn-primary') Welcome, #{user.name_given} #{user.name_family}
+        a(href='/admin/users/#{user.email}' class='btn btn-primary') Welcome, #{user.name_given} #{user.name_family}
     .container
       h1= title
       h2 Administration
@@ -22,14 +22,15 @@ block content
           div.messages(class='alert alert-warning', role='alert') !{message}
 
          div
-          table(id='list' class='table tablesorter')
+          table(id='list' class='table' data-toggle='table' data-sort-name='id' data-sort-order='asc'
+          data-pagination='true', data-page-size='50' data-search='true', data-id-field='id' data-show-toggle='true' data-mobile-responsive='true')
             thead
               tr
-                th User ID
-                th Given Name
-                th Family Name
-                th Email
-                th Status
+                th(data-field='id' data-sortable='true') User ID
+                th(data-field='name-given' data-sortable='true') Given Name
+                th(data-field='name-family' data-sortable='true') Family Name
+                th(data-field='email' data-sortable='true') Email
+                th(data-field='status' data-sortable='true') Status
                 th Roles
                 th Operations
             tbody
