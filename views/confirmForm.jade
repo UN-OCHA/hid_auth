@@ -1,35 +1,25 @@
-extends layout
+h3 Modify #{action.target}!
 
-block content
-  p You are logged in as #{user.name_given} #{user.name_family}
-  .container.main
-    h1= title
-    h2 Confirm: #{action.label}
+if message
+  div.messages(class='alert alert-warning', role='alert') !{message}
 
-    .container.main
-      .row
-        h3 Modify #{action.target}!
+div
+  p #{action.description}
 
-        if message
-          div.messages(class='alert alert-warning', role='alert') !{message}
+if !complete
+  form.form-account(method='post', action='#{action.submitUri}', role='form')
+    input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
+    input(type='hidden', name='_csrf', value='#{csrf}')
 
-        div
-          p #{action.description}
+    div(class='btn-toolbar' role='toolbar')
+      div(class='btn-group' role='group')
+        button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Confirm #{action.shortName}
+      div(class='btn-group' role='group')
+        a(href='#{cancel_uri}' class='btn btn-default') Cancel
 
-        if !complete
-          form.form-account(method='post', action='', role='form')
-            input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
-            input(type='hidden', name='_csrf', value='#{csrf}')
-
-            div(class='btn-toolbar' role='toolbar')
-              div(class='btn-group' role='group')
-                button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Confirm #{action.shortName}
-              div(class='btn-group' role='group')
-                a(href='#{cancel_uri}' class='btn btn-default') Cancel
-
-        else
-          div(class='btn-toolbar' role='toolbar')
-            each op, i in next
-              div(class='btn-group' role='group')
-                a(href='#{i}' class='btn btn-default') #{op}
+else
+  div(class='btn-toolbar' role='toolbar')
+    each op, i in next
+      div(class='btn-group' role='group')
+        a(href='#{i}' class='btn btn-default') #{op}
 

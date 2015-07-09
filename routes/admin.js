@@ -7,23 +7,69 @@ var async = require('async');
 var bcrypt = require('bcrypt');
 var Client = require('./../models').OAuthClientsModel;
 
-function userOperations(item) {
+function userOperations(account, modal) {
   ops = {};
-  ops["/admin/users/" + item.email] = "View Account";
-  if (item.roles === undefined || !hasAdminAccess(item)) {
-    ops["/admin/users/" + item.email + "/promote"] = "Promote to Admin";
-  }
-  else {
-    ops["/admin/users/" + item.email + "/demote"] = "Demote from Admin";
-  }
-  if (item.active) {
-    ops["/admin/users/" + item.email + "/disable"] = "Disable Account";
-  }
-  else {
-    ops["/admin/users/" + item.email + "/enable"] = "Enable Account";
-  }
+  var sep = modal ? '#' : '/';
 
-  ops["/admin/users/" + item.email + "/delete"] = "Delete Account";
+  ops.view = {
+    id: 'view',
+    shortName: 'View',
+    label: "View Account",
+    target: account.email,
+    description: 'View the details for the user account.',
+    uri: "/admin/users/" + account.email,
+    display: !modal
+  };
+  ops.promote = {
+    id: 'promote',
+    shortName: 'Promotion',
+    label: 'Promote to Admin',
+    target: account.email,
+    description: "Promote this user to admin, with the ability to manage all users and applications.",
+    uri: "/admin/users/" + account.email + sep + "promote",
+    submitUri: "/admin/users/" + account.email + "/promote",
+    display: account.roles === undefined || !hasAdminAccess(account)
+  };
+  ops.demote = {
+    id: 'demote',
+    shortName: 'Demotion',
+    label: 'Demote from Admin',
+    target: account.email,
+    description: "Demote this user from administrative powers.",
+    uri: "/admin/users/" + account.email + sep + "demote",
+    submitUri: "/admin/users/" + account.email + "/demote",
+    display: account.roles !== undefined && hasAdminAccess(account)
+  };
+  ops.disable = {
+    id: 'disable',
+    shortName: 'Deactivation',
+    label: 'Disable Account',
+    target: account.email,
+    description: "Disable this user.",
+    uri: "/admin/users/" + account.email + sep + "disable",
+    submitUri: "/admin/users/" + account.email + "/disable",
+    display: account.active
+  };
+  ops.enable = {
+    id: 'enable',
+    shortName: 'Activation',
+    label: 'Enable Account',
+    target: account.email,
+    description: "Enable this user account. They will be able to authenticate with H.ID.",
+    uri: "/admin/users/" + account.email + sep + "enable",
+    submitUri: "/admin/users/" + account.email + "/enable",
+    display: !account.active
+  };
+  ops.delete = {
+    id: 'delete',
+    shortName: 'Deletion',
+    label: 'Delete Account',
+    target: account.email,
+    description: "Delete this account. It cannot be restored!",
+    uri: "/admin/users/" + account.email + sep + "delete",
+    submitUri: "/admin/users/" + account.email + "/delete",
+    display: !account.active
+  };
 
   return ops;
 }
@@ -79,7 +125,7 @@ module.exports.userList = function(req, res) {
         }
         else {
           data = users.map(function(item) {
-            item.ops = userOperations(item);
+            item.ops = userOperations(item, false);
             return item;
           });
         }
@@ -103,7 +149,7 @@ module.exports.userView = function(req, res) {
     cancel_uri = '/admin/users',
     message = null,
     currentUser = {},
-    data = [];
+    data = {};
 
   async.series([
     function (cb) {
@@ -116,9 +162,8 @@ module.exports.userView = function(req, res) {
           return cb(true);
         }
 
-        user.ops = userOperations(user);
         user.roles = user.roles || [];
-        data.push(user);
+        data = user;
         return cb();
       });
     }
@@ -126,10 +171,15 @@ module.exports.userView = function(req, res) {
   function (err, results) {
     res.render('adminUserView', {
       user: req.user,
-      account: data[0],
+      account: data,
+      actions: userOperations(data, true),
       message: message,
       redirect_uri: redirect_uri,
-      cancel_uri: cancel_uri
+      csrf: req.csrfToken(),
+      cancel_uri: cancel_uri,
+      next: {
+        "/admin/users": "View Users"
+      }
     });
   });
 };
@@ -154,7 +204,7 @@ module.exports.userPromote = function(req, res) {
           return cb(true);
         }
 
-        user.ops = userOperations(user);
+        user.ops = userOperations(user, false);
         user.roles = user.roles || [];
         data = user;
         return cb();
@@ -202,15 +252,9 @@ module.exports.userPromote = function(req, res) {
     next["/admin/users"] = "View Users";
     next["/admin/users/" + data.email] = "View " + data.email;
 
-    res.render('confirmForm', {
+    res.render('confirmFormPage', {
       user: req.user,
-      action: {
-        id: 'promote',
-        shortName: 'Promotion',
-        label: 'Promote User to Admin',
-        target: data.email,
-        description: "Promote this user to admin, with the ability to manage all users and applications."
-      },
+      action: userOperations(data, false).promote,
       account: data,
       message: message,
       csrf: req.csrfToken(),
@@ -288,15 +332,9 @@ module.exports.userDemote = function(req, res) {
     next["/admin/users"] = "View Users";
     next["/admin/users/" + data.email] = "View " + data.email;
 
-    res.render('confirmForm', {
+    res.render('confirmFormPage', {
       user: req.user,
-      action: {
-        id: 'demote',
-        shortName: 'Demotion',
-        label: 'Demote User from Admin',
-        target: data.email,
-        description: "Demote this user from administrative powers."
-      },
+      action: userOperations(data, false).demote,
       account: data,
       message: message,
       csrf: req.csrfToken(),
@@ -374,15 +412,9 @@ module.exports.userDisable = function(req, res) {
     next["/admin/users"] = "View Users";
     next["/admin/users/" + data.email] = "View " + data.email;
 
-    res.render('confirmForm', {
+    res.render('confirmFormPage', {
       user: req.user,
-      action: {
-        id: 'disable',
-        shortName: 'Deactivation',
-        label: 'Disable Account',
-        target: data.email,
-        description: "Disable this user."
-      },
+      action: userOperations(data, false).disable,
       account: data,
       message: message,
       csrf: req.csrfToken(),
@@ -459,15 +491,9 @@ module.exports.userEnable = function(req, res) {
     next["/admin/users"] = "View Users";
     next["/admin/users/" + data.email] = "View " + data.email;
 
-    res.render('confirmForm', {
+    res.render('confirmFormPage', {
       user: req.user,
-      action: {
-        id: 'enable',
-        shortName: 'Activation',
-        label: 'Enable Account',
-        target: data.email,
-        description: "Enable this user account. They will be able to authenticate with H.ID."
-      },
+      action: userOperations(data, false).enable,
       account: data,
       message: message,
       csrf: req.csrfToken(),
@@ -539,15 +565,9 @@ module.exports.userDelete = function(req, res) {
     }
   ],
   function (err, results) {
-    res.render('confirmForm', {
+    res.render('confirmFormPage', {
       user: req.user,
-      action: {
-        id: 'delete',
-        shortName: 'Deletion',
-        label: 'Delete Account',
-        target: data.email,
-        description: "Delete this account. It cannot be restored!"
-      },
+      action: userOperations(data, false).delete,
       account: data,
       message: message,
       csrf: req.csrfToken(),
