@@ -64,7 +64,7 @@ block content
                       span(class='sr-only') Toggle Dropdown
                     ul(class='dropdown-menu')
                       each op, i in item.ops
-                        if op.display
+                        if op.valid
                           li
                             a(href='#{op.uri}') #{op.label}
 

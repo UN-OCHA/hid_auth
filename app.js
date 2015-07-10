@@ -244,16 +244,8 @@ app.get('/admin', middleware.requiresWebUser, middleware.requiresAdminAccess, ro
 app.get('/admin/users', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userList);
 app.get('/admin/apps', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.appList);
 app.get('/admin/users/:id', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userView);
-app.get('/admin/users/:id/promote', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userPromote);
-app.post('/admin/users/:id/promote', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userPromote);
-app.get('/admin/users/:id/demote', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userDemote);
-app.post('/admin/users/:id/demote', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userDemote);
-app.get('/admin/users/:id/enable', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userEnable);
-app.get('/admin/users/:id/disable', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userDisable);
-app.get('/admin/users/:id/delete', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userDelete);
-app.post('/admin/users/:id/enable', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userEnable);
-app.post('/admin/users/:id/disable', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userDisable);
-app.post('/admin/users/:id/delete', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userDelete);
+app.get('/admin/users/:id/ops/:action', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userAction);
+app.post('/admin/users/:id/ops/:action', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userAction);
 /*
 app.get('/admin/apps/:id/view', middleware.requiresUser, routes.admin.viewApp);
 app.get('/admin/apps/:id/edit', middleware.requiresUser, routes.admin.editApp);
