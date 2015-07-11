@@ -1,11 +1,7 @@
 var User = require('./../models').User;
 var errors = require('./../errors');
-var mail = require('./../mail');
 var log = require('./../log');
-var config = require('./../config');
 var async = require('async');
-var bcrypt = require('bcrypt');
-var Client = require('./../models').OAuthClientsModel;
 
 function userOperations(account, modal) {
   ops = {};
@@ -92,28 +88,7 @@ function removeRole(account, role) {
   return account;
 }
 
-module.exports.index = function(req, res) {
-  var message = '';
-
-  res.render('adminIndex', {
-    user: req.user,
-    message: message,
-    pages: [
-      {
-        label: 'Administer Users',
-        path: 'admin/users',
-        description: 'Administer user accounts, including promotion to or demotion from administrative status.'
-      },
-      {
-        label: 'Administer Apps',
-        path: 'admin/apps',
-        description: 'Administer application keys, including registering and revoking access.'
-      }
-    ]
-  });
-};
-
-module.exports.userList = function(req, res) {
+module.exports.list = function(req, res) {
   var redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
     cancel_uri = '/admin',
     message = null,
@@ -126,6 +101,7 @@ module.exports.userList = function(req, res) {
         if (err) {
           message = "Could not load users. Please try again."
           log.warn({type: 'admin:userlist:error', message: 'Failed to load list of users.'});
+          return cb(true);
         }
         else {
           data = users.map(function(item) {
@@ -150,7 +126,7 @@ module.exports.userList = function(req, res) {
   });
 };
 
-module.exports.userView = function(req, res) {
+module.exports.view = function(req, res) {
   var redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
     cancel_uri = '/admin/users',
     message = null,
@@ -191,7 +167,7 @@ module.exports.userView = function(req, res) {
   });
 };
 
-module.exports.userAction = function(req, res) {
+module.exports.action = function(req, res) {
   var options = req.body || {},
     redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
     cancel_uri = '/admin/users',
@@ -330,32 +306,6 @@ module.exports.userAction = function(req, res) {
       cancel_uri: cancel_uri,
       complete: submitted || (err && !data.ops[req.params.action].valid),
       next: next
-    });
-  });
-};
-
-module.exports.appList = function(req, res) {
-  var redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
-    cancel_uri = '/admin',
-    message = null,
-    currentUser = {},
-    data = [];
-
-  async.series([
-    function (cb) {
-      data.push({ clientName: "YourApp", clientId: "your-app-1", clientSecret: '1234512345', redirectUri: 'http://example.com/redirect', loginUri: 'http://example.com/login', description: "YourApp is the example application from the SSO documentation." });
-      data.push({ clientName: "MySite", clientId: "my-site-dev", clientSecret: 'abcdeabcde', redirectUri: 'http://example.net/redirect', loginUri: 'http://example.net/login', description: "MySite is an alternate example client." });
-      data.push({ clientName: "AllWeb", clientId: "all-web-prod", clientSecret: 'a1b2c3', redirectUri: 'allweb://redirect', loginUri: 'allweb://login', description: "MySite is an alternate example client." });
-      return cb();
-    }
-  ],
-  function (err, results) {
-    res.render('adminAppList', {
-      user: req.user,
-      apps: data,
-      message: message,
-      redirect_uri: redirect_uri,
-      cancel_uri: cancel_uri
     });
   });
 };
