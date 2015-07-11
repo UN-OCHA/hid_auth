@@ -2,8 +2,7 @@ extends layout
 
 block content
   .main
-    div.header
-        a(href='/admin/users/#{user.user_id}' class='btn btn-primary') Welcome, #{user.name_given} #{user.name_family}
+    include adminToolbar.jade
     .container
       h1= title
       h2 Administration
@@ -12,7 +11,7 @@ block content
         li.active
           a(href='/admin/users') Administer Users
         li
-          a(href='/admin/apps') Administer Client Keys
+          a(href='/admin/apps') Administer Applications
 
       .container.main
         .row
