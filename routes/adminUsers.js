@@ -3,7 +3,7 @@ var errors = require('./../errors');
 var log = require('./../log');
 var async = require('async');
 
-function userOperations(account, modal) {
+function operations(account, modal) {
   ops = {};
   var sep = modal ? '#' : '/ops/';
 
@@ -105,7 +105,7 @@ module.exports.list = function(req, res) {
         }
         else {
           data = users.map(function(item) {
-            item.ops = userOperations(item, false);
+            item.ops = operations(item, false);
             item.roles = item.roles || [];
             item.authorized_services = item.authorized_services || {};
             return item;
@@ -155,7 +155,7 @@ module.exports.view = function(req, res) {
     res.render('adminUserView', {
       user: req.user,
       account: data,
-      actions: userOperations(data, true),
+      actions: operations(data, true),
       message: message,
       redirect_uri: redirect_uri,
       csrf: req.csrfToken(),
@@ -189,7 +189,7 @@ module.exports.action = function(req, res) {
           return cb(true);
         }
 
-        user.ops = userOperations(user, false);
+        user.ops = operations(user, false);
         user.roles = user.roles || [];
         data = user;
 
@@ -280,13 +280,13 @@ module.exports.action = function(req, res) {
       else {
         return data.remove(function(err, item) {
           if (err || !item) {
-            message = "Error updating the user account.";
+            message = "Error deleting the user account.";
             log.warn({'type': 'account:error', 'message': 'Error occurred trying to delete user account for ID ' + data.user_id + '.', 'data': data, 'err': err});
             return cb(true);
           }
           else {
             data = item;
-            message = "Settings successfully saved.";
+            message = "User account successfully deleted.";
             log.info({'type': 'account:success', 'message': 'User account deleted for ID ' + data.user_id + '.', 'data': data});
             return cb();
           }
@@ -295,7 +295,6 @@ module.exports.action = function(req, res) {
     }
   ],
   function (err, results) {
-          log.info({type: 'dev', data: data});
     res.render('confirmFormPage', {
       user: req.user,
       action: data.ops[req.params.action],
