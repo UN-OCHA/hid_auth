@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  p You are logged in as #{user.name_given} #{user.name_family}
+  include adminToolbar.jade
   .container.main
     h1= title
     h2 Administration
