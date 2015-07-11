@@ -318,6 +318,10 @@ label.ie-label {
   color: #494949;
 }
 
+.admin, .admin a {
+  color: #494949;
+}
+
 .table-hover tbody tr:hover td a {
   color: #54b1c8;
 }
@@ -332,3 +336,5 @@ label.ie-label {
   color: #2a5d81;
   background-color: white;
 }
+
+
