@@ -3,7 +3,7 @@ var errors = require('./../errors');
 var log = require('./../log');
 var async = require('async');
 
-function userOperations(account, modal) {
+function operations(account, modal) {
   ops = {};
   var sep = modal ? '#' : '/ops/';
 
@@ -91,7 +91,6 @@ module.exports.list = function(req, res) {
   var redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
     cancel_uri = '/admin',
     message = null,
-    currentUser = {},
     data = [];
 
   async.series([
@@ -104,7 +103,7 @@ module.exports.list = function(req, res) {
         }
         else {
           data = users.map(function(item) {
-            item.ops = userOperations(item, false);
+            item.ops = operations(item, false);
             item.roles = item.roles || [];
             item.authorized_services = item.authorized_services || {};
             return item;
@@ -129,7 +128,6 @@ module.exports.view = function(req, res) {
   var redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
     cancel_uri = '/admin/users',
     message = null,
-    currentUser = {},
     data = {};
 
   async.series([
@@ -154,7 +152,7 @@ module.exports.view = function(req, res) {
     res.render('adminUserView', {
       user: req.user,
       account: data,
-      actions: userOperations(data, true),
+      actions: operations(data, true),
       message: message,
       redirect_uri: redirect_uri,
       csrf: req.csrfToken(),
@@ -172,9 +170,7 @@ module.exports.action = function(req, res) {
     cancel_uri = '/admin/users',
     next = { "/admin/users": "View Users" },
     submitted = false,
-    invalid = false,
     message = null,
-    currentUser = {},
     data = {};
 
   async.series([
@@ -188,7 +184,7 @@ module.exports.action = function(req, res) {
           return cb(true);
         }
 
-        user.ops = userOperations(user, false);
+        user.ops = operations(user, false);
         user.roles = user.roles || [];
         data = user;
 
@@ -279,13 +275,13 @@ module.exports.action = function(req, res) {
       else {
         return data.remove(function(err, item) {
           if (err || !item) {
-            message = "Error updating the user account.";
+            message = "Error removing the user account.";
             log.warn({'type': 'account:error', 'message': 'Error occurred trying to delete user account for email address ' + data.email + '.', 'data': data, 'err': err});
             return cb(true);
           }
           else {
             data = item;
-            message = "Settings successfully saved.";
+            message = "User account successfully deleted.";
             log.info({'type': 'account:success', 'message': 'User account deleted for email address ' + data.email + '.', 'data': data});
             return cb();
           }
