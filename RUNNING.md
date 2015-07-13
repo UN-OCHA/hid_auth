@@ -80,3 +80,9 @@ core@dev-vm ~ $ ip addr | grep -A1 -B2 172.20.20.20
 ```
 
 If you do not see the 172.20.20.20 address under the interface ("ens34" in this example,) then your VM has lost its link somehow. If this happens, a `vagrant reload` on the dev VM should fix it. If you encounter this in testing, please come into the *devtools-project* flow and see if anyone is around to help - we'd like to try to catch this in the wild.
+
+### Troubleshooting the Application
+
+Application logs are placed inside the container at `/root/.pm2`.
+
+In local development you can reach this by running `docker exec -it contactsidauth_auth_1 bash`.
