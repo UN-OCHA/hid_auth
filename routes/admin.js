@@ -100,12 +100,12 @@ module.exports.index = function(req, res) {
     message: message,
     pages: [
       {
-        label: 'Administrate Users',
+        label: 'Administer Users',
         path: 'admin/users',
         description: 'Administer user accounts, including promotion to or demotion from administrative status.'
       },
       {
-        label: 'Administrate Apps',
+        label: 'Administer Apps',
         path: 'admin/apps',
         description: 'Administer application keys, including registering and revoking access.'
       }
