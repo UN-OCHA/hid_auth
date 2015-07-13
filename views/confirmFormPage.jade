@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  .main
+    div.header
+      a(href='/admin/users/#{user.email}' class='btn btn-primary') Welcome, #{user.name_given} #{user.name_family}
+    .container
+      h1= title
+      h2 Confirm: #{action.label}
+
+      .container.main
+        .row
+          include confirmForm.jade

@@ -1,0 +1,70 @@
+extends layout
+
+block content
+  .main
+    div.header
+        a(href='/admin/users/#{user.email}' class='btn btn-primary') Welcome, #{user.name_given} #{user.name_family}
+    .container
+      h1= title
+      h2 Administration
+
+      ul.nav.nav-tabs(role='tablist')
+        li.active
+          a(href='/admin/users') Administer Users
+        li
+          a(href='/admin/apps') Administer Client Keys
+
+      .container.main
+        .row
+         p.admin-lead-in Manage all accounts on #{title}.
+
+         if message
+          div.messages(class='alert alert-warning', role='alert') !{message}
+
+         div
+          table(id='list' class='table' data-toggle='table' data-sort-name='id' data-sort-order='asc'
+          data-pagination='true', data-page-size='50' data-search='true', data-id-field='id' data-show-toggle='true' data-mobile-responsive='true')
+            thead
+              tr
+                th(data-field='id' data-sortable='true') User ID
+                th(data-field='name-given' data-sortable='true') Given Name
+                th(data-field='name-family' data-sortable='true') Family Name
+                th(data-field='email' data-sortable='true') Email
+                th(data-field='status' data-sortable='true') Status
+                th Roles
+                th Services
+                th Operations
+            tbody
+             each item, i in accounts
+              tr
+                td
+                  a(href='/admin/users/#{item.email}') #{item.email}
+                td #{item.name_given}
+                td #{item.name_family}
+                td
+                  a(href='mailto:#{item.email_recovery}') #{item.email_recovery}
+                td
+                  if item.active
+                    span active
+                  else
+                    span inactive
+                td
+                  each role, i in item.roles
+                    ul
+                      li #{role}
+                td
+                  each profiles, name in item.authorized_services
+                    ul
+                      li #{name}
+                td
+                  div(class='btn-group')
+                    a(href='/admin/users/#{item.email}' class='btn btn-primary') View Account
+                    button(type='button' class='btn btn-primary dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+                      span(class='caret')
+                      span(class='sr-only') Toggle Dropdown
+                    ul(class='dropdown-menu')
+                      each op, i in item.ops
+                        if op.valid
+                          li
+                            a(href='#{op.uri}') #{op.label}
+

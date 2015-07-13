@@ -232,14 +232,25 @@ app.post('/oauth/authorize', function(req, res, next) {
 
 app.use(app.oauth.errorHandler());
 
-app.all('/account', middleware.requiresUser, routes.users.account);
-app.get('/account.json', cors(), middleware.requiresUser, routes.users.showjson);
+app.all('/account', middleware.requiresWebOrApiUser, routes.users.account);
+app.get('/account.json', cors(), middleware.requiresWebOrApiUser, routes.users.showjson);
 
 app.post('/register', routes.register.form);
 app.post('/login', routes.session.create);
 app.post('/resetpw', routes.users.resetpw);
 app.get('/resetpw/:key', routes.users.resetpwuse);
 app.get('/register/:key', routes.users.resetpwuse);
+app.get('/admin', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.index);
+app.get('/admin/users', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userList);
+app.get('/admin/apps', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.appList);
+app.get('/admin/users/:id', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userView);
+app.get('/admin/users/:id/ops/:action', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userAction);
+app.post('/admin/users/:id/ops/:action', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userAction);
+/*
+app.get('/admin/apps/:id/view', middleware.requiresUser, routes.admin.viewApp);
+app.get('/admin/apps/:id/edit', middleware.requiresUser, routes.admin.editApp);
+app.get('/admin/apps/:id/delete', middleware.requiresUser, routes.admin.deleteApp);
+*/
 
 app.all('/logout', function (req, res) {
   log.info({'type': 'logout', 'message': 'Clearing session to log out user ' + req.session.userId});
