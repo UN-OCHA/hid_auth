@@ -15,7 +15,8 @@ var OAuthUsersSchema = new Schema({
   name_given: String,
   name_family: String,
   authorized_services: Schema.Types.Mixed,
-  active: Number
+  active: Number,
+  roles: [String]
 });
 
 function hashPassword(password) {

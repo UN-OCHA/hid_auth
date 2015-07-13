@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  .container.main
+    h1= title
+    h2 Administration
+
+    .container.main
+      .row
+        if message
+          div.messages(class='alert alert-warning', role='alert') !{message}
+        ul
+          each item, i in pages
+            li
+              a(href='/#{item.path}')
+                strong #{item.label}
+              span :&nbsp;#{item.description}

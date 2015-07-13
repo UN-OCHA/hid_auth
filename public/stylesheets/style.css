@@ -43,7 +43,6 @@ a:hover {
   text-decoration: underline;
 }
 
-
 .heading img {
   width: 290px;
   margin: 80px 0;
@@ -103,7 +102,7 @@ a:hover {
   }
 }
 
-#login, #register, #about, #forgotPass {
+#login, #register, #about, #forgotPass, #promote, #disable, #enable, #delete, #demote {
   display: none;
 }
 
@@ -313,4 +312,23 @@ label.ie-label {
     top:30px;
     left:30px;
   }
+}
+
+.table-hover tbody tr:hover td {
+  color: #494949;
+}
+
+.table-hover tbody tr:hover td a {
+  color: #54b1c8;
+}
+
+.table-hover tbody tr:hover td .btn {
+  background-color: #2a5d81;
+  color: white;
+}
+
+.table-hover tbody tr:hover td .btn:hover,
+.table-hover tbody tr:hover td .btn:hover {
+  color: #2a5d81;
+  background-color: white;
 }
