@@ -79,8 +79,9 @@ function hasAdminAccess(account) {
 }
 
 function addRole(account, role) {
-  // @todo ensure only one instance of the role is added.
-  account.roles.push(role);
+  if (account.roles.indexOf(role) == -1) {
+    account.roles.push(role);
+  }
 
   return account;
 }
