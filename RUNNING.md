@@ -16,11 +16,17 @@ In addition, your code and data are saved on a different disk partition, so the 
 ### Mac Setup
 
 - Install docker 1.3.x.
-- Install fig 1.0.x.
+- Install docker-compose 1.2.x.
 - Install Vagrant and VirtualBox or Vagrant and VMware and the VMware provider.
 - Clone https://bitbucket.org/phase2tech/\_devtools\_vm and `vagrant up`.
 - Once the tonistiigi/dnsdock and phase2/devtools-fileserver containers have downloaded, mount the code and data shares on your Mac by choosing Go > Connect to Server in the finder and entering `smb://Dev-VM`. ![connecting to the VM file shares](https://www.evernote.com/shard/s2/sh/0287f382-0439-4dcd-9faf-8e60baf1e9d8/edd7ede8af6cfdebfdea2830c561d0be/res/493c94da-060c-481c-b30d-63d47e9ffd45/skitch.png). Mount both shares.
 - Add the line `export DOCKER_HOST=tcp://localhost:2375` to your shell config. This will let you run Docker commands against the dev VM while it is running.
+
+#### Running Docker-Compose
+
+`docker-compose` can be run directly, or with `fig` as a supported alias. If
+you already have fig installed on you already have fig installed in your system,
+remove it. It has been officially deprecated and subsumed into docker-compose.
 
 ### Running the site
 
