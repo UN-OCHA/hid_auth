@@ -12,7 +12,7 @@
     "express": "^3.4.8",
     "jade": "^1.5.0",
     "oauth2-server": "https://github.com/arithmetric/node-oauth2-server/archive/hid/2.x.tar.gz",
-    "mongoose": "^3.8.8",
+    "mongoose": "~3.8.27",
     "async": "^0.9.0",
     "bcrypt": "^0.7.7",
     "csurf": "^1.6.1",

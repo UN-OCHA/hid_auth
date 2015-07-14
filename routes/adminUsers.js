@@ -75,8 +75,9 @@ function hasAdminAccess(account) {
 }
 
 function addRole(account, role) {
-  // @todo ensure only one instance of the role is added.
-  account.roles.push(role);
+  if (account.roles.indexOf(role) == -1) {
+    account.roles.push(role);
+  }
 
   return account;
 }
@@ -86,6 +87,7 @@ function removeRole(account, role) {
 
   return account;
 }
+
 
 module.exports.list = function(req, res) {
   var redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
