@@ -1,0 +1,61 @@
+extends layout
+
+block content
+  .main
+    include adminToolbar.jade
+    .container
+      h1= title
+      h2 Administration
+
+      ul.nav.nav-tabs(role='tablist')
+        li
+          a(href='/admin/users') Administer Users
+        li.active
+          a(href='/admin/apps') Administer Apps
+
+      .container
+        .row
+          p.admin-lead-in View application "#{app.clientName}".
+
+          if message
+            div.messages(class='alert alert-warning', role='alert') !{message}
+
+          div
+            ul
+              li
+                strong Client ID:&nbsp;
+                span
+                  a(href='/admin/apps/#{app.clientId}') #{app.clientId}
+              li
+                strong Client Name:&nbsp;
+                span #{app.clientName}
+              li
+                strong Client Secret:&nbsp;
+                span #{app.clientSecret}
+              li
+                strong Redirect URI:&nbsp;
+                span #{app.redirectUri}
+              li
+                strong Login URI:&nbsp;
+                span #{app.loginUri}
+              if app.description
+                li
+                  strong Description:&nbsp;
+                  div.description #{app.description}
+
+          div(class='btn-toolbar' role='toolbar')
+            each op, i in actions
+              if op.valid
+                div(class='btn-group' role='group')
+                  a(href='#{op.uri}' class='btn btn-default') #{op.label}
+
+
+    each action, i in actions
+      if action.valid
+        div
+          div(id='#{action.id}')
+            a.close-modal(href='#')
+              span.fa.fa-angle-left
+            include ./confirmForm.jade
+
+

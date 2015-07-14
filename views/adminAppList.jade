@@ -10,7 +10,7 @@ block content
       li
         a(href='/admin/users') Administer Users
       li.active
-        a(href='/admin/apps') Administer Client Keys
+        a(href='/admin/apps') Administer Apps
 
     .container.main
       .row
@@ -20,18 +20,23 @@ block content
         div.messages(class='alert alert-warning', role='alert') !{message}
 
        div
-        table(class='table')
+        table(id='list' class='table' data-toggle='table' data-sort-name='id' data-sort-order='asc'
+        data-pagination='true', data-page-size='50' data-search='true', data-id-field='id' data-show-toggle='true' data-mobile-responsive='true')
           thead
             tr
-              th Applications
+              th(data-field='id' data-sortable='true') ID
+              th(data-field='label' data-sortable='true') Application
               th Operations
           tbody
            each item, i in apps
             tr
               td
-                a(href='/admin/apps/#{item.clientName}')
-                  strong #{item.clientName} (#{item.clientId})
-                p #{item.description}
+                a(href='/admin/apps/#{item.clientId}') #{item.clientId}
+              td
+                a(href='/admin/apps/#{item.clientId}')
+                  strong #{item.clientName}
+                if item.description
+                  p #{item.description}
               td
                 div(class='btn-group')
                   button(type='button' class='btn btn-primary') View App
@@ -39,8 +44,7 @@ block content
                     span(class='caret')
                     span(class='sr-only') Toggle Dropdown
                   ul(class='dropdown-menu')
-                    li
-                      a(href='#') View App
-                    li
-                      a(href='#') Edit App
-
+                    each op, i in item.ops
+                      if op.valid
+                        li
+                          a(href='#{op.uri}') #{op.label}
