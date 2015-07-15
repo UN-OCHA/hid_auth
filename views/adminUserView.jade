@@ -3,7 +3,7 @@ extends layout
 block content
   .main
     div.header
-        a(href='/admin/users/#{user.email}' class='btn btn-primary') Welcome, #{user.name_given} #{user.name_family}
+        a(href='/admin/users/#{user.user_id}' class='btn btn-primary') Welcome, #{user.name_given} #{user.name_family}
     .container
       h1= title
       h2 Administration
@@ -16,7 +16,7 @@ block content
 
       .container
         .row
-          p.admin-lead-in View user "#{account.email}".
+          p.admin-lead-in View user "#{account.id}".
 
           if message
             div.messages(class='alert alert-warning', role='alert') !{message}
@@ -27,14 +27,16 @@ block content
                 strong
                   User Id/Email:&nbsp;
                 span
-                  a(href='/admin/users/#{account.email}') #{account.email}
+                  a(href='/admin/users/#{account.user_id}') #{account.user_id}
               li
                 strong Name:&nbsp;
                 span #{account.name_given} #{account.name_family}
               li
+                strong Email:&nbsp;
+                a(href='mailto:#{account.email}') #{account.email}
+              li
                 strong Recovery Email:&nbsp;
                 a(href='mailto:#{account.email_recovery}') #{account.email_recovery}
-
               li
                 strong Status:&nbsp;
                 if account.active
