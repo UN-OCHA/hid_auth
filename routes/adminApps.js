@@ -123,6 +123,7 @@ module.exports.action = function(req, res) {
     cancel_uri = '/admin/apps',
     next = { "/admin/apps": "View Applications" },
     submitted = false,
+    changed = false,
     message = null,
     data = {};
 
@@ -145,15 +146,20 @@ module.exports.action = function(req, res) {
     },
     function (cb) {
       switch(req.params.action) {
-        case 'promote':
+        case 'edit':
           // If the user already has the admin role something has changed.
-          if (!data.ops.promote.valid) {
-            message = "The target user account is already an administrator.";
-            log.debug({type: 'account:status', message: 'The account for user ' + data.email + ' is already an administrator.'});
+          if (!data.ops.edit.valid) {
+            message = "The application cannot be edited.";
             return cb(true);
           }
           else {
-            data = addRole(data, 'admin');
+            // Update any fields
+            for (var key in options) {
+              if (options.hasOwnProperty(key)) {
+                data[key] = options[key];
+                changed = true;
+              }
+            }
           }
           break;
         case 'revoke':
@@ -179,13 +185,13 @@ module.exports.action = function(req, res) {
       if (req.params.action != 'revoke') {
         return data.save(function (err, item) {
           if (err || !item) {
-            message = "Error updating the user account.";
+            message = "Error updating the client application.";
             log.warn({'type': 'client:error', 'message': 'Error occurred trying to update client for ID ' + data.clientId + '.', 'data': data, 'err': err});
             return cb(true);
           }
           else {
             data = item;
-            message = "Settings successfully saved.";
+            message = "Client settings successfully saved.";
             log.info({'type': 'client:success', 'message': 'Client application updated for ID ' + data.clientId + '.', 'data': data});
             return cb();
           }
@@ -209,10 +215,11 @@ module.exports.action = function(req, res) {
     }
   ],
   function (err, results) {
-    res.render('confirmFormPage', {
+    var template = req.params.action == 'edit' ? 'appFormPage' : 'confirmFormPage',
+    res.render(template, {
       user: req.user,
       action: data.ops[req.params.action],
-      account: data,
+      app: data,
       message: message,
       csrf: req.csrfToken(),
       redirect_uri: redirect_uri,
