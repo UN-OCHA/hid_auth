@@ -19,8 +19,30 @@ exports.index = function(req, res) {
   }
 };
 
+exports.admin = function(req, res) {
+  var message = '';
+
+  res.render('adminIndex', {
+    user: req.user,
+    message: message,
+    pages: [
+      {
+        label: 'Administrate Users',
+        path: 'admin/users',
+        description: 'Administer user accounts, including promotion to or demotion from administrative status.'
+      },
+      {
+        label: 'Administrate Apps',
+        path: 'admin/apps',
+        description: 'Administer application keys, including registering and revoking access.'
+      }
+    ]
+  });
+};
+
 exports.register = require('./register');
 exports.session = require('./session');
 exports.users = require('./users');
-exports.admin = require('./admin');
+exports.adminUsers = require('./adminUsers');
+exports.adminApps = require('./adminApps');
 exports.api = require('./api');
