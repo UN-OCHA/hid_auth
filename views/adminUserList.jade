@@ -2,8 +2,7 @@ extends layout
 
 block content
   .main
-    div.header
-        a(href='/admin/users/#{user.email}' class='btn btn-primary') Welcome, #{user.name_given} #{user.name_family}
+    include adminToolbar.jade
     .container
       h1= title
       h2 Administration
@@ -12,7 +11,7 @@ block content
         li.active
           a(href='/admin/users') Administer Users
         li
-          a(href='/admin/apps') Administer Client Keys
+          a(href='/admin/apps') Administer Applications
 
       .container.main
         .row
@@ -38,11 +37,18 @@ block content
              each item, i in accounts
               tr
                 td
-                  a(href='/admin/users/#{item.email}') #{item.email}
+                  a(href='/admin/users/#{item.user_id}') #{item.user_id}
                 td #{item.name_given}
                 td #{item.name_family}
                 td
-                  a(href='mailto:#{item.email_recovery}') #{item.email_recovery}
+                  ul
+                    li
+                      strong Primary:&nbsp;
+                      a(href='mailto:#{item.email}') #{item.email}
+                    if item.email_recovery
+                      li
+                        strong Recovery:&nbsp;
+                        a(href='mailto:#{item.email_recovery}') #{item.email_recovery}
                 td
                   if item.active
                     span active
@@ -58,7 +64,7 @@ block content
                       li #{name}
                 td
                   div(class='btn-group')
-                    a(href='/admin/users/#{item.email}' class='btn btn-primary') View Account
+                    a(href='/admin/users/#{item.user_id}' class='btn btn-primary') View Account
                     button(type='button' class='btn btn-primary dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
                       span(class='caret')
                       span(class='sr-only') Toggle Dropdown

@@ -240,12 +240,16 @@ app.post('/login', routes.session.create);
 app.post('/resetpw', routes.users.resetpw);
 app.get('/resetpw/:key', routes.users.resetpwuse);
 app.get('/register/:key', routes.users.resetpwuse);
-app.get('/admin', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.index);
-app.get('/admin/users', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userList);
-app.get('/admin/apps', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.appList);
-app.get('/admin/users/:id', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userView);
-app.get('/admin/users/:id/ops/:action', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userAction);
-app.post('/admin/users/:id/ops/:action', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin.userAction);
+
+
+app.get('/admin', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin);
+
+app.get('/admin/users', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminUsers.list);
+app.get('/admin/users/:id', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminUsers.view);
+app.get('/admin/users/:id/ops/:action', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminUsers.action);
+app.post('/admin/users/:id/ops/:action', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminUsers.action);
+
+app.get('/admin/apps', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminApps.list);
 /*
 app.get('/admin/apps/:id/view', middleware.requiresUser, routes.admin.viewApp);
 app.get('/admin/apps/:id/edit', middleware.requiresUser, routes.admin.editApp);
