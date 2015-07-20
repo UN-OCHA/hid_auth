@@ -19,7 +19,7 @@ function operations(app, modal) {
   ops.edit = {
     id: 'edit',
     shortName: 'Edit',
-    label: 'Update Application',
+    label: 'Edit Settings',
     target: app.clientId,
     description: "Update settings for this application.",
     uri: "/admin/apps/" + app.clientId + sep + "edit",
@@ -29,7 +29,7 @@ function operations(app, modal) {
   ops.revoke = {
     id: 'revoke',
     shortName: 'Revoke',
-    label: 'Revoke Application Access',
+    label: 'Revoke Access',
     target: app.clientId,
     description: "Revoke this applications authorization to connect with Humanitarian ID. It's record will be permanently deleted.",
     uri: "/admin/apps/" + app.clientId + sep + "revoke",
@@ -39,6 +39,19 @@ function operations(app, modal) {
   };
 
   return ops;
+}
+
+function listOperations() {
+  return {
+    create: {
+      id: 'create',
+      shortName: 'Create',
+      label: 'Create App',
+      uri: '/admin/apps#create',
+      submitUri: '/admin/apps/create',
+      valid: true
+    }
+  };
 }
 
 module.exports.list = function(req, res) {
@@ -68,8 +81,18 @@ module.exports.list = function(req, res) {
   function (err, results) {
     res.render('adminAppList', {
       user: req.user,
+      app: {
+        clientId: '',
+        clientName: '',
+        clientSecret: '',
+        redirectUri: '',
+        loginUri: '',
+        description: ''
+      },
       apps: data,
+      actions: listOperations(),
       message: message,
+      csrf: req.csrfToken(),
       redirect_uri: redirect_uri,
       cancel_uri: cancel_uri
     });
@@ -94,7 +117,7 @@ module.exports.view = function(req, res) {
         }
 
         client.description = client.description || '';
-        client.ops = operations(data, true),
+        client.ops = operations(client, true),
         data = client;
         return cb();
       });
@@ -164,7 +187,7 @@ module.exports.action = function(req, res) {
           break;
         case 'revoke':
           if (!data.ops.revoke.valid) {
-            message = "Can not revoke this client.";
+            message = "Cannot revoke this client.";
             return cb(true);
           }
           break;
@@ -215,7 +238,7 @@ module.exports.action = function(req, res) {
     }
   ],
   function (err, results) {
-    var template = req.params.action == 'edit' ? 'appFormPage' : 'confirmFormPage',
+    var template = req.params.action == 'edit' ? 'appFormPage' : 'confirmFormPage';
     res.render(template, {
       user: req.user,
       action: data.ops[req.params.action],
@@ -230,3 +253,90 @@ module.exports.action = function(req, res) {
   });
 };
 
+module.exports.create = function(req, res) {
+  var options = req.body || {},
+    redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
+    cancel_uri = '/admin/apps',
+    next = { "/admin/apps": "View Applications" },
+    submitted = false,
+    message = null,
+    data = {
+      clientId: '',
+      clientName: '',
+      clientSecret: '',
+      redirectUri: '',
+      loginUri: '',
+      description: ''
+    };
+
+  async.series([
+    function (cb) {
+      // If the CSRF token was not posted, this was not a form submit.
+      // Bail as error to skip further processing.
+      if (options._csrf == undefined) {
+        return cb(true);
+      }
+
+      return cb();
+    },
+    function (cb) {
+      Client.findOne({clientId: options.clientId}, function(err, app) {
+        if (err) {
+          message = "Could not load clients. Please try again."
+          log.warn({type: 'admin:clientList:error', message: 'Failed to load list of clients.'});
+          return cb(true)
+        }
+        else if (app != null) {
+          message = "Please select a unique Client ID."
+          data = options;
+          data.clientId = '';
+          return cb(true);
+        }
+
+        return cb();
+      });
+    },
+    function (cb) {
+      // Process/save the submitted form values.
+      submitted = true;
+
+      if (options.clientId == 'create') {
+        message = 'Create is a reserved word and cannot be used as a Client ID.';
+        return cb(true);
+      }
+
+      if (options.clientSecret == '') {
+        options.clientSecret = require('../lib/secretKey').generate();
+      }
+
+      var app = new Client(options);
+      return app.save(function (err, item) {
+        if (err || !item) {
+          message = "Error creating the client application.";
+          log.warn({'type': 'client:error', 'message': 'Error occurred trying to create client for ID ' + data.clientId + '.', 'data': data, 'err': err});
+          return cb(true);
+        }
+        else {
+          data = item;
+          message = "Client settings successfully saved.";
+          log.info({'type': 'client:success', 'message': 'Client application created for ID ' + data.clientId + '.', 'data': data});
+          res.redirect('/admin/apps/' + options.clientId);
+          return cb();
+        }
+      });
+    }
+  ],
+  function (err, results) {
+    res.render('appFormPage', {
+      user: req.user,
+      action: listOperations().create,
+      app: data,
+      message: message,
+      csrf: req.csrfToken(),
+      redirect_uri: redirect_uri,
+      cancel_uri: cancel_uri,
+      complete: submitted,
+      next: next
+    });
+  });
+};

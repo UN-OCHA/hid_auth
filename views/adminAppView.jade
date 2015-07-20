@@ -30,8 +30,10 @@ block content
                 strong Client Name:&nbsp;
                 span #{app.clientName}
               li
-                strong Client Secret:&nbsp;
-                span #{app.clientSecret}
+                details
+                  summary
+                    strong Client Secret
+                  p #{app.clientSecret}
               li
                 strong Redirect URI:&nbsp;
                 span #{app.redirectUri}
@@ -56,6 +58,9 @@ block content
           div(id='#{action.id}')
             a.close-modal(href='#')
               span.fa.fa-angle-left
-            include ./confirmForm.jade
+            if action.id == 'edit'
+              include ./appForm.jade
+            else
+              include ./confirmForm.jade
 
 

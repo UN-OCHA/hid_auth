@@ -102,7 +102,7 @@ a:hover {
   }
 }
 
-#login, #register, #about, #forgotPass, #promote, #disable, #enable, #delete, #demote, #revoke, #edit {
+#login, #register, #about, #forgotPass, #promote, #disable, #enable, #delete, #demote, #revoke, #edit, #create {
   display: none;
 }
 

@@ -241,7 +241,6 @@ app.post('/resetpw', routes.users.resetpw);
 app.get('/resetpw/:key', routes.users.resetpwuse);
 app.get('/register/:key', routes.users.resetpwuse);
 
-
 app.get('/admin', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin);
 
 app.get('/admin/users', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminUsers.list);
@@ -250,13 +249,12 @@ app.get('/admin/users/:id/ops/:action', middleware.requiresWebUser, middleware.r
 app.post('/admin/users/:id/ops/:action', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminUsers.action);
 
 app.get('/admin/apps', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminApps.list);
+app.get('/admin/apps/create', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminApps.create);
+app.post('/admin/apps/create', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminApps.create);
 app.get('/admin/apps/:id', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminApps.view);
 app.get('/admin/apps/:id/ops/:action', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminApps.action);
+app.post('/admin/apps/:id/ops/:action', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminApps.action);
 
-/*
-app.get('/admin/apps/:id/edit', middleware.requiresUser, routes.admin.editApp);
-app.get('/admin/apps/:id/delete', middleware.requiresUser, routes.admin.deleteApp);
-*/
 
 app.all('/logout', function (req, res) {
   log.info({'type': 'logout', 'message': 'Clearing session to log out user ' + req.session.userId});
