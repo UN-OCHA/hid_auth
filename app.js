@@ -255,7 +255,6 @@ app.get('/admin/apps/:id', middleware.requiresWebUser, middleware.requiresAdminA
 app.get('/admin/apps/:id/ops/:action', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminApps.action);
 app.post('/admin/apps/:id/ops/:action', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminApps.action);
 
-
 app.all('/logout', function (req, res) {
   log.info({'type': 'logout', 'message': 'Clearing session to log out user ' + req.session.userId});
   req.session.destroy(function () {
