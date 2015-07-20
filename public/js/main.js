@@ -30,7 +30,7 @@
       var hash = window.location.hash;
 
       if (hash && $(hash).length) {
-        hash_height = (hash === '#register') ? 520 : 478;
+        hash_height = (hash === '#register' || hash == '#create' || hash == '#edit') ? 520 : 478;
         build_modal(hash, 288, hash_height);
       }
     }

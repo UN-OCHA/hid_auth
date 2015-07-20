@@ -8,28 +8,28 @@ if message
 
 form.form-account(method='post', action='#{action.submitUri}', role='form')
   .form-group
-    label.ie-label(for='clientName') Client Name
+    label(for='clientName') Client Name
     input.form-control(name='clientName', type='text', placeholder='Client Name', value='#{app.clientName}', required)
   .form-group
-    label.ie-label(for='clientId') Recovery email address
+    label(for='clientId') Recovery email address
     if action.id == 'create'
       input.form-control(name='clientId', type='text', disabled=false, placeholder='Client ID (client-id-env)', value='#{app.clientId}', required)
     else
       input.form-control(name='clientId', type='text', disabled=true, placeholder='Client ID (e.g., client-id-env)', value='#{app.clientId}', required)
   .form-group
-    label.ie-label(for='redirectUri') Redirect URI
+    label(for='redirectUri') Redirect URI
     input.form-control(name='redirectUri', type='uri', placeholder='Redirect URI (https://example.org/redirect)', value='#{app.redirectUri}', required)
   .form-group
-    label.ie-label(for='loginUri') Login URI
+    label(for='loginUri') Login URI
     input.form-control(name='loginUri', type='uri', placeholder='Login URI (https://example.org/login)', value='#{app.loginUri}', required)
   .form-group
-    label.ie-label(for='description') Description
+    label(for='description') Description
     textarea.form-control(name='description', rows='3', placeholder='Notes and Contact Details')
   details
     summary
       strong Advanced
     .form-group
-      label.ie-label(for='clientSecret') Client Secret
+      label(for='clientSecret') Client Secret
       input.form-control(name='clientSecret', type='password', autocomplete='off', placeholder='Client Secret', value='#{app.clientSecret}', data-toggle='password')
       span.help-block Strong password 16+ characters. Leave blank to auto-generate.
   .form-group
