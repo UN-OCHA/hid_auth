@@ -2,6 +2,7 @@ var Client = require('./../models').OAuthClientsModel;
 var errors = require('./../errors');
 var log = require('./../log');
 var async = require('async');
+var validator = require('validator');
 
 function operations(app, modal) {
   ops = {};
@@ -201,6 +202,25 @@ module.exports.action = function(req, res) {
 
       return cb();
     },
+    function(cb) {
+      if (req.params.action != 'revoke') {
+        var opts = {require_tld: false, require_protocol: true};
+        if (!validator.isURL(options.redirectUri, opts)) {
+          message = "Redirect URI is not valid.";
+          return cb(true);
+        }
+        if (!validator.isURL(options.loginUri, opts)) {
+          message = "Login URI is not valid.";
+          return cb(true);
+        }
+        if (options.clientId.match(/^[a-z0-9]+[a-z0-9\-]*$/) === null) {
+          message = "ClientId must be a valid machine name. (Lowercase letters, numbers, and hyphens)";
+          return cb(true);
+        }
+
+        return cb();
+      }
+    },
     function (cb) {
       // Process/save the submitted form values.
       submitted = true;
@@ -274,6 +294,23 @@ module.exports.create = function(req, res) {
       // If the CSRF token was not posted, this was not a form submit.
       // Bail as error to skip further processing.
       if (options._csrf == undefined) {
+        return cb(true);
+      }
+
+      return cb();
+    },
+    function (cb) {
+      var opts = {require_tld: false, require_protocol: true};
+      if (!validator.isURL(options.redirectUri, opts)) {
+        message = "Redirect URI is not valid.";
+        return cb(true);
+      }
+      if (!validator.isURL(options.loginUri, opts)) {
+        message = "Login URI is not valid.";
+        return cb(true);
+      }
+      if (options.clientId.match(/^[a-z0-9]+[a-z0-9\-]*$/) === null) {
+        message = "ClientId must be a valid machine name. (Lowercase letters, numbers, and hyphens)";
         return cb(true);
       }
 
