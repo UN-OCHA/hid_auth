@@ -1,7 +1,7 @@
 if action.id == 'create'
   p Create a new application access key.
 else
-  p #{action.description}
+  p !{action.description}
 
 if message
   div.messages(class='alert alert-warning', role='alert') !{message}
@@ -24,7 +24,7 @@ form.form-account(method='post', action='#{action.submitUri}', role='form')
     input.form-control(name='loginUri', type='uri', placeholder='Login URI (https://example.org/login)', value='#{app.loginUri}', required)
   .form-group
     label(for='description') Description
-    textarea.form-control(name='description', rows='3', placeholder='Notes and Contact Details')
+    textarea.form-control(name='description', rows='3', placeholder='Notes and Contact Details') #{app.description}
   details
     summary
       strong Advanced

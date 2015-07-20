@@ -22,7 +22,7 @@ function operations(app, modal) {
     shortName: 'Edit',
     label: 'Edit Settings',
     target: app.clientId,
-    description: "Update settings for this application.",
+    description: 'Update settings for this <a href="/admin/apps/' + app.clientId + '">application</a>.',
     uri: "/admin/apps/" + app.clientId + sep + "edit",
     submitUri: "/admin/apps/" + app.clientId + "/ops/edit",
     valid: true
@@ -213,10 +213,6 @@ module.exports.action = function(req, res) {
           message = "Login URI is not valid.";
           return cb(true);
         }
-        if (options.clientId.match(/^[a-z0-9]+[a-z0-9\-]*$/) === null) {
-          message = "ClientId must be a valid machine name. (Lowercase letters, numbers, and hyphens)";
-          return cb(true);
-        }
 
         return cb();
       }
@@ -225,6 +221,7 @@ module.exports.action = function(req, res) {
       // Process/save the submitted form values.
       submitted = true;
 
+log.info({type: 'dev', data:data});
       if (req.params.action != 'revoke') {
         return data.save(function (err, item) {
           if (err || !item) {

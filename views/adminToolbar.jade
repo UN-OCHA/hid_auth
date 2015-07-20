@@ -1,7 +1,7 @@
 div.header.admin
   ul.nav.nav-pills
     li(role='presentation')
-      a(href='/admin/users/#{user.email}' title='Logged in as user #{user.user_id}')
+      a(href='/admin/users/#{user.user_id}' title='Logged in as user #{user.user_id}')
         strong #{user.name_given} #{user.name_family}
     li(role='presentation')
       a(href='/account') Edit Account
