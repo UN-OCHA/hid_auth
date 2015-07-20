@@ -20,11 +20,3 @@ block content
         .row
           include appForm.jade
 
-          if app.ops
-            div(class='btn-toolbar' role='toolbar')
-              each op, i in app.ops
-                if op.valid && op.id != 'edit'
-                  div(class='btn-group' role='group')
-                    a.btn(href='#{op.uri}') #{op.label}
-
-
