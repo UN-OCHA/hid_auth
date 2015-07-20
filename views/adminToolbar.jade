@@ -1,4 +1,11 @@
 div.header.admin
-  span Welcome,&nbsp;
-  a(href='/admin/users/#{user.email}')
-    strong #{user.name_given} #{user.name_family}
+  ul.nav.nav-pills
+    li(role='presentation')
+      a(href='/admin/users/#{user.email}' title='Logged in as user #{user.user_id}')
+        strong #{user.name_given} #{user.name_family}
+    li(role='presentation')
+      a(href='/account') Edit Account
+    li(role='presentation')
+      a(href='/admin') Admin
+    li.navbar-right(role='presentation')
+      a(href='/logout') Logout
