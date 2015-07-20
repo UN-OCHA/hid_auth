@@ -40,6 +40,10 @@ block content
               li
                 strong Login URI:&nbsp;
                 span #{app.loginUri}
+              if app.url
+                li
+                  strong URL:&nbsp;
+                  a(href="#{app.url}") #{app.url}
               if app.description
                 li
                   strong Description:&nbsp;

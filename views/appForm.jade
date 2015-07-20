@@ -11,6 +11,9 @@ form.form-account(method='post', action='#{action.submitUri}', role='form')
     label(for='clientName') Client Name
     input.form-control(name='clientName', type='text', placeholder='Client Name', value='#{app.clientName}', required)
   .form-group
+    label(for='url') URL
+    input.form-control(name='url', type='uri', placeholder='URL', value='#{app.url}')
+  .form-group
     label(for='clientId') Recovery email address
     if action.id == 'create'
       input.form-control(name='clientId', type='text', disabled=false, placeholder='Client ID (client-id-env)', value='#{app.clientId}', required)

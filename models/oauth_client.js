@@ -5,6 +5,7 @@ var OAuthClientsSchema = new Schema({
   clientName: String,
   clientId: String,
   clientSecret: String,
+  url: String,
   redirectUri: String,
   loginUri: String,
   description: String
