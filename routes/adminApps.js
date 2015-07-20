@@ -85,6 +85,7 @@ module.exports.list = function(req, res) {
       app: {
         clientId: '',
         clientName: '',
+        url: '',
         clientSecret: '',
         redirectUri: '',
         loginUri: '',
@@ -163,6 +164,7 @@ module.exports.action = function(req, res) {
         }
 
         client.description = client.description || '';
+        client.url = client.url || '';
         client.ops = operations(client, false);
         data = client;
         return cb();
@@ -221,7 +223,6 @@ module.exports.action = function(req, res) {
       // Process/save the submitted form values.
       submitted = true;
 
-log.info({type: 'dev', data:data});
       if (req.params.action != 'revoke') {
         return data.save(function (err, item) {
           if (err || !item) {
@@ -280,6 +281,7 @@ module.exports.create = function(req, res) {
     data = {
       clientId: '',
       clientName: '',
+      url: '',
       clientSecret: '',
       redirectUri: '',
       loginUri: '',
@@ -304,6 +306,10 @@ module.exports.create = function(req, res) {
       }
       if (!validator.isURL(options.loginUri, opts)) {
         message = "Login URI is not valid.";
+        return cb(true);
+      }
+      if (options.url && !validator.isURL(options.url)) {
+        message = "Provided application URL is invalid.";
         return cb(true);
       }
       if (options.clientId.match(/^[a-z0-9]+[a-z0-9\-]*$/) === null) {
