@@ -1,0 +1,48 @@
+if action.id == 'create'
+  p Create a new application access key.
+else
+  p !{action.description}
+
+if message
+  div.messages(class='alert alert-warning', role='alert') !{message}
+
+form.form-account(method='post', action='#{action.submitUri}', role='form')
+  .form-group
+    label(for='clientName') Client Name
+    input.form-control(name='clientName', type='text', placeholder='Client Name', value='#{app.clientName}', required)
+  .form-group
+    label(for='url') URL
+    input.form-control(name='url', type='uri', placeholder='URL', value='#{app.url}')
+  .form-group
+    label(for='clientId') Recovery email address
+    if action.id == 'create'
+      input.form-control(name='clientId', type='text', disabled=false, placeholder='Client ID (client-id-env)', value='#{app.clientId}', required)
+    else
+      input.form-control(name='clientId', type='text', disabled=true, placeholder='Client ID (e.g., client-id-env)', value='#{app.clientId}', required)
+  .form-group
+    label(for='redirectUri') Redirect URI
+    input.form-control(name='redirectUri', type='uri', placeholder='Redirect URI (https://example.org/redirect)', value='#{app.redirectUri}', required)
+  .form-group
+    label(for='loginUri') Login URI
+    input.form-control(name='loginUri', type='uri', placeholder='Login URI (https://example.org/login)', value='#{app.loginUri}', required)
+  .form-group
+    label(for='description') Description
+    textarea.form-control(name='description', rows='3', placeholder='Notes and Contact Details') #{app.description}
+  details
+    summary
+      strong Advanced
+    .form-group
+      label(for='clientSecret') Client Secret
+      input.form-control(name='clientSecret', type='password', autocomplete='off', placeholder='Client Secret', value='#{app.clientSecret}', data-toggle='password')
+      span.help-block Strong password 16+ characters. Leave blank to auto-generate.
+  .form-group
+    if action.id == 'create'
+      button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Create App
+        span.fa.fa-angle-right
+    else
+      button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Update App
+        span.fa.fa-angle-right
+    input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
+    input(type='hidden', name='_csrf', value='#{csrf}')
+
+
