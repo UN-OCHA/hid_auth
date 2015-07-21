@@ -1,46 +1,69 @@
 extends layout
 
 block content
-  include adminToolbar.jade
-  .container.main
-    h1= title
-    h2 Administration
+  .main
+    include adminToolbar.jade
+    .container
+      h1= title
+      h2 Administration
 
-    ul.nav.nav-tabs(role='tablist')
-      li
-        a(href='/admin/users') Administer Users
-      li.active
-        a(href='/admin/apps') Administer Client Keys
+      ul.nav.nav-tabs(role='tablist')
+        li
+          a(href='/admin/users') Administer Users
+        li.active
+          a(href='/admin/apps') Administer Apps
 
-    .container.main
-      .row
-       p.admin-lead-in Manage all applications integrated with #{title}.
+      .container
+        .row
+          p.admin-lead-in Manage all applications integrated with #{title}.
 
-       if message
-        div.messages(class='alert alert-warning', role='alert') !{message}
+          if actions
+            div.btn-toolbar.navbar-left(role='toolbar')
+              each op, i in actions
+                if op.valid
+                  div(class='btn-group' role='group')
+                    a.btn.btn-default(href='#{op.uri}') #{op.label}
 
-       div
-        table(class='table')
-          thead
-            tr
-              th Applications
-              th Operations
-          tbody
-           each item, i in apps
-            tr
-              td
-                a(href='/admin/apps/#{item.clientName}')
-                  strong #{item.clientName} (#{item.clientId})
-                p #{item.description}
-              td
-                div(class='btn-group')
-                  button(type='button' class='btn btn-primary') View App
-                  button(type='button' class='btn btn-primary dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
-                    span(class='caret')
-                    span(class='sr-only') Toggle Dropdown
-                  ul(class='dropdown-menu')
-                    li
-                      a(href='#') View App
-                    li
-                      a(href='#') Edit App
+          if message
+            div.messages(class='alert alert-warning', role='alert') !{message}
 
+          div
+            table(id='list' class='table' data-toggle='table' data-sort-name='id' data-sort-order='asc'
+            data-pagination='true', data-page-size='50' data-search='true', data-id-field='id' data-show-toggle='true' data-mobile-responsive='true')
+              thead
+                tr
+                  th(data-field='id' data-sortable='true') ID
+                  th(data-field='label' data-sortable='true') Application
+                  th Operations
+              tbody
+               each item, i in apps
+                tr
+                  td
+                    a(href='/admin/apps/#{item.clientId}') #{item.clientId}
+                  td
+                    a(href='/admin/apps/#{item.clientId}')
+                      strong #{item.clientName}
+                    if item.description
+                      p #{item.description}
+                  td
+                    div(class='btn-group')
+                      a(href='/admin/apps/#{item.clientId}' class='btn btn-primary') View App
+                      button(type='button' class='btn btn-primary dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+                        span(class='caret')
+                        span(class='sr-only') Toggle Dropdown
+                      ul(class='dropdown-menu')
+                        each op, i in item.ops
+                          if op.valid
+                            li
+                              a(href='#{op.uri}') #{op.label}
+
+    each action, i in actions
+      if action.valid
+        div
+          div(id='#{action.id}')
+            a.close-modal(href='#')
+              span.fa.fa-angle-left
+            if action.id == 'edit' || action.id == 'create'
+              include ./appForm.jade
+            else
+              include ./confirmForm.jade

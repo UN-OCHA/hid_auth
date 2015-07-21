@@ -1,10 +1,10 @@
 h3 Modify #{action.target}!
 
-if message
-  div.messages(class='alert alert-warning', role='alert') !{message}
-
 div
   p #{action.description}
+
+if message
+  div.messages(class='alert alert-warning', role='alert') !{message}
 
 if !complete
   form.form-account(method='post', action='#{action.submitUri}', role='form')
@@ -21,5 +21,6 @@ else
   div(class='btn-toolbar' role='toolbar')
     each op, i in next
       div(class='btn-group' role='group')
-        a(href='#{i}' class='btn btn-default') #{op}
+        a(href='#{i}' class='btn btn-default')
+          span.fa.fa-angle-right #{op}
 
