@@ -13,6 +13,10 @@ block content
     ul.nav.nav-tabs(role='tablist')
       li.active
         a(href='#') Update Your Account
+      each role, i in user.roles
+        if role == 'admin'
+          li
+            a(href='/admin') Admin
       li
         a(href='/logout') Logout
 

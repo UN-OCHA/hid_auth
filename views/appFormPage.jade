@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  .main
+    include adminToolbar.jade
+    .container
+      h1= title
+      if action.id == 'create'
+        h2 Create App
+      else
+        h2 Edit #{app.clientName}
+
+      ul.nav.nav-tabs(role='tablist')
+        li
+          a(href='/admin/users') Administer Users
+        li.active
+          a(href='/admin/apps') Administer Apps
+
+      .container.main
+        .row
+          include appForm.jade
+
