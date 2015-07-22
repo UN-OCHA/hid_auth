@@ -92,7 +92,6 @@ module.exports.list = function(req, res) {
   var redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
     cancel_uri = '/admin',
     message = null,
-    currentUser = {},
     data = [];
 
   async.series([
@@ -130,7 +129,6 @@ module.exports.view = function(req, res) {
   var redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
     cancel_uri = '/admin/users',
     message = null,
-    currentUser = {},
     data = {};
 
   async.series([
@@ -173,9 +171,7 @@ module.exports.action = function(req, res) {
     cancel_uri = '/admin/users',
     next = { "/admin/users": "View Users" },
     submitted = false,
-    invalid = false,
     message = null,
-    currentUser = {},
     data = {};
 
   async.series([
