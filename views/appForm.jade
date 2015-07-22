@@ -14,7 +14,7 @@ form.form-account(method='post', action='#{action.submitUri}', role='form')
     label(for='url') URL
     input.form-control(name='url', type='uri', placeholder='URL', value='#{app.url}')
   .form-group
-    label(for='clientId') Recovery email address
+    label(for='clientId') Client ID
     if action.id == 'create'
       input.form-control(name='clientId', type='text', disabled=false, placeholder='Client ID (client-id-env)', value='#{app.clientId}', required)
     else
@@ -44,5 +44,3 @@ form.form-account(method='post', action='#{action.submitUri}', role='form')
         span.fa.fa-angle-right
     input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
     input(type='hidden', name='_csrf', value='#{csrf}')
-
-
