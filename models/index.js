@@ -10,4 +10,5 @@ mongoose.connection.on('error', function(err) {
 exports.oauth = require('./oauth');
 exports.User = require('./user');
 exports.OAuthClientsModel = require('./oauth_client');
+exports.FloodEntry = require('./flood');
 exports.mongoose = mongoose;
