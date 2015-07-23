@@ -13,13 +13,13 @@ function floodWarning(count) {
 }
 
 module.exports.create = function(req, res) {
-  var floodCount = 0,
+  var floodCount = 1,
     message = '',
+    locked = false,
     currentUser = {};
 
   async.series([
     function (cb) {
-      log.info({type: 'dev', message: 'flood event count'});
       Flood.count({ type: 'authenticate', target_id: req.body.email }, function(err, count) {
         if (!err && count) {
           // If count matters, the current request is also a failed login attempt.
@@ -29,31 +29,60 @@ module.exports.create = function(req, res) {
       });
     },
     function (cb) {
-      log.info({type: 'dev', message: 'flood event lock'});
       if (floodCount >= 5) {
-        message = '<p>You have reached the maximum number of login attempts at this time.</p>';
+        message = '<p>You have reached the maximum number of login attempts for the next several minutes.</p>';
+
+        // @todo look up email address to include last login/not-a-user info in the log.
         log.warn({
           type: 'authenticate:error',
           message: 'Authentication attempts reached flood limit for this email address.',
           email: req.body.email
         });
 
-        // @todo look up email address to include last login/not-a-user info in the log.
-        return cb(true);
+        Flood.create({type: 'login-lock', target_id: req.body.email}, 3, function(err, item) {
+          if (err || !item) {
+            log.warn({'type': 'flood:error', 'message': 'Error locking login for user with email ' + req.body.email + '.', data: req.body.email, 'err': err});
+          }
+
+          // While the current process does not depend on the login-lock flood entry,
+          // concievably the user could resubmit fast enough that if Mongo is backlogged
+          // they could slip through.
+          return cb(true);
+        });
       }
 
       return cb();
     },
     function (cb) {
+      Flood.hasEntry({type: 'login-lock', target_id: req.body.email}, function(err, found) {
+        if (found) {
+          locked = found;
+          // We do not need to wait for authentication entries to be removed.
+          message = '<p>You have reached the maximum number of login attempts at this time.</p>';
+
+          Flood.remove({type: 'authenticate', target_id: req.body.email}, function(err, item) {
+            if (err || !item) {
+              log.warn({type: 'flood:error', target_id: req.body.email, err: err}, 'Could not remove flood entries.');
+            }
+          });
+
+          return cb(true);
+        }
+        return cb();
+      });
+    },
+    function (cb) {
       User.authenticate(req.body.email, req.body.password, function(err, user) {
         if (err || !user) {
           message = '<p>Authentication failed. Do you need to confirm your account or <a class="forgot-password" href="#forgotPass">reset your password?</a></p>';
-          log.info({'type': 'authenticate:error', 'message': 'Authentication failed for ' + req.body.email + '.', user: req.body.email});
+          log.info({'type': 'authenticate:error', user: req.body.email}, 'Authentication failed for ' + req.body.email + '.');
           Flood.create({ type: 'authenticate', target_id: req.body.email }, 60, function(err, entry) {
             if (err || !entry) {
-              log.warn({type: 'authenticate:warning', message: 'Could not create flood entry for failed login attempt.', parameters: req.body});
+              log.warn({type: 'authenticate:warning', parameters: req.body}, 'Could not create flood entry for failed login attempt.');
             }
           });
+
+          // We do not need to wait for the flood entry to be created before proceeding.
           return cb(true);
         }
 
@@ -61,10 +90,9 @@ module.exports.create = function(req, res) {
         return cb();
       });
     }
-
   ], function(err, results) {
     if (err) {
-      if (floodCount < 5) {
+      if (floodCount < 5 && !locked) {
         message += '<p>' + floodWarning(floodCount) + '</p>';
       }
       res.status(401).render('index', {
@@ -92,28 +120,21 @@ module.exports.create = function(req, res) {
       currentUser.login_last = Date.now();
       currentUser.save(function(err, item) {
         if (err || !item) {
-          log.warn({
-            type: 'account:error',
-            message: 'Error occurred trying to update user account ' + item.user_id + ' with login success timestamp.',
-            data: item,
-            err: err
-          });
+          log.warn({ type: 'account:error', data: item, err: err },
+            'Error occurred trying to update user account ' + item.user_id + ' with login success timestamp.'
+          );
         }
         else {
-          log.info({
-            type: 'account:success',
-            message: 'User account updated with login access timestamp for ID ' + item.user_id + '.',
-            data: item
-          });
+          log.info({ type: 'account:success', data: item },
+            'User account updated with login access timestamp for ID ' + item.user_id + '.'
+          );
         }
       });
 
       res.redirect(redirect);
-      log.info({
-        type: 'authenticate:success',
-        message: 'Authentication successful for ' + req.body.email + '. Redirecting to ' + redirect,
-        user: currentUser
-      });
+      log.info({ type: 'authenticate:success', user: currentUser, 'redirect': redirect },
+        'Authentication successful for ' + req.body.email + '. Redirecting to ' + redirect
+      );
     }
   });
 };

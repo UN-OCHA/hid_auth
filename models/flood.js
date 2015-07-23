@@ -38,6 +38,16 @@ FloodEntrySchema.static('count', function(fields, cb) {
   FloodEntryModel.where(fields).count(cb);
 });
 
+FloodEntrySchema.static('hasEntry', function(fields, cb) {
+  FloodEntryModel.count(fields, function(err, count) {
+    if (!err && count) {
+      return cb(null, true);
+    }
+
+    return cb(true);
+  });
+});
+
 mongoose.model('flood_entry', FloodEntrySchema);
 
 var FloodEntryModel = mongoose.model('flood_entry');
