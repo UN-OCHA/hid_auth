@@ -1,11 +1,13 @@
 var User = require('./../models').User;
+var Flood = require('./../models').FloodEntry;
 var errors = require('./../errors');
 var log = require('./../log');
 var async = require('async');
 
-function operations(account, modal) {
+function operations(account, modal, env) {
   ops = {};
   var sep = modal ? '#' : '/ops/';
+  var dev = env == 'development' || env == 'dockerdev';
 
   ops.view = {
     id: 'view',
@@ -56,6 +58,27 @@ function operations(account, modal) {
     submitUri: "/admin/users/" + account.user_id + "/ops/enable",
     valid: !account.active
   };
+  ops.unlock = {
+    id: 'unlock',
+    shortName: 'Unlock',
+    label: 'Unlock Login',
+    target: account.user_id,
+    description: 'This account has been locked out due to repeated, failed attempts to login.'
+    + ' Normally this lock is removed automatically after several minutes, this is a special override.',
+    uri: "/admin/users/" + account.user_id + sep + "unlock",
+    submitUri: "/admin/users/" + account.user_id + "/ops/unlock",
+    valid: account.active && account.locked
+  };
+  ops.lock = {
+    id: 'lock',
+    shortName: 'Lock',
+    label: '(Dev Only) Lock Login',
+    target: account.user_id,
+    description: 'Lock the user account to facilitate troubleshooting. Only available in development.',
+    uri: "/admin/users/" + account.user_id + sep + "lock",
+    submitUri: "/admin/users/" + account.user_id + "/ops/lock",
+    valid: account.active && !account.locked && dev
+  };
   ops.delete = {
     id: 'delete',
     shortName: 'Deletion',
@@ -104,7 +127,7 @@ module.exports.list = function(req, res) {
         }
         else {
           data = users.map(function(item) {
-            item.ops = operations(item, false);
+            item.ops = operations(item, false, req.app.get('env'));
             item.roles = item.roles || [];
             item.authorized_services = item.authorized_services || {};
             return item;
@@ -147,13 +170,22 @@ module.exports.view = function(req, res) {
         data = user;
         return cb();
       });
+    },
+    function (cb) {
+      Flood.hasEntry({type: 'login-lock', target_id: data.email}, function(err, locked) {
+        if (!err, locked) {
+          data.locked = locked;
+        }
+
+        return cb();
+      });
     }
   ],
   function (err, results) {
     res.render('adminUserView', {
       user: req.user,
       account: data,
-      actions: operations(data, true),
+      actions: operations(data, true, req.app.get('env')),
       message: message,
       redirect_uri: redirect_uri,
       csrf: req.csrfToken(),
@@ -185,13 +217,22 @@ module.exports.action = function(req, res) {
           return cb(true);
         }
 
-        user.ops = operations(user, false);
         user.roles = user.roles || [];
         data = user;
 
         if (req.params.action != 'delete') {
           next["/admin/users/" + data.user_id] = "View " + data.email;
         }
+
+        return cb();
+      });
+    },
+    function (cb) {
+      Flood.hasEntry({type: 'login-lock', target_id: data.email}, function(err, locked) {
+        if (!err, locked) {
+          data.locked = locked;
+        }
+        data.ops = operations(data, false, req.app.get('env'));
 
         return cb();
       });
@@ -238,6 +279,21 @@ module.exports.action = function(req, res) {
             data.active = 0;
           }
           break;
+        case 'unlock':
+          // If the user already has the admin role something has changed.
+          if (!data.ops.unlock.valid) {
+            message = "The target user account is inactive or not locked.";
+            return cb(true);
+          }
+          break;
+        case 'lock':
+          // If the user already has the admin role something has changed.
+          if (!data.ops.lock.valid) {
+            message = '<p>The target user account must be active & unlocked.</p>'
+              + '<p>This operation is only available in development environments.</p>';
+            return cb(true);
+          }
+          break;
         case 'delete':
           if (!data.ops.delete.valid) {
             message = "You may not delete an account until first disabling it.";
@@ -258,7 +314,37 @@ module.exports.action = function(req, res) {
       // Process/save the submitted form values.
       submitted = true;
 
-      if (req.params.action != 'delete') {
+      if (req.params.action == 'unlock') {
+        Flood.remove({type: 'login-lock', target_id: data.email}, function(err, items) {
+          if (err || !items) {
+            message = 'Error unlocking the user account.';
+            log.warn({'type': 'flood:error', 'message': 'Error clearing the flood entries locking the user with ID ' + data.user_id + '.', 'data': data, 'err': err});
+            return cb(true);
+          }
+          else {
+            delete data.locked;
+            message = 'User account successfully unlocked.';
+            log.warn({'type': 'flood:success', 'message': 'Cleared the flood entries locking the user with ID ' + data.user_id + '.', data: data, 'err': err});
+            return cb();
+          }
+        });
+      }
+      else if (req.params.action == 'lock') {
+        Flood.create({type: 'login-lock', target_id: data.email}, 300, function(err, item) {
+          if (err || !item) {
+            message = 'Error locking the user account.';
+            log.warn({'type': 'flood:error', 'message': 'Error locking login for user with ID ' + data.user_id + '.', 'data': data, 'err': err});
+            return cb(true);
+          }
+          else {
+            data.locked = true;
+            message = 'User account successfully locked for 5 hours.';
+            log.warn({'type': 'flood:success', 'message': 'Created flood entries to lock the user with ID ' + data.user_id + '.', data: data, flood: item, 'err': err});
+            return cb();
+          }
+        });
+      }
+      else if (req.params.action != 'delete') {
         return data.save(function (err, item) {
           if (err || !item) {
             message = "Error updating the user account.";
