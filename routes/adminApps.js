@@ -206,7 +206,7 @@ module.exports.action = function(req, res) {
     },
     function(cb) {
       if (req.params.action != 'revoke') {
-        var opts = {require_tld: false, require_protocol: true};
+        var opts = {require_tld: false, require_protocol: true, require_valid_protocol: false};
         if (!validator.isURL(options.redirectUri, opts)) {
           message = "Redirect URI is not valid.";
           return cb(true);
@@ -299,7 +299,7 @@ module.exports.create = function(req, res) {
       return cb();
     },
     function (cb) {
-      var opts = {require_tld: false, require_protocol: true};
+      var opts = {require_tld: false, require_protocol: true, require_valid_protocol: false};
       if (!validator.isURL(options.redirectUri, opts)) {
         message = "Redirect URI is not valid.";
         return cb(true);
