@@ -26,7 +26,7 @@
     "nodemailer": "^1.3.0",
     "oauth2-server": "https://github.com/arithmetric/node-oauth2-server/archive/hid/2.x.tar.gz",
     "pm2": "~0.12.7",
-    "validator": "^3.41.2"
+    "validator": "https://github.com/arithmetric/validator.js/archive/feature/validate_urls_any_protocol.tar.gz"
   },
   "devDependencies": {
     "supertest": "^0.9.0",
