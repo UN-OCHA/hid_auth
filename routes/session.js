@@ -89,6 +89,16 @@ module.exports.create = function(req, res) {
         currentUser = user;
         return cb();
       });
+    },
+    function (cb) {
+      // Wipe flood entries for failed authentication attempts if login succeeded.
+      Flood.remove({type: 'authenticate', target_id: req.body.email}, function(err, item) {
+        if (err || !item) {
+          log.warn({type: 'flood:error', target_id: req.body.email, err: err}, 'Could not remove flood entries.');
+        }
+      });
+
+      return cb();
     }
   ], function(err, results) {
     if (err) {
