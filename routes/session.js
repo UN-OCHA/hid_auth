@@ -3,13 +3,39 @@ var Flood = require('./../models').FloodEntry;
 var log = require('./../log');
 var async = require('async');
 
-
 function floodWarning(count) {
   var remaining = 5 - count;
   if (remaining == 1) {
     return 'You have 1 more login attempt before your account will be temporarily locked.';
   }
   return 'You have ' + remaining + ' remaining login attempts before your account will be temporarily locked.';
+}
+
+function lockAlert(email, user, lockFailure, req) {
+  var message = 'Hello HID Administrators,\n\nThis is an alert to inform you that the email "'
+    + email + '" has been locked for multiple failed login attempts. It should unlock automatically'
+    + ' in the next few minutes.\n\nDate: ' + new Date() + '\n\t* IP:' + req.ip
+    + '\n\t* User Agent: ' + req.get('User-Agent');
+
+  if (!user) {
+    message += '\n\nPLEASE NOTE\n\nThis email address is not the primary email of any HID account.';
+  }
+  else {
+    message += '\n\nThis email address is associated with a user acount:'
+      + '\n\t* User ID: ' + user.user_id
+      + '\n\tName: ' + user.name_given + ' ' + user.name_family
+      + '\n\tView Account: ' + require('../config').rootURL + '/admin/users/' + user.user_id;
+  }
+
+  message += '\n\nTo view the related logs please visit the Kibana Dashboard for HID Authentication:'
+    + '\n\n\thttp://568elmp01.blackmesh.com/kibana/#/dashboard/elasticsearch/HID%20Prod%20Authentication%20Events'
+
+  if (lockFailure) {
+    message += '\n\nSPECIAL NOTICE\n\nThe lock was successfully triggered, but something went wrong.'
+      + 'The account is not actually locked against further authentication attempts.';
+  }
+
+  require('../lib/alert').send(message, 'Account Locked for ' + email, req);
 }
 
 module.exports.create = function(req, res) {
@@ -33,19 +59,21 @@ module.exports.create = function(req, res) {
         message = '<p>You have reached the maximum number of login attempts for the next several minutes.</p>';
 
         // @todo look up email address to include last login/not-a-user info in the log.
-        log.warn({
-          type: 'authenticate:error',
-          message: 'Authentication attempts reached flood limit for this email address.',
-          email: req.body.email
-        });
+        log.warn({ type: 'authenticate:error', email: req.body.email },
+          'Authentication attempts reached flood limit for this email address.');
 
         Flood.create({type: 'login-lock', target_id: req.body.email}, 3, function(err, item) {
+          var failure = false;
           if (err || !item) {
+            failure = true;
             log.warn({'type': 'flood:error', 'message': 'Error locking login for user with email ' + req.body.email + '.', data: req.body.email, 'err': err});
           }
+          require('./../models').User.findOne({email: req.body.email}, function(err, user) {
+            lockAlert(req.body.email, user, failure, req);
+          })
 
           // While the current process does not depend on the login-lock flood entry,
-          // concievably the user could resubmit fast enough that if Mongo is backlogged
+          // conceivably the user could resubmit fast enough that if Mongo is backlogged
           // they could slip through.
           return cb(true);
         });
