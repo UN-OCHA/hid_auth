@@ -27,34 +27,34 @@ block content
         div.messages(class='alert alert-warning', role='alert') !{message}
 
       .form-group
-        label.ie-label(for='email') Email address
+        label(for='email') Email address
         input.form-control(name='email', type='email', placeholder='Email address', value='#{user.email}', required)
       .form-group
-        label.ie-label(for='email_recovery') Recovery email address
+        label(for='email_recovery') Recovery email address
         input.form-control(name='email_recovery', type='email', placeholder='Recovery email address', value='#{user.email_recovery}')
       if allowPasswordReset
         .form-group
-          label.ie-label(for='pass_new') New password
+          label(for='pass_new') New password
           input.form-control(name='pass_new', type='password', placeholder='New password', required)
         .form-group
-          label.ie-label(for='pass_confirm') New password (confirm)
+          label(for='pass_confirm') New password (confirm)
           input.form-control(name='pass_confirm', type='password', placeholder='New password (confirm)', required)
       else
         .form-group
-          label.ie-label(for='pass_new') New password
+          label(for='pass_new') New password
           input.form-control(name='pass_new', type='password', placeholder='New password')
         .form-group
-          label.ie-label(for='pass_confirm') New password (confirm)
+          label(for='pass_confirm') New password (confirm)
           input.form-control(name='pass_confirm', type='password', placeholder='New password (confirm)')
       .form-group
-        label.ie-label(for='name_given') Given name
+        label(for='name_given') Given name
         input.form-control(name='name_given', type='text', placeholder='Given name', value='#{user.name_given}', required)
       .form-group
-        label.ie-label(for='name_family') Family name
+        label(for='name_family') Family name
         input.form-control(name='name_family', type='text', placeholder='Family name', value='#{user.name_family}', required)
       unless allowPasswordReset
         .form-group.alert.alert-warning.hidden
-          label.ie-label(for='pass_current') Current password
+          label(for='pass_current') Current password
           input.form-control(name='pass_current', type='password', placeholder='Current password')
           em You must provide your current password to change your email address, recovery email, or password.
 
