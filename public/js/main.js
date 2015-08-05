@@ -8,6 +8,30 @@
     ],
     originalValues = {};
 
+    //Password Strength
+    "use strict";
+    var options = {};
+    options.ui = {
+        //container: "#pwd-container",
+        showStatus: true,
+        showProgressBar: true,
+        showVerdictsInsideProgressBar: true,
+        
+    };
+    $('#pass_new').pwstrength(options);
+
+    //Show Password
+  $(document).ready(function() {
+  $('#showPassword').click(function() {
+    if ($('#pass_login').attr("type") == "password") {
+      $('#pass_login').attr("type", "text");
+
+    } else {
+      $('#pass_login').attr("type", "password");
+    }
+  });
+  });
+
   function checkFields() {
     var changed = false;
     restrictedFieldKeys.forEach(function (val, idx, arr) {
