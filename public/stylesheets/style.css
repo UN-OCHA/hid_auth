@@ -281,10 +281,6 @@ ul.authorize-list i {
   margin-right: 10px;
 }
 
-label.ie-label {
-  display: none;
-}
-
 @media (max-width: 767px) {
   #simplemodal-container {
     position: absolute !important;
