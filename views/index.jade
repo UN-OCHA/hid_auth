@@ -47,7 +47,10 @@ block content
             input.form-control(name='email', type='email', placeholder='Email address', required, autofocus)
           .form-group
             label(for='Password') Password
-            input.form-control(name='password', type='password', placeholder='Password', required)
+            input.form-control(name='password', id='pass_login', type='password', placeholder='Password', required)
+            input(type='checkbox', id='showPassword')
+            span &nbsp
+            label='Show Password'
           .form-group
             button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit',id='signInBtn') Proceed
               span.fa.fa-angle-right
@@ -85,7 +88,7 @@ block content
             input.form-control(name='name_family', type='text', placeholder='Family name', required)
           .form-group
             label(for='pass_new') Password
-            input.form-control(name='pass_new', type='password', placeholder='Password', required)
+            input.form-control(name='pass_new', id='pass_new', type='password', placeholder='Password', required)
           .form-group
             label(for='pass_confirm') Password (confirm)
             input.form-control(name='pass_confirm', type='password', placeholder='Password (confirm)', required)
@@ -133,3 +136,4 @@ block content
             input(type='hidden', name='state', value='#{state}')
             input(type='hidden', name='scope', value='#{scope}')
             input(type='hidden', name='_csrf', value='#{csrf}')
+
