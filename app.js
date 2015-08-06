@@ -16,10 +16,18 @@ var https = require('https');
 https.globalAgent.maxSockets = Infinity;
 
 var express = require('express');
+var session = require('express-session');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var errorHandler = require('errorhandler');
+var multer = require('multer');
+var methodOverride = require('method-override');
+var serveStatic = require('serve-static');
+var logger = require('morgan');
 var helmet = require('helmet');
 var csrf = require('csurf')();
 var cors = require('cors');
-var MongoStore = require('connect-mongo')(express);
+var MongoStore = require('connect-mongo')(session);
 var oauthserver = require('oauth2-server');
 
 var app = express();
@@ -27,12 +35,17 @@ app.set('env', process.env.NODE_ENV || 'development');
 app.set('port', process.env.PORT || 3000);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-app.use(express.cookieParser());
-var mstore = new MongoStore({mongooseConnection: models.mongoose.connection});
-app.use(express.session({
+app.use(cookieParser());
+var mstore = new MongoStore({
+  mongooseConnection: models.mongoose.connection,
+  touchAfter: 6 * 3600 // refresh session document every 6 hours
+});
+app.use(session({
   key: 'hid.auth',
   store: mstore,
-  secret: 'LGVU$S&uI3JqRJ%yyp%^N0RC'
+  secret: 'LGVU$S&uI3JqRJ%yyp%^N0RC',
+  saveUninitialized: false,
+  resave: false
 }));
 
 app.set('title', 'Humanitarian ID');
@@ -42,12 +55,9 @@ app.set('emailFrom', 'info@humanitarian.id');
 // Define Oauth token expiration time to 8 hours.
 var oauthTokenExpires = 28800;
 
-app.configure('development', 'production', function() {
-  app.use(express.logger('dev'));
-});
-
-app.use(express.bodyParser());
-app.use(express.methodOverride());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+app.use(methodOverride());
 
 app.use(helmet());
 // Set Strict-Transport-Security header to 4 weeks (in milliseconds)
@@ -94,8 +104,7 @@ app.oauth = oauthserver({
   accessTokenLifetime: oauthTokenExpires
 });
 
-app.use(app.router);
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(serveStatic(path.join(__dirname, 'public')));
 
 app.use(function(err, req, res, next) {
   if (process.env.NODE_ENV !== 'test') {
@@ -116,7 +125,7 @@ app.use(function(err, req, res, next) {
 });
 
 if ('development' === app.get('env')) {
-  app.use(express.errorHandler());
+  app.use(errorHandler());
 }
 
 app.get('/', routes.index);
