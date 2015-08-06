@@ -26,6 +26,7 @@
     "helmet": "~0.10.0",
     "jade": "^1.5.0",
     "jwt-simple": "~0.3.0",
+    "lodash": "^3.10.1",
     "method-override": "^2.3.5",
     "mongoose": "~3.8.27",
     "morgan": "^1.6.1",
