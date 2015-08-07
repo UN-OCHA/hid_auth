@@ -7,31 +7,7 @@
       'pass_confirm'
     ],
     originalValues = {};
-
-    //Password Strength
-    "use strict";
-    var options = {};
-    options.ui = {
-        //container: "#pwd-container",
-        showStatus: true,
-        showProgressBar: true,
-        showVerdictsInsideProgressBar: true,
-        
-    };
-    $('#pass_new').pwstrength(options);
-
-    //Show Password
-  $(document).ready(function() {
-  $('#showPassword').click(function() {
-    if ($('#pass_login').attr("type") == "password") {
-      $('#pass_login').attr("type", "text");
-
-    } else {
-      $('#pass_login').attr("type", "password");
-    }
-  });
-  });
-
+ 
   function checkFields() {
     var changed = false;
     restrictedFieldKeys.forEach(function (val, idx, arr) {
@@ -54,9 +30,29 @@
       var hash = window.location.hash;
 
       if (hash && $(hash).length) {
-        hash_height = (hash === '#register' || hash == '#create' || hash == '#edit') ? 520 : 478;
+        hash_height = (hash == '#register' || hash=='#login' || hash == '#create' || hash == '#edit') ? 520 : 478;
         build_modal(hash, 288, hash_height);
+
+        if (hash == '#register') {
+         var options = {};
+         options.ui = {
+           //container: "#pwd-container",
+           showStatus: true,
+           showProgressBar: true,
+           showVerdictsInsideProgressBar: true,
+         };
+          $('#pass_new').pwstrength(options);
+       }
+       if( hash == '#login') {
+        $('#showPassword').click(function() {
+        if ($('#pass_login').attr("type") == "password") {
+          $('#pass_login').attr("type", "text");
+          } else {
+          $('#pass_login').attr("type", "password");
+          }
+        });
       }
+      } 
     }
 
     $(window).on('hashchange', function(e) {
@@ -78,6 +74,8 @@
     }
 
     $('.close-modal').click(function (e) {
+      $(this).data('pwstrength', null);
+      $("#passwdfield").pwstrength("destroy");
       $.modal.close();
     });
 
