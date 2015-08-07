@@ -77,29 +77,15 @@ module.exports.form = function(req, res) {
         log.info({'type': 'registerEmail:confirm', 'message': reset_url});
       }
 
-      var mailText = 'Dear ' + data.name_given + ',\n\n';
-      mailText += 'We are very excited that you have joined the ' + req.app.get('title') + ' community. As a first step, we need you to verify your account by simply following the link below.\n\n';
-      mailText += 'As we expand integration with humanitarian websites, your account will gain you access to a wide range of resources. But, of course, it will also give you access to the ' + req.app.get('title') + ' contact management solution!\n\n';
-      mailText += reset_url + '\n\n';
-      mailText += 'The ' + req.app.get('title') + ' team\n';
-      mailText += 'http://humanitarian.id\n\n\n';
-
-      mailText += 'Bonjour ' + data.name_given + ',\n\n';
-      mailText += 'Nous sommes ravis que vous ayez joint la communauté d’' + req.app.get('title') + '. On vous prie de bien vouloir vérifier votre compte en cliquant sur le lien ci-dessous.\n\n';
-      mailText += 'Vu qu’on est en train d’élargir l’intégration avec d’autres sites humanitaires, votre compte aura accès à encore plus de ressources. En outre, vous allez avoir accès à la solution de la gestion des contacts « ' + req.app.get('title') + ' » !\n\n';
-      mailText += reset_url + '\n\n';
-      mailText += 'Votre équipe ' + req.app.get('title') + '\n';
-      mailText += 'http://humanitarian.id';
-
       var mailOptions = {
-        from: req.app.get('title') + ' <' + req.app.get('emailFrom') + '>',
         to: data.email,
         subject: 'Account verify link for ' + req.app.get('title'),
-        text: mailText
+        reset_url: reset_url,
+        name_given: data.name_given
       };
 
       // Send mail
-      mail.sendMail(mailOptions, function (err, info) {
+      mail.sendTemplate('register', mailOptions, function (err, info) {
         if (err) {
           message = 'Verify email sending failed. Please try again or contact administrators.';
           log.warn({'type': 'registerEmail:error', 'message': 'Registration verification email sending failed to ' + data.email + '.', 'err': err, 'info': info});
