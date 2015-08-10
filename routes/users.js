@@ -258,6 +258,27 @@ module.exports.resetpwuse = function(req, res, next) {
       // otherwise, redirect to account page, but add session variable to track client app
       if (isRegistration && clientId.length) {
         Client.findOne({clientId: clientId}, function(err, client) {
+          var mailOptions = {
+            to: user.email,
+            subject: 'Humanitarian ID account created. Create your profile and check-in',
+            first_name: user.name_given
+          };
+
+          // Send mail
+          mail.sendTemplate('post_registration_client', mailOptions, function (err, info) {
+            if (err) {
+              message = 'Post registration email sending failed. Please try again or contact administrators.';
+              log.warn({'type': 'postRegistrationEmail:error', 'message': 'Post registration verification email sending failed to ' + user.email + '.', 'err': err, 'info': info});
+              return next(new errors.BadRequest('Error sending post-registration email.'));
+            }
+            else {
+              message = 'Post registration email sent successful! Check your email and follow the included link to verify your account.';
+              log.info({'type': 'postRegistrationEmail:success', 'message': 'Post registration verification email sending successful to ' + user.email + '.', 'info': info});
+              options = {};
+              return next();
+            }
+          });
+
           if (client && client.loginUri && client.loginUri.length) {
             return res.redirect(client.loginUri);
           }
@@ -279,6 +300,29 @@ module.exports.resetpwuse = function(req, res, next) {
 
         // set session variable to allow link to originating client app
         req.session.returnClientId = clientId.length ? clientId : null;
+
+        if (isRegistration) {
+          var mailOptions = {
+            to: user.email,
+            subject: 'Humanitarian ID account created. Create your profile and check-in',
+            first_name: user.name_given
+          };
+
+          // Send mail
+          mail.sendTemplate('post_registration_hid', mailOptions, function (err, info) {
+            if (err) {
+              message = 'Post registration email sending failed. Please try again or contact administrators.';
+              log.warn({'type': 'postRegistrationEmail:error', 'message': 'Post registration verification email sending failed to ' + user.email + '.', 'err': err, 'info': info});
+              return next(new errors.BadRequest('Error sending post-registration email.'));
+            }
+            else {
+              message = 'Post registration email sent successful! Check your email and follow the included link to verify your account.';
+              log.info({'type': 'postRegistrationEmail:success', 'message': 'Post registration verification email sending successful to ' + user.email + '.', 'info': info});
+              options = {};
+              return next();
+            }
+          });
+        }
 
         // redirect to account page to change password
         res.redirect('/account');
