@@ -20,9 +20,13 @@ function floodWarning(count) {
 }
 
 function lockAlert(email, user, lockFailure, req) {
+  var config = require('./../config');
+  var alert = require('./../lib/alert');
+  var ip = req.get('X-Forwarded-For') || req.ip;
+
   var message = 'Hello HID Administrators,\n\nThis is an alert to inform you that the email "'
     + email + '" has been locked for multiple failed login attempts. It should unlock automatically'
-    + ' in the next few minutes.\n\nDate: ' + new Date() + '\n\t* IP:' + req.get('X-Forwarded-For')
+    + ' in the next few minutes.\n\nDate: ' + new Date() + '\n\t* IP:' + ip
     + '\n\t* User Agent: ' + req.get('User-Agent');
 
   if (!user) {
@@ -32,7 +36,7 @@ function lockAlert(email, user, lockFailure, req) {
     message += '\n\nThis email address is associated with a user acount:'
       + '\n\t* User ID: ' + user.user_id
       + '\n\tName: ' + user.name_given + ' ' + user.name_family
-      + '\n\tView Account: ' + require('../config').rootURL + '/admin/users/' + user.user_id;
+      + '\n\tView Account: ' + config.rootURL + '/admin/users/' + user.user_id;
   }
 
   message += '\n\nTo view the related logs please visit the Kibana Dashboard for HID Authentication:'
@@ -43,7 +47,19 @@ function lockAlert(email, user, lockFailure, req) {
       + 'The account is not actually locked against further authentication attempts.';
   }
 
-  require('../lib/alert').send(message, 'Account Locked for ' + email, req);
+  var alert = require('../lib/alert');
+  alert.admin(message, 'Account Locked for ' + email, req);
+  if (user) {
+    var message = 'Dear ' + user.name_given + ' ' + user.name_family + ',\n\n'
+      + 'We have detected multiple failed attempts to access your account. For security purposes we have locked your account for '
+      + FLOOD_LOCK_EXPIRATION_MINUTES + ' minutes.\n\n'
+      + 'If you cannot recall your password, we recommend resetting your password ' + config.rootUrl + '#forgotPass.\n\n'
+      + 'If you have not tried to login to your account, and are concerned that someone is illicitly attempting to access it, please contact '
+      + 'the Humanitarian ID Administrators (info@humanitarian.id)\n\nThank you,'
+      + 'The ' + req.app.get('title') + ' team\n'
+      + 'http://humanitarian.id\n\n\n';
+    alert.user(message, 'Humanitarian ID: Account Temporarily Locked', user, req);
+  }
 }
 
 module.exports.create = function(req, res) {
