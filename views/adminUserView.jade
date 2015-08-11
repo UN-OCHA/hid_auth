@@ -42,6 +42,12 @@ block content
                   span Active
                 else
                   span Inactive
+                if account.locked
+                  span ; Locked
+              if account.login_last
+                li
+                  strong Last Login:&nbsp;
+                  span #{account.login_last}
               if account.roles.length
                 li
                   strong Roles:&nbsp;

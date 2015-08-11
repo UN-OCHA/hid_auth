@@ -1,0 +1,13 @@
+p Dear #{user.name_given},
+
+p We have detected multiple failed attempts to access your account. For security purposes we have locked your account for #{lockoutTime} minutes.
+
+p If you cannot recall your password, we recommend resetting your password at:
+
+  a(href=forgotpassUrl) #{forgotpassUrl}
+
+p If you have not tried to login to your account, and are concerned that someone is illicitly attempting to access it, please contact the Humanitarian ID administrators at:
+
+  a(href='mailto:info@humanitarian.id') info@humanitarian.id
+
+include ../includes/footer_en.jade
