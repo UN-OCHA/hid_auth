@@ -22,43 +22,23 @@ function floodWarning(count) {
 function lockAlert(email, user, lockFailure, req) {
   var config = require('./../config');
   var alert = require('./../lib/alert');
-  var ip = req.get('X-Forwarded-For') || req.ip;
 
-  var message = 'Hello HID Administrators,\n\nThis is an alert to inform you that the email "'
-    + email + '" has been locked for multiple failed login attempts. It should unlock automatically'
-    + ' in the next few minutes.\n\nDate: ' + new Date() + '\n\t* IP:' + ip
-    + '\n\t* User Agent: ' + req.get('User-Agent');
+  var locals = {
+    user: user,
+    lockoutTime: FLOOD_LOCK_EXPIRATION_MINUTES,
+    forgotpassUrl: config.rootURL + '#forgotPass',
+    email: email,
+    date: new Date(),
+    ip: req.get('X-Forwarded-For') || req.ip,
+    userAgent: req.get('User-Agent'),
+    accountUrl: user && user.user_id ? config.rootURL + '/admin/users/' + user.user_id : '',
+    kibanaUrl: 'http://568elmp01.blackmesh.com/kibana/#/dashboard/elasticsearch/HID%20Prod%20Authentication%20Events',
+    lockFailure: lockFailure
+  };
 
-  if (!user) {
-    message += '\n\nPLEASE NOTE\n\nThis email address is not the primary email of any HID account.';
-  }
-  else {
-    message += '\n\nThis email address is associated with a user acount:'
-      + '\n\t* User ID: ' + user.user_id
-      + '\n\tName: ' + user.name_given + ' ' + user.name_family
-      + '\n\tView Account: ' + config.rootURL + '/admin/users/' + user.user_id;
-  }
-
-  message += '\n\nTo view the related logs please visit the Kibana Dashboard for HID Authentication:'
-    + '\n\n\thttp://568elmp01.blackmesh.com/kibana/#/dashboard/elasticsearch/HID%20Prod%20Authentication%20Events'
-
-  if (lockFailure) {
-    message += '\n\nSPECIAL NOTICE\n\nThe lock was successfully triggered, but something went wrong.'
-      + 'The account is not actually locked against further authentication attempts.';
-  }
-
-  var alert = require('../lib/alert');
-  alert.admin(message, 'Account Locked for ' + email, req);
+  alert.admin(locals, 'Humanitarian ID: Account Locked for ' + email, req);
   if (user) {
-    var message = 'Dear ' + user.name_given + ' ' + user.name_family + ',\n\n'
-      + 'We have detected multiple failed attempts to access your account. For security purposes we have locked your account for '
-      + FLOOD_LOCK_EXPIRATION_MINUTES + ' minutes.\n\n'
-      + 'If you cannot recall your password, we recommend resetting your password ' + config.rootUrl + '#forgotPass.\n\n'
-      + 'If you have not tried to login to your account, and are concerned that someone is illicitly attempting to access it, please contact '
-      + 'the Humanitarian ID Administrators (info@humanitarian.id)\n\nThank you,'
-      + 'The ' + req.app.get('title') + ' team\n'
-      + 'http://humanitarian.id\n\n\n';
-    alert.user(message, 'Humanitarian ID: Account Temporarily Locked', user, req);
+    alert.user(locals, 'Humanitarian ID: Account Temporarily Locked', user, req);
   }
 }
 
@@ -101,8 +81,9 @@ module.exports.create = function(req, res) {
           return cb(true);
         });
       }
-
-      return cb();
+      else {
+        return cb();
+      }
     },
     function (cb) {
       Flood.hasEntry({type: 'login-lock', target_id: req.body.email}, function(err, found) {
