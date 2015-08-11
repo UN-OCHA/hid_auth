@@ -86,3 +86,9 @@ If you do not see the 172.20.20.20 address under the interface ("ens34" in this 
 Application logs are placed inside the container at `/root/.pm2`.
 
 In local development you can reach this by running `docker exec -it contactsidauth_auth_1 bash`.
+
+## Receiving Admin Email
+
+If you are developing against functionality that sends an admin email, you can override the environment default (currently null outside of shared infrastructure).
+
+Set the environment variable `HID_AUTH_ADMIN_EMAIL` to the valid address of your choice. Note that some local environments have issues sending email.

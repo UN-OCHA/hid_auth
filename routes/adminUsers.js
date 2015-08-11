@@ -7,7 +7,7 @@ var async = require('async');
 function operations(account, modal, env) {
   ops = {};
   var sep = modal ? '#' : '/ops/';
-  var dev = env == 'development' || env == 'dockerdev';
+  var dev = env == 'development' || env == 'dockerdev' || env == 'blackmeshdev';
 
   ops.view = {
     id: 'view',
