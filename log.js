@@ -1,7 +1,17 @@
 var bunyan = require('bunyan'),
   config = require('./config'),
+  _ = require('lodash'),
+  userSerializer = function (user) {
+    return _.pick(user, function (value, key, object) {
+      return ['user_id', 'email', 'email_recovery', 'name_given', 'name_family', 'authorized_services', 'active', 'roles'].indexOf(key) !== -1;
+    });
+  },
   log = bunyan.createLogger({
     name: config.name,
+    serializers: {
+      req: bunyan.stdSerializers.req,
+      user: userSerializer
+    },
     streams: [
       {
         level: 'info',
