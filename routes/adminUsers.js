@@ -72,12 +72,12 @@ function operations(account, modal, env) {
   ops.lock = {
     id: 'lock',
     shortName: 'Lock',
-    label: '(Dev Only) Lock Login',
+    label: 'Lock Login',
     target: account.user_id,
-    description: 'Lock the user account to facilitate troubleshooting. Only available in development.',
+    description: 'Lock the user account to prevent malicious login attempts for 5 hours.',
     uri: "/admin/users/" + account.user_id + sep + "lock",
     submitUri: "/admin/users/" + account.user_id + "/ops/lock",
-    valid: account.active && !account.locked && dev
+    valid: account.active && !account.locked
   };
   ops.delete = {
     id: 'delete',
