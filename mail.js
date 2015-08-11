@@ -1,6 +1,7 @@
 var nodemailer = require('nodemailer');
 var config = require('./config');
 var path = require('path');
+var _ = require('lodash');
 var templatesDir = path.resolve(__dirname, 'templates');
 var EmailTemplate = require('email-templates').EmailTemplate;
 
@@ -14,9 +15,11 @@ var transporter = nodemailer.createTransport({
   }
 });
 
-transporter.sendTemplate = function (templateName, locals, fn) {
+transporter.sendTemplate = function (templateName, options, fn) {
   var templateDir = path.join(templatesDir, templateName);
   var template = new EmailTemplate(templateDir);
+  var locals = _.clone(options);
+
   template.render(locals, function (err, result) {
     if (err) {
       return fn(err);

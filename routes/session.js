@@ -23,7 +23,7 @@ function lockAlert(email, user, lockFailure, req) {
   var config = require('./../config');
   var alert = require('./../lib/alert');
 
-  var locals = {
+  var options = {
     user: user,
     lockoutTime: FLOOD_LOCK_EXPIRATION_MINUTES,
     forgotpassUrl: config.rootURL + '#forgotPass',
@@ -36,9 +36,9 @@ function lockAlert(email, user, lockFailure, req) {
     lockFailure: lockFailure
   };
 
-  alert.admin(locals, 'Humanitarian ID: Account Locked for ' + email, req);
+  alert.admin(options, 'Humanitarian ID: Account Locked for ' + email, req);
   if (user) {
-    alert.user(locals, 'Humanitarian ID: Account Temporarily Locked', user, req);
+    alert.user(options, 'Humanitarian ID: Account Temporarily Locked', user, req);
   }
 }
 
