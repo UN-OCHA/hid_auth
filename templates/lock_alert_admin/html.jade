@@ -1,0 +1,33 @@
+p Hello H.ID Administrators,
+
+p This is an alert to inform you that the email #{email} has been locked for multiple failed login attempts. It should unlock automatically in the next few minutes.
+
+p Date: #{date}
+
+p IP address: #{ip}
+
+p User agent: #{userAgent}
+
+if !user
+
+  p PLEASE NOTE: This email address is not the primary email of any HID account.
+
+else
+
+  p This email address is associated with a user account:
+
+  p User ID: #{user.user_id}
+
+  p Name: #{user.name_given} #{user.name_family}
+
+  p View account:
+
+    a(href=accountUrl) #{accountUrl}
+
+p To view the related logs please visit the Kibana Dashboard for HID Authentication:
+
+  a(href=kibanaUrl) #{kibanaUrl}
+
+if lockFailure
+
+  p SPECIAL NOTICE: The lock was successfully triggered, but something went wrong. The account is not actually locked against further authentication attempts.
