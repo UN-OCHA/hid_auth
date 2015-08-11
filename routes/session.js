@@ -3,18 +3,26 @@ var Flood = require('./../models').FloodEntry;
 var log = require('./../log');
 var async = require('async');
 
+// Number of authentication attempts before the account will be locked against login attempts.
+var FLOOD_ATTEMPT_LIMIT_BEFORE_LOCK = 5;
+// Length of time before an authentication attempt record is dropped from consideration against the limit.
+var FLOOD_ATTEMPT_EXPIRATION_MINUTES = 60;
+// Length of time before the login lock is dropped from the flood tracker.
+var FLOOD_LOCK_EXPIRATION_MINUTES = 3;
+
+
 function floodWarning(count) {
-  var remaining = 5 - count;
+  var remaining = FLOOD_ATTEMPT_LIMIT_BEFORE_LOCK - count;
   if (remaining == 1) {
-    return 'You have 1 more login attempt before your account will be temporarily locked.';
+    return 'For security purposes, you have 1 attempt remaining until your account locks down for ' + FLOOD_LOCK_EXPIRATION_MINUTES + ' minutes';
   }
-  return 'You have ' + remaining + ' remaining login attempts before your account will be temporarily locked.';
+  return 'For security purposes, you have ' + remaining + ' attempts remaining until your account locks down for ' + FLOOD_LOCK_EXPIRATION_MINUTES + ' minutes';
 }
 
 function lockAlert(email, user, lockFailure, req) {
   var message = 'Hello HID Administrators,\n\nThis is an alert to inform you that the email "'
     + email + '" has been locked for multiple failed login attempts. It should unlock automatically'
-    + ' in the next few minutes.\n\nDate: ' + new Date() + '\n\t* IP:' + req.ip
+    + ' in the next few minutes.\n\nDate: ' + new Date() + '\n\t* IP:' + req.get('X-Forwarded-For')
     + '\n\t* User Agent: ' + req.get('User-Agent');
 
   if (!user) {
@@ -55,20 +63,19 @@ module.exports.create = function(req, res) {
       });
     },
     function (cb) {
-      if (floodCount >= 5) {
-        message = '<p>You have reached the maximum number of login attempts for the next several minutes.</p>';
+      // This count is reset when a lock is created.
+      if (floodCount >= FLOOD_ATTEMPT_LIMIT_BEFORE_LOCK) {
+        message = '<p>Your account has been locked for ' + FLOOD_LOCK_EXPIRATION_MINUTES + ' minutes. We have sent you an email with additional information.</p>';
 
-        // @todo look up email address to include last login/not-a-user info in the log.
-        log.warn({ type: 'authenticate:error', email: req.body.email },
-          'Authentication attempts reached flood limit for this email address.');
-
-        Flood.create({type: 'login-lock', target_id: req.body.email}, 3, function(err, item) {
+        Flood.create({type: 'login-lock', target_id: req.body.email}, FLOOD_LOCK_EXPIRATION_MINUTES, function(err, item) {
           var failure = false;
           if (err || !item) {
             failure = true;
-            log.warn({'type': 'flood:error', 'message': 'Error locking login for user with email ' + req.body.email + '.', data: req.body.email, 'err': err});
+            log.warn({'type': 'flood:error', 'message': 'Error locking login for user with email ' + req.body.email + '.', email: req.body.email, 'err': err});
           }
           require('./../models').User.findOne({email: req.body.email}, function(err, user) {
+            log.warn({ type: 'authenticate:error', email: req.body.email, 'user': user },
+              'Authentication attempts reached flood limit for this email address.');
             lockAlert(req.body.email, user, failure, req);
           })
 
@@ -86,7 +93,7 @@ module.exports.create = function(req, res) {
         if (found) {
           locked = found;
           // We do not need to wait for authentication entries to be removed.
-          message = '<p>You have reached the maximum number of login attempts at this time.</p>';
+          message = '<p>For security purposes, your account has been locked for several minutes. We have sent you an email with additional information.</p>';
 
           Flood.remove({type: 'authenticate', target_id: req.body.email}, function(err, item) {
             if (err || !item) {
@@ -104,7 +111,7 @@ module.exports.create = function(req, res) {
         if (err || !user) {
           message = '<p>Authentication failed. Do you need to confirm your account or <a class="forgot-password" href="#forgotPass">reset your password?</a></p>';
           log.info({'type': 'authenticate:error', user: req.body.email}, 'Authentication failed for ' + req.body.email + '.');
-          Flood.create({ type: 'authenticate', target_id: req.body.email }, 60, function(err, entry) {
+          Flood.create({ type: 'authenticate', target_id: req.body.email }, FLOOD_ATTEMPT_EXPIRATION_MINUTES, function(err, entry) {
             if (err || !entry) {
               log.warn({type: 'authenticate:warning', parameters: req.body}, 'Could not create flood entry for failed login attempt.');
             }
@@ -130,7 +137,7 @@ module.exports.create = function(req, res) {
     }
   ], function(err, results) {
     if (err) {
-      if (floodCount < 5 && !locked) {
+      if (floodCount < FLOOD_ATTEMPT_LIMIT_BEFORE_LOCK && !locked) {
         message += '<p>' + floodWarning(floodCount) + '</p>';
       }
       res.status(401).render('index', {
