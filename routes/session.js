@@ -42,6 +42,15 @@ function lockAlert(email, user, lockFailure, req) {
   }
 }
 
+function clearAuthAttempts(email, cb) {
+  Flood.remove({type: 'authenticate', target_id: email}, function(err, item) {
+    if (err || !item) {
+      log.warn({type: 'flood:error', target_id: email, err: err}, 'Could not remove flood entries.');
+    }
+    return cb(err);
+  });
+}
+
 module.exports.create = function(req, res) {
   var floodCount = 1,
     message = '',
@@ -73,12 +82,10 @@ module.exports.create = function(req, res) {
             log.warn({ type: 'authenticate:error', email: req.body.email, 'user': user },
               'Authentication attempts reached flood limit for this email address.');
             lockAlert(req.body.email, user, failure, req);
-          })
-
-          // While the current process does not depend on the login-lock flood entry,
-          // conceivably the user could resubmit fast enough that if Mongo is backlogged
-          // they could slip through.
-          return cb(true);
+            clearAuthAttempts(req.body.email, function (err) {
+              return cb(true);
+            });
+          });
         });
       }
       else {
@@ -89,15 +96,7 @@ module.exports.create = function(req, res) {
       Flood.hasEntry({type: 'login-lock', target_id: req.body.email}, function(err, found) {
         if (found) {
           locked = found;
-          // We do not need to wait for authentication entries to be removed.
           message = '<p>For security purposes, your account has been locked for several minutes. We have sent you an email with additional information.</p>';
-
-          Flood.remove({type: 'authenticate', target_id: req.body.email}, function(err, item) {
-            if (err || !item) {
-              log.warn({type: 'flood:error', target_id: req.body.email, err: err}, 'Could not remove flood entries.');
-            }
-          });
-
           return cb(true);
         }
         return cb();
@@ -123,13 +122,9 @@ module.exports.create = function(req, res) {
       });
     },
     function (cb) {
-      // Wipe flood entries for failed authentication attempts if login succeeded.
-      Flood.remove({type: 'authenticate', target_id: req.body.email}, function(err, item) {
-        if (err || !item) {
-          log.warn({type: 'flood:error', target_id: req.body.email, err: err}, 'Could not remove flood entries.');
-        }
-      });
-
+      // At this point, authentication has succeeded, so wipe any flood entries
+      // for failed authentication attempts.
+      clearAuthAttempts(req.body.email, function () {});
       return cb();
     }
   ], function(err, results) {
