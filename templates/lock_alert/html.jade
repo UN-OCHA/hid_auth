@@ -11,3 +11,19 @@ p If you have not tried to login to your account, and are concerned that someone
   a(href='mailto:info@humanitarian.id') info@humanitarian.id
 
 include ../includes/footer_en.jade
+
+hr.
+
+p Bonjour #{user.name_given},
+
+p Nous avons détecté plusieurs tentatives de connexion infructueuses sur votre compte. Pour des raisons de sécurité, nous avons bloqué votre compte pour #{lockoutTime} minutes.
+
+p Si vous ne vous rappelez pas de votre mot de passe, nous vous recommandons de le réinitialiser ici:
+
+  a(href=forgotpassUrl) #{forgotpassUrl}
+
+p Si vous n'êtes pas l'auteur de ces tentatives de connexion, et pensez que quelqu'un essaye de pirater votre compte, veuillez contacter les administrateurs de Humanitarian ID à l'adresse:
+
+  a(href='mailto:info@humanitarian.id') info@humanitarian.id
+
+include ../includes/footer_fr.jade

@@ -31,3 +31,39 @@ p To view the related logs please visit the Kibana Dashboard for HID Authenticat
 if lockFailure
 
   p SPECIAL NOTICE: The lock was successfully triggered, but something went wrong. The account is not actually locked against further authentication attempts.
+
+hr.
+
+p Bonjour administrateurs de HID,
+
+p Ceci est une alerte pour vous signaler que l'adresse email #{email} a été bloqué à cause de plusieurs tentatives de connexion infructueuses. Il devrait se débloquer automatiquement d'ici quelques minutes.
+
+p Date: #{date}
+
+p Adresse IP: #{ip}
+
+p User agent: #{userAgent}
+
+if !user
+
+  p NOTE: Cette adresse email n'est l'adresse principale d'aucun compte HID.
+
+else
+
+  p Cette adresse email est associée avec le compte utilisateur:
+
+  p ID utilisateur: #{user.user_id}
+
+  p Nom: #{user.name_given} #{user.name_family}
+
+  p Voir le compte:
+
+    a(href=accountUrl) #{accountUrl}
+
+p Pour voir les journaux associés, veuillez visiter le Dashboard Kibana pour l'authentification HID:
+
+  a(href=kibanaUrl) #{kibanaUrl}
+
+if lockFailure
+
+  p NOTE SPECIALE: Le blocage a bien été déclenché, mais quelque chose s'est mal passé. Le compte n'est pour l'instant pas bloqué contre d'autres tentatives de connexion..
