@@ -63,12 +63,12 @@ For example, for the HR.info dev site we provided:
 
 ## Example
 
-The dev H.ID auth Oauth2 authorization endpoint is at: `http://dev.auth.568elmp02.blackmesh.com/oauth/authorize`
+The dev H.ID auth Oauth2 authorization endpoint is at: `http://auth.dev.humanitarian.id/oauth/authorize`
 
 Here's an example URL for starting the auth process for a sample app with the Client ID `hrinfo-dev1`:
 
 ````
-http://auth.example.com/oauth/authorize?response_type=token&client_id=hrinfo-dev1&scope=profile&redirect_uri=hrinfo://authorized&state=12345
+http://auth.dev.humanitarian.id/oauth/authorize?response_type=token&client_id=hrinfo-dev1&scope=profile&redirect_uri=hrinfo://authorized&state=12345
 ````
 
 To start the auth process, send a user to your endpoint with the following URL parameters:
