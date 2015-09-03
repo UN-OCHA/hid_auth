@@ -333,4 +333,7 @@ ul.authorize-list i {
   background-color: white;
 }
 
+.form-group.url {
+  display: none;
+}
 

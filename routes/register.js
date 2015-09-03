@@ -12,6 +12,16 @@ module.exports.form = function(req, res) {
 
   async.series([
     function (cb) {
+      // Make sure honeypot field is empty
+      if (options.url == undefined || String(options.url).length > 0) {
+        message = 'Sorry, we can not register you on our system';
+        return cb(true);
+      }
+      else {
+        return cb();
+      }
+    },
+    function (cb) {
       // Validate the email address
       var emailRegEx = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (options.email == undefined || String(options.email).length < 1 || !emailRegEx.test(options.email)) {
