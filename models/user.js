@@ -17,12 +17,32 @@ var OAuthUsersSchema = new Schema({
   authorized_services: Schema.Types.Mixed,
   active: Number,
   roles: [String],
-  login_last: Date
+  login_last: Date,
+  reminded_verify: Number // timestamp
 });
 
 function hashPassword(password) {
   return bcrypt.hashSync(password, 11);
 }
+
+// Whether we should send a reminder to verify email to user
+OAuthUsersSchema.methods.shouldSendReminderVerify = function() {
+  var created = this.user_id.replace(this.email + '_', '');
+  var current = Date.now();
+  var offset = current.valueOf() - created;
+  if (this.active || offset < 24 * 3600 * 1000) {
+    return false;
+  }
+  else {
+    if (this.reminded_verify && current.valueOf() - this.reminded_verify < 72 * 3600 * 1000) {
+      return false;
+    }
+    else {
+      return true;
+    }
+  }
+};
+
 
 OAuthUsersSchema.static('register', function(fields, cb) {
   var user;
