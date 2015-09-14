@@ -106,7 +106,10 @@ function requiresKeySecret(req, res, next) {
       }
     }
   ], function (err) {
-    return next(err);
+    if (err) {
+      return res.status(403).send('Access Denied').end();
+    }
+    next();
   });
 }
 
