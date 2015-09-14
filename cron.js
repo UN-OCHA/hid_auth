@@ -5,7 +5,6 @@ async.auto({
   reminderVerify: users.sendReminderVerifyEmails,
 },
 function (err, results) {
-  console.log('test');
   if (err) {
     console.log("hid_auth cron run failed.");
   }
