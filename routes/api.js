@@ -104,7 +104,10 @@ exports.register = function(req, res) {
           clientId = req.body.client_id || req.client_key || '';
           reset_url = config.rootURL || (req.protocol + "://" + req.get('host'));
 
-        reset_url += "/register/" + new Buffer(email + "/" + now + "/" + new Buffer(User.hashPassword(hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
+        // Use the resetpw endpoint so that ghost users are directed to their
+        // account page to set their password, as they did not go through the
+        // self-registration process.
+        reset_url += "/resetpw/" + new Buffer(email + "/" + now + "/" + new Buffer(User.hashPassword(hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
 
         if (!adminName){
           subject = 'Account verify link for ' + req.app.get('title');
