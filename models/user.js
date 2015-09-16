@@ -50,6 +50,20 @@ OAuthUsersSchema.static('authenticate', function(email, password, cb) {
   });
 });
 
+OAuthUsersSchema.methods.sanitize = function() {
+  // Remove sensitive fields. The delete operator is not sufficient.
+  var sanitized = this.toObject();
+  sanitized.hashed_password = undefined;
+  sanitized.email_recovery = undefined;
+  sanitized._id = undefined;
+  sanitized.__v = undefined;
+  delete sanitized.hashed_password;
+  delete sanitized.email_recovery;
+  delete sanitized._id;
+  delete sanitized.__v;
+  return sanitized;
+};
+
 mongoose.model('users', OAuthUsersSchema);
 
 var OAuthUsersModel = mongoose.model('users');
