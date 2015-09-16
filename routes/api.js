@@ -40,6 +40,7 @@ exports.register = function(req, res) {
       location = req.body.location;
       adminName = req.body.adminName || null;
       adminEmail = req.body.adminEmail || null;
+      active = req.body.active || 0;
       emailFlag = req.body.emailFlag || false;
 
       // Check if email is already registered.
@@ -53,17 +54,8 @@ exports.register = function(req, res) {
           status = 'ok';
           data = {
             user_id: user.user_id,
-            active: user.active,
             is_new: 0
           };
-          if (user.active == 0) {
-            // Send claim link back
-            var now = Date.now(),
-              clientId = req.body.client_id || req.client_key || '';
-              reset_url = config.rootURL || (req.protocol + "://" + req.get('host'));
-            reset_url += "/register/" + new Buffer(email + "/" + now + "/" + new Buffer(User.hashPassword(user.hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
-            data.reset_url = reset_url;
-          }
           log.info({'type': 'apiRegister', 'message': 'api/register called for registered user with email ' + req.body.email + ' by client ' + req.client_key});
           return cb(true);
         }
