@@ -180,3 +180,20 @@ exports.resetpw = function(req, res) {
     res.send(JSON.stringify(results[1] || {'status': 'error', 'message': 'An error occurred processing the request.'}));
   });
 }
+
+exports.users = function(req, res) {
+  async.series([
+    function (cb) {
+      User.findOne({email: new RegExp('^' + escapeStringRegexp(req.body.email) + '$', 'i')}, function(err, user) {
+        if (err || !user) {
+          message = "Could not load user. Please try again."
+          log.warn({type: 'api:users:error', message: 'Failed to load user.', err: err});
+          return cb(err);
+        }
+        return cb(null, user.sanitize());
+      })
+    }
+  ], function (err, results) {
+    res.send(results[0] || {'status': 'error', 'message': 'An error occurred processing the request.'});
+  });
+}

@@ -168,14 +168,8 @@ module.exports.showjson = function(req, res, next) {
       return next(new errors.BadRequest('An error occurred. Please <a href="/#login">Sign In</a> to continue.'));
     }
 
-    // Remove sensitive fields. The delete operator did not work.
-    user.hashed_password = undefined;
-    user.email_recovery = undefined;
-    user._id = undefined;
-    user.__v = undefined;
-
     // Return the JSON serialized user object
-    res.send(JSON.stringify(user));
+    res.send(JSON.stringify(user.sanitize()));
   });
 };
 

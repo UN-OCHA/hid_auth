@@ -276,5 +276,6 @@ app.all('/logout', function (req, res) {
 
 app.post('/api/register', middleware.requiresKeySecret, routes.api.register);
 app.post('/api/resetpw', middleware.requiresKeySecret, routes.api.resetpw);
+app.post('/api/users', middleware.requiresKeySecret, routes.api.users);
 
 module.exports = app;
