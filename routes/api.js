@@ -196,7 +196,7 @@ exports.users = function(req, res) {
           var now = Date.now(),
             clientId = req.body.client_id || req.client_key || '';
             reset_url = config.rootURL || (req.protocol + "://" + req.get('host'));
-          reset_url += "/resetpw/" + new Buffer(email + "/" + now + "/" + new Buffer(User.hashPassword(user.hashed_password + now + user.user_id)).toString('base64') + "/" + clientId).toString('base64');
+          reset_url += "/resetpw/" + new Buffer(user.email + "/" + now + "/" + new Buffer(User.hashPassword(user.hashed_password + now + user.user_id)).toString('base64') + "/" + clientId).toString('base64');
           output.reset_url = reset_url;
         }
         return cb(null, output);
