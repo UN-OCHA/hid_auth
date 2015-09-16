@@ -55,43 +55,10 @@ module.exports.create = function(req, res) {
   var floodCount = 1,
     message = '',
     locked = false,
-    currentUser = {};
+    currentUser = false;
 
   async.series([
-    function (cb) {
-      Flood.count({ type: 'authenticate', target_id: req.body.email }, function(err, count) {
-        if (!err && count) {
-          // If count matters, the current request is also a failed login attempt.
-          floodCount = count + 1;
-        }
-        return cb();
-      });
-    },
-    function (cb) {
-      // This count is reset when a lock is created.
-      if (floodCount >= FLOOD_ATTEMPT_LIMIT_BEFORE_LOCK) {
-        message = '<p>Your account has been locked for ' + FLOOD_LOCK_EXPIRATION_MINUTES + ' minutes. We have sent you an email with additional information.</p>';
-
-        Flood.create({type: 'login-lock', target_id: req.body.email}, FLOOD_LOCK_EXPIRATION_MINUTES, function(err, item) {
-          var failure = false;
-          if (err || !item) {
-            failure = true;
-            log.warn({'type': 'flood:error', 'message': 'Error locking login for user with email ' + req.body.email + '.', email: req.body.email, 'err': err});
-          }
-          require('./../models').User.findOne({email: req.body.email}, function(err, user) {
-            log.warn({ type: 'authenticate:error', email: req.body.email, 'user': user },
-              'Authentication attempts reached flood limit for this email address.');
-            lockAlert(req.body.email, user, failure, req);
-            clearAuthAttempts(req.body.email, function (err) {
-              return cb(true);
-            });
-          });
-        });
-      }
-      else {
-        return cb();
-      }
-    },
+    // If a login lock entry is found, block further authentication attempts.
     function (cb) {
       Flood.hasEntry({type: 'login-lock', target_id: req.body.email}, function(err, found) {
         if (found) {
@@ -102,6 +69,8 @@ module.exports.create = function(req, res) {
         return cb();
       });
     },
+    // Check authentication. If it fails, create a flood record. If it succeeds,
+    // set the currentUser variable.
     function (cb) {
       User.authenticate(req.body.email, req.body.password, function(err, user) {
         if (err || !user) {
@@ -111,20 +80,56 @@ module.exports.create = function(req, res) {
             if (err || !entry) {
               log.warn({type: 'authenticate:warning', parameters: req.body}, 'Could not create flood entry for failed login attempt.');
             }
+            return cb();
           });
-
-          // We do not need to wait for the flood entry to be created before proceeding.
-          return cb(true);
+          return;
         }
 
         currentUser = user;
         return cb();
       });
     },
+    // If the currentUser isn't set, login failed, and the failed auth count
+    // should be checked and a login lock created if too many attempts are made.
+    function (cb) {
+      if (!currentUser) {
+        Flood.count({type: 'authenticate', target_id: req.body.email}, function(err, count) {
+          if (!err && count) {
+            floodCount = count;
+            if (floodCount >= FLOOD_ATTEMPT_LIMIT_BEFORE_LOCK) {
+              message = '<p>Your account has been locked for ' + FLOOD_LOCK_EXPIRATION_MINUTES + ' minutes. We have sent you an email with additional information.</p>';
+
+              Flood.create({type: 'login-lock', target_id: req.body.email}, FLOOD_LOCK_EXPIRATION_MINUTES, function(err, item) {
+                var failure = false;
+                if (err || !item) {
+                  log.warn({'type': 'flood:error', 'message': 'Error locking login for user with email ' + req.body.email + '.', email: req.body.email, 'err': err});
+                  failure = true
+                }
+                require('./../models').User.findOne({email: req.body.email}, function(err, user) {
+                  log.warn({ type: 'authenticate:error', email: req.body.email, 'user': user },
+                    'Authentication attempts reached flood limit for this email address.');
+                  lockAlert(req.body.email, user, failure, req);
+                  clearAuthAttempts(req.body.email, function (err) {
+                    return cb(true);
+                  });
+                });
+              });
+              return;
+            }
+          }
+          return cb(true);
+        });
+      }
+      else {
+        return cb();
+      }
+    },
     function (cb) {
       // At this point, authentication has succeeded, so wipe any flood entries
       // for failed authentication attempts.
-      clearAuthAttempts(req.body.email, function () {});
+      if (currentUser) {
+        clearAuthAttempts(req.body.email, function () {});
+      }
       return cb();
     }
   ], function(err, results) {
