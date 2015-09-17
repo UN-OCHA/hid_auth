@@ -17,12 +17,38 @@ var OAuthUsersSchema = new Schema({
   authorized_services: Schema.Types.Mixed,
   active: Number,
   roles: [String],
-  login_last: Date
+  login_last: Date,
+  reminded_verify: Number, // timestamp
+  times_reminded_verify: Number // Number of times the user was reminded to verify his account
 });
 
 function hashPassword(password) {
   return bcrypt.hashSync(password, 11);
 }
+
+// Whether we should send a reminder to verify email to user
+// Reminder emails are sent out 2, 4, 7 and 30 days after registration
+OAuthUsersSchema.methods.shouldSendReminderVerify = function() {
+  var created = this.user_id.replace(this.email + '_', '');
+  var current = Date.now();
+  if (this.active) {
+    return false;
+  }
+  if (!this.reminded_verify && !this.times_reminded_verify && current.valueOf() - created > 48 * 3600 * 1000) {
+    return true;
+  }
+  if (this.reminded_verify && this.times_reminded_verify == 1 && current.valueOf() - this.reminded_verify > 48 * 3600 * 1000) {
+    return true;
+  }
+  if (this.reminded_verify && this.times_reminded_verify == 2 && current.valueOf() - this.reminded_verify > 72 * 3600 * 1000) {
+    return true;
+  }
+  if (this.reminded_verify && this.times_reminded_verify == 3 && current.valueOf() - this.reminded_verify > 23 * 24 * 3600 * 1000) {
+    return true;
+  }
+  return false;
+};
+
 
 OAuthUsersSchema.static('register', function(fields, cb) {
   var user;
