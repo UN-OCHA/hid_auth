@@ -3,7 +3,7 @@
 cd $NODE_APP_DIR
 
 echo "==> Update npm"
-npm install -g npm
+npm install -g npm@^2.14
 
 echo "==> Installing npm dependencies"
 npm install
