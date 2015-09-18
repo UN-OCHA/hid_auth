@@ -212,8 +212,8 @@ module.exports.resetpwuse = function(req, res, next) {
       clientId = parts[3] || '',
       now = Date.now();
 
-    // verify timestamp is not too old (allow up to 1 day in milliseconds)
-    if (timestamp < (now - 86400000) || timestamp > now) {
+    // verify timestamp is not too old (allow up to 7 days in milliseconds)
+    if (timestamp < (now - 7 * 86400000) || timestamp > now) {
       log.warn({'type': 'resetPassword:error', 'message': 'Password reset link expired.', 'req': req});
       return next(new errors.BadRequest('This verification link is expired. Please <a href="/#forgotPass">Reset Your Password</a> to continue.'));
     }
