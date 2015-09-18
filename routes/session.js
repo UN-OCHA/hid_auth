@@ -151,11 +151,11 @@ module.exports.create = function(req, res) {
     else {
       req.session.userId = currentUser.email;
       var redirect = req.body.redirect || '/account';
-      redirect += "?client_id=" + req.body.client_id;
-      redirect += "&redirect_uri=" + req.body.redirect_uri;
-      redirect += "&response_type=" + req.body.response_type;
+      redirect += "?client_id=" + req.body.client_id || config.defaultClient;
+      redirect += "&redirect_uri=" + req.body.redirect_uri || config.defaultRedirect;
+      redirect += "&response_type=" + req.body.response_type || 'token';
       redirect += "&state=" + req.body.state;
-      redirect += "&scope=" + req.body.scope;
+      redirect += "&scope=" + req.body.scope || 'profile';
 
       if (!req.body.response_type || !req.body.scope) {
         log.warn({type: 'authenticate:error', body: req.body, cookies: req.cookies, header: req.headers, query: req.query},
