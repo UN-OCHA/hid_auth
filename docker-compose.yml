@@ -12,7 +12,6 @@ auth:
     - .:/var/www/html
     - ./env/etc/nginx/nginx.conf:/etc/nginx/nginx.conf
     - ./env/etc/nginx/conf.d:/etc/nginx/conf.d
-    - ./env/opt/node.sh:/opt/app/node.sh
   environment:
     DNSDOCK_NAME: auth
     DNSDOCK_IMAGE: contactsid
