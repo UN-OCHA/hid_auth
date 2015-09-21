@@ -157,6 +157,11 @@ module.exports.create = function(req, res) {
       redirect += "&state=" + req.body.state;
       redirect += "&scope=" + req.body.scope;
 
+      if (!req.body.response_type || !req.body.scope) {
+        log.warn({type: 'authenticate:error', body: req.body, cookies: req.cookies, header: req.headers, query: req.query},
+          'Undefined response_type or scope');
+      }
+
       // Record the successful authentication date.
       // This facilitates troubleshooting, e.g., 10 account floods, no successes since last year.
       currentUser.login_last = Date.now();
