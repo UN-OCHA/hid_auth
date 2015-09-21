@@ -337,3 +337,28 @@ ul.authorize-list i {
   display: none;
 }
 
+/* Error page */
+body.error-page {
+  background: #EFEFEF; /* Old browsers */
+  color: #cbeef3;
+}
+
+body.error-page .row {
+  margin-top: 10%;
+}
+
+body.error-page h2 {
+  color: #54B1C8;
+  font-family: "Exo 2";
+  font-size: 3em;
+}
+
+body.error-page p {
+  color: #767676;
+  margin-top: 25px;
+}
+
+body.error-page a {
+  color: #54B1C8;
+}
+

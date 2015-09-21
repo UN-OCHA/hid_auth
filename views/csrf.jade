@@ -1,0 +1,20 @@
+extends layout
+block vars
+  - var bodyClass = 'error-page'
+block content
+  .container.main
+    .row
+      .col-md-2.text-center
+        img(src='images/error.png', alt='Error', style='width: 100px;')
+      .col-md-8
+        h2 Oops !
+        p It seems that you may have encountered one of our precautionary security measures.
+        p 
+          | We only allow Humanitarian ID forms to be open in a browser for a set duration and you have passed that time. As a result, we detected an invalid 
+          a(href='https://en.wikipedia.org/wiki/Cross-site_request_forgery' target="blank") Cross-Site Request Forgery
+          |  (CSRF) token.
+        p 
+          | Please 
+          a(href="#" onclick="window.location.href = document.referrer;") reload
+          |  the page and resubmit the form.
+        p Sorry for the inconvenience, but we must always put security first.
