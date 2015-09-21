@@ -111,9 +111,15 @@ app.use(function(err, req, res, next) {
     log.warn({'type': 'error', 'message': 'Error: ' + JSON.stringify(err)});
   }
 
-  if (err && err.name === 'ValidationError') {
-    res.status(400);
-    res.send(err.errors);
+  if (err) {
+    if (err.name === 'ValidationError') {
+      res.status(400);
+      res.send(err.errors);
+    }
+    else if (err.code === 'EBADCSRFTOKEN') {
+      res.status(403);
+      res.render('csrf');
+    }
   }
   else {
     res.status(err.code || 500);
