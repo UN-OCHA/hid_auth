@@ -157,7 +157,7 @@ module.exports.create = function(req, res) {
       redirect += "&state=" + req.body.state;
       redirect += "&scope=" + req.body.scope;
 
-      if (!req.body.response_type || !req.body.scope) {
+      if (typeof req.body.response_type == 'undefined' || typeof req.body.scope == 'undefined') {
         log.warn({type: 'authenticate:error', body: req.body, cookies: req.cookies, header: req.headers, query: req.query},
           'Undefined response_type or scope');
       }
