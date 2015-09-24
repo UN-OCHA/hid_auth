@@ -116,7 +116,7 @@ app.use(function(err, req, res, next) {
       res.status(400);
       res.send(err.errors);
     }
-    else if (err.code === 'EBADCSRFTOKEN') {
+    if (err.code === 'EBADCSRFTOKEN') {
       res.status(403);
       res.render('csrf');
     }
