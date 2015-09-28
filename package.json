@@ -36,7 +36,8 @@
     "oauth2-server": "https://github.com/arithmetric/node-oauth2-server/archive/hid/2.x.tar.gz",
     "pm2": "~0.14.6",
     "serve-static": "^1.10.0",
-    "validator": "^3.42.0"
+    "validator": "^3.42.0",
+    "restify": "~4.0.3"
   },
   "devDependencies": {
     "supertest": "^0.9.0",
