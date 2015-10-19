@@ -131,6 +131,7 @@ exports.register = function(req, res) {
         if (inviter) {
           mailOptions.cc = mailOptions.cc + ',' + inviter.name + '<' + inviter.email + '>';
           mailOptions.adminName = inviter.name;
+          mailOptions.subject = inviter.name + ' has invited you to join Humanitarian ID';
         }
 
         // Send mail
