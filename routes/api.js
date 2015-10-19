@@ -14,6 +14,7 @@ exports.register = function(req, res) {
     emailFlag,
     adminName,
     adminEmail,
+    inviter,
     location,
     data = {};
 
@@ -42,6 +43,7 @@ exports.register = function(req, res) {
       adminEmail = req.body.adminEmail || null;
       active = req.body.active || 0;
       emailFlag = req.body.emailFlag || false;
+      inviter = req.body.inviter || null;
 
       // Check if email is already registered.
       User.findOne({email: new RegExp('^' + escapeStringRegexp(req.body.email) + '$', 'i')}, function (err, user) {
@@ -125,6 +127,11 @@ exports.register = function(req, res) {
         };
         if (adminEmail) {
           mailOptions.cc = !adminName ? adminEmail : adminName + '<' + adminEmail + '>';
+        }
+        if (inviter) {
+          mailOptions.cc = mailOptions.cc + ',' + inviter.name + '<' + inviter.email + '>';
+          mailOptions.adminName = inviter.name;
+          mailOptions.subject = inviter.name + ' has invited you to join Humanitarian ID';
         }
 
         // Send mail
