@@ -49,7 +49,7 @@ app.use(session({
 }));
 
 app.set('title', 'Humanitarian ID');
-app.locals.title = 'Humanitarian ID';
+app.locals.title = 'Your Humanitarian ID login';
 app.set('emailFrom', 'info@humanitarian.id');
 
 // Define Oauth token expiration time to 8 hours.
