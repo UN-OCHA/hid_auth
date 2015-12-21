@@ -1,0 +1,17 @@
+{
+  "name": "hid_auth-blackmeshtest",
+  "db": "mongodb/contactsid-test",
+  "emailer": {
+    "from": "info@humanitarian.id",
+    "admin": "contacts-id+blackmeshtest@unocha.flowdock.com"
+  },
+  "smtpHost": "mailhog.568elmp02.blackmesh.com",
+  "smtpPort": "1025",
+  "smtpUser": "humanitarianid",
+  "smtpPass": "GV^15bzv20",
+  "rootURL": "http://auth.test.humanitarian.id",
+  "defaultClient": "hid-test",
+  "profilesURL": "http://profiles.test.humanitarian.id",
+  "profilesClientId": "hid-auth-test",
+  "profilesClientSecret": "T1GrPikT&TTDe$rd"
+}

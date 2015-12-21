@@ -1,0 +1,17 @@
+{
+  "name": "hid_auth-blackmeshstage",
+  "db": "mongodb/contactsid-stage",
+  "emailer": {
+    "from": "info@humanitarian.id",
+    "admin": "contacts-id+blackmeshstage@unocha.flowdock.com"
+  },
+  "smtpHost": "mailhog.568elmp02.blackmesh.com",
+  "smtpPort": "1025",
+  "smtpUser": "humanitarianid",
+  "smtpPass": "GV^15bzv20",
+  "rootURL": "http://auth.stage.humanitarian.id",
+  "defaultClient": "hid-stage",
+  "profilesURL": "http://profiles.stage.humanitarian.id",
+  "profilesClientId": "hid-stage",
+  "profilesClientSecret": "lNIRihcM6X*g"
+}

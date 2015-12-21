@@ -1,0 +1,18 @@
+{
+  "name": "hid_auth-prod",
+  "db": "568eldb01.blackmesh.com/hid-auth-prod,568eldb02.blackmesh.com/hid-auth-prod,568elmp01.blackmesh.com/hid-auth-prod?replicaSet=hid",
+  "emailer": {
+    "from": "info@humanitarian.id",
+    "admin": "info@humanitarian.id"
+  },
+  "smtpHost": "smtp.sendgrid.net",
+  "smtpPort": "25",
+  "smtpUser": "humanitarianid",
+  "smtpPass": "GV^15bzv20",
+  "rootURL": "https://auth.humanitarian.id",
+  "requireSSL": true,
+  "defaultClient": "hid-prod",
+  "profilesURL": "https://profiles.humanitarian.id",
+  "profilesClientId": "hid-auth-prod",
+  "profilesClientSecret": "T1GrPikT&TTDe$rd"
+}

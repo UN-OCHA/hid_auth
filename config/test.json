@@ -1,0 +1,8 @@
+{
+  "name": "hid_auth-test",
+  "db": "localhost/contactsid-test",
+  "emailer": {
+    "from": "test@example.com"
+  },
+  "rootURL": "http://contactsid.local:3000"
+}
