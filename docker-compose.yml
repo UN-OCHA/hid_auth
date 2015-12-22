@@ -16,5 +16,19 @@ auth:
     DNSDOCK_NAME: auth
     DNSDOCK_IMAGE: contactsid
     NODE_ENV: dockerdev
+    DATABASE: mongo/contactsid-dev
+    SESSION_SECRET: put_something_crazy_here_but_maybe_no_weird_chars_please
+    REQUIRE_SSL: false
+    ROOT_URL: http://auth.contactsid.vm
+    HID_AUTH_ADMIN_EMAIL: info@humanitarian.id
+    DEFAULT_CLIENT: hid-local
+    PROFILES_URL: http://profiles.contactsid.vm
+    PROFILES_CLIENT_ID: hid-local
+    PROFILES_CLIENT_SECRET: Kk6a8bk@HZBs
+    NAME: hid_auth-dockerdev
+    SMTP_HOST: app.mailhog.vm
+    SMTP_PORT: 1025
+    SMTP_USER: humanitarianid
+    SMTP_PASS: smtp_password
   links:
     - mongo:mongo

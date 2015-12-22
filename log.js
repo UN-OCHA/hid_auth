@@ -1,5 +1,4 @@
 var bunyan = require('bunyan'),
-  config = require('./config'),
   _ = require('lodash'),
   userSerializer = function (user) {
     return _.pick(user, function (value, key, object) {
@@ -7,7 +6,7 @@ var bunyan = require('bunyan'),
     });
   },
   log = bunyan.createLogger({
-    name: config.name,
+    name: process.env.NAME,
     serializers: {
       req: bunyan.stdSerializers.req,
       user: userSerializer

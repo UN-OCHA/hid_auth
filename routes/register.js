@@ -1,5 +1,4 @@
 var User = require('./../models').User;
-var config = require('./../config');
 var log = require('./../log');
 var mail = require('./../mail');
 var async = require('async');
@@ -78,7 +77,7 @@ module.exports.form = function(req, res) {
       // Set up email content
       var now = Date.now(),
         clientId = req.body.client_id || '',
-        reset_url = config.rootURL || (req.protocol + "://" + req.get('host'));
+        reset_url = process.env.ROOT_URL || (req.protocol + "://" + req.get('host'));
 
       reset_url += "/register/" + new Buffer(data.email + "/" + now + "/" + new Buffer(User.hashPassword(data.hashed_password + now + data.user_id)).toString('base64') + "/" + clientId).toString('base64');
 

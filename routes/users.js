@@ -2,7 +2,6 @@ var User = require('./../models').User;
 var errors = require('./../errors');
 var mail = require('./../mail');
 var log = require('./../log');
-var config = require('./../config');
 var async = require('async');
 var bcrypt = require('bcrypt');
 var Client = require('./../models').OAuthClientsModel;
