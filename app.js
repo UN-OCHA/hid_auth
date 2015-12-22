@@ -43,7 +43,7 @@ var mstore = new MongoStore({
 app.use(session({
   key: 'hid.auth',
   store: mstore,
-  secret: 'LGVU$S&uI3JqRJ%yyp%^N0RC',
+  secret: config.sessionSecret,
   saveUninitialized: false,
   resave: false
 }));
