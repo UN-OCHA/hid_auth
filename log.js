@@ -6,7 +6,7 @@ var bunyan = require('bunyan'),
     });
   },
   log = bunyan.createLogger({
-    name: process.env.NAME,
+    name: process.env.APP_NAME,
     serializers: {
       req: bunyan.stdSerializers.req,
       user: userSerializer
