@@ -3,7 +3,6 @@ var models = require('./../models');
 var log = require('../log');
 var User = models.User;
 var Client = models.OAuthClientsModel;
-var config = require('./../config');
 
 function requiresWebUser(req, res, next) {
   if (req.session.userId) {
@@ -134,7 +133,7 @@ module.exports.getProfilesAccessKey = function(req){
   var access_key = '';
   var SHA256 = require("crypto-js/sha256");
   var data = req;
-  var valuesList = flattenValues(data, '') + config.profilesClientSecret;
+  var valuesList = flattenValues(data, '') + process.env.PROFILES_CLIENT_SECRET;
   access_key = SHA256(valuesList);
 
   return access_key;
