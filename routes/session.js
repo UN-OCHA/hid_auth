@@ -20,18 +20,17 @@ function floodWarning(count) {
 }
 
 function lockAlert(email, user, lockFailure, req) {
-  var config = require('./../config');
   var alert = require('./../lib/alert');
 
   var options = {
     user: user,
     lockoutTime: FLOOD_LOCK_EXPIRATION_MINUTES,
-    forgotpassUrl: config.rootURL + '#forgotPass',
+    forgotpassUrl: process.env.ROOT_URL + '#forgotPass',
     email: email,
     date: new Date(),
     ip: req.get('X-Forwarded-For') || req.ip,
     userAgent: req.get('User-Agent'),
-    accountUrl: user && user.user_id ? config.rootURL + '/admin/users/' + user.user_id : '',
+    accountUrl: user && user.user_id ? process.env.ROOT_URL + '/admin/users/' + user.user_id : '',
     kibanaUrl: 'http://568elmp01.blackmesh.com/kibana/#/dashboard/elasticsearch/HID%20Prod%20Authentication%20Events',
     lockFailure: lockFailure
   };

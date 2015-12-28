@@ -2,7 +2,6 @@ var async = require('async'),
   escapeStringRegexp = require('escape-string-regexp'),
   log = require('./../log'),
   User = require('./../models').User,
-  config = require('./../config'),
   mail = require('./../mail');
 
 exports.register = function(req, res) {
@@ -104,7 +103,7 @@ exports.register = function(req, res) {
         var subject = '';
         var now = Date.now(),
           clientId = req.body.client_id || req.client_key || '';
-          reset_url = config.rootURL || (req.protocol + "://" + req.get('host'));
+          reset_url = process.env.ROOT_URL || (req.protocol + "://" + req.get('host'));
 
         // Use the resetpw endpoint so that ghost users are directed to their
         // account page to set their password, as they did not go through the
@@ -202,7 +201,7 @@ exports.users = function(req, res) {
           // Send claim
           var now = Date.now(),
             clientId = req.body.client_id || req.client_key || '';
-            reset_url = config.rootURL || (req.protocol + "://" + req.get('host'));
+            reset_url = process.env.ROOT_URL || (req.protocol + "://" + req.get('host'));
           reset_url += "/resetpw/" + new Buffer(user.email + "/" + now + "/" + new Buffer(User.hashPassword(user.hashed_password + now + user.user_id)).toString('base64') + "/" + clientId).toString('base64');
           output.reset_url = reset_url;
         }

@@ -1,5 +1,4 @@
 var routes = require('./routes');
-var config = require('./config');
 var errors = require('./errors');
 var log = require('./log');
 var path = require('path');
@@ -43,7 +42,7 @@ var mstore = new MongoStore({
 app.use(session({
   key: 'hid.auth',
   store: mstore,
-  secret: 'LGVU$S&uI3JqRJ%yyp%^N0RC',
+  secret: process.env.SESSION_SECRET,
   saveUninitialized: false,
   resave: false
 }));
@@ -61,7 +60,7 @@ app.use(methodOverride());
 
 app.use(helmet());
 // Set Strict-Transport-Security header to 4 weeks (in milliseconds)
-app.use(helmet.hsts({maxAge: 2419200000, force: config.requireSSL ? true : false}));
+app.use(helmet.hsts({maxAge: 2419200000, force: process.env.REQUIRE_SSL ? true : false}));
 
 var formCSRF = function (req, res, next) {
   // Skip CSRF validation on the /oauth/access_token callback, as it's not based
@@ -81,7 +80,7 @@ function oauthAlterResponse(oauth, response, cb) {
       crypto = require('crypto'),
       base64url = require('base64url'),
       id_token = {
-        iss: config.rootURL || (oauth.req.protocol + '://' + oauth.req.headers.host),
+        iss: process.env.ROOT_URL || (oauth.req.protocol + '://' + oauth.req.headers.host),
         sub: oauth.user.id,
         aud: oauth.req.body.client_id,
         exp: d + oauthTokenExpires,

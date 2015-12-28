@@ -1,7 +1,6 @@
-var config = require('./../config');
 var mongoose = require('mongoose');
 
-mongoose.connect(config.db, {});
+mongoose.connect(process.env.DATABASE, {});
 
 mongoose.connection.on('error', function(err) {
   console.error('MongoDB error: %s', err);
