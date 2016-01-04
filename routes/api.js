@@ -136,12 +136,12 @@ exports.register = function(req, res) {
         // Send mail
         mail.sendTemplate('register_ghost', mailOptions, function (err, info) {
           if (err) {
-            message = 'Verify email sending failed. Please try again or contact administrators.';
+            message = 'Confirm email was not sent successfully. Please try again or contact administrators.';
             log.warn({'type': 'registerEmail:error', 'message': 'Registration verification email sending failed to ' + data.email + '.', 'err': err, 'info': info});
             return cb(true);
           }
           else {
-            message = 'Verify email sent successful! Check your email and follow the included link to verify your account.';
+            message = 'Confirm email sent successfully ! Check your email and follow the included link to verify your account.';
             log.info({'type': 'registerEmail:success', 'message': 'Registration verification email sending successful to ' + data.email + '.', 'info': info, 'resetUrl': reset_url});
             options = {};
             return cb();
