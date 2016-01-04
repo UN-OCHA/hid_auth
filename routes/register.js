@@ -88,7 +88,7 @@ module.exports.form = function(req, res) {
 
       var mailOptions = {
         to: data.email,
-        subject: 'Account verify link for ' + req.app.get('title'),
+        subject: 'Confirm your new account on ' + req.app.get('title'),
         reset_url: reset_url,
         name_given: data.name_given
       };
