@@ -50,7 +50,7 @@ module.exports.account = function(req, res) {
 
       // Verify form user_id matches session user_id
       if (options.email !== req.session.userId) {
-        message = "Invalid account settings submission. Please try again or contact an administrator.";
+        message = "Sorry, we do not allow changing your primary email address yet. If you need to change your email address, please contact info@humanitarian.id";
         log.warn({'type': 'account:error', 'message': 'User with session ID ' + req.session.userId + ' attempted to change user account with email ' + options.email + '.', 'session': req.session});
         return cb(true);
       }

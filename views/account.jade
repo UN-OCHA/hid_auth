@@ -28,7 +28,7 @@ block content
 
       .form-group
         label(for='email') Email address
-        input.form-control(name='email', type='email', placeholder='Email address', value='#{user.email}', required)
+        input.form-control(name='email', type='email', placeholder='Email address', value='#{user.email}', required, readonly)
       .form-group
         label(for='email_recovery') Recovery email address
         input.form-control(name='email_recovery', type='email', placeholder='Recovery email address', value='#{user.email_recovery}')
