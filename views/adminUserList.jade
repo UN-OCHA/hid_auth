@@ -20,16 +20,20 @@ block content
          if message
           div.messages(class='alert alert-warning', role='alert') !{message}
 
+         form(id='search', name='search', class='form-inline')
+           div.form-group
+             input(type='text', name='q', class='form-control', placeholder='Search' value='#{q}')
+           button(type='submit', class='btn btn-primary') Search
+
          div
-          table(id='list' class='table' data-toggle='table' data-sort-name='id' data-sort-order='asc'
-          data-pagination='true', data-page-size='50' data-search='true', data-id-field='id' data-show-toggle='true' data-mobile-responsive='true')
+          table(id='listusers', class='table table-responsive')
             thead
               tr
-                th(data-field='id' data-sortable='true') User ID
-                th(data-field='name-given' data-sortable='true') Given Name
-                th(data-field='name-family' data-sortable='true') Family Name
-                th(data-field='email' data-sortable='true') Email
-                th(data-field='status' data-sortable='true') Status
+                th User ID
+                th Given Name
+                th Family Name
+                th Email
+                th Status
                 th Roles
                 th Services
                 th Operations
@@ -73,4 +77,5 @@ block content
                         if op.valid
                           li
                             a(href='#{op.uri}') #{op.label}
+        include _paginate
 

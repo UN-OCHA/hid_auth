@@ -362,3 +362,22 @@ body.error-page a {
   color: #54B1C8;
 }
 
+/* Admin users */
+#listusers ul {
+  padding-left: 0;
+}
+
+#search .btn {
+  margin-bottom: 0;
+}
+
+/* Pager */
+.pager > a {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.pager > li > a {
+  color: #428bca;
+}
+

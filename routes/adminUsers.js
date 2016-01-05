@@ -3,6 +3,7 @@ var Flood = require('./../models').FloodEntry;
 var errors = require('./../errors');
 var log = require('./../log');
 var async = require('async');
+var paginate = require('express-paginate');
 
 function operations(account, modal, env) {
   ops = {};
@@ -115,35 +116,35 @@ module.exports.list = function(req, res) {
   var redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
     cancel_uri = '/admin',
     message = null,
-    data = [];
+    data = [],
+    size = 10,
+    start = size * (req.query.page - 1);
 
-  async.series([
-    function (cb) {
-      User.find({}, function(err, users) {
-        if (err) {
-          message = "Could not load users. Please try again."
-          log.warn({type: 'admin:userlist:error', message: 'Failed to load list of users.'});
-          return cb(true);
-        }
-        else {
-          data = users.map(function(item) {
-            item.ops = operations(item, false, req.app.get('env'));
-            item.roles = item.roles || [];
-            item.authorized_services = item.authorized_services || {};
-            return item;
-          });
-        }
-        return cb();
-      })
+  User.list({start: start, limit: size, find: req.query.q},  function(err, count, users) {
+    if (err) {
+      message = "Could not load users. Please try again."
+      log.warn({type: 'admin:userlist:error', message: 'Failed to load list of users.'});
     }
-  ],
-  function (err, results) {
+    else {
+      data = users.map(function(item) {
+        item.ops = operations(item, false, req.app.get('env'));
+        item.roles = item.roles || [];
+        item.authorized_services = item.authorized_services || {};
+        return item;
+      });
+    }
+    console.log(count);
+    var pageCount = count / size;
     res.render('adminUserList', {
       user: req.user,
       accounts: data,
       message: message,
       redirect_uri: redirect_uri,
-      cancel_uri: cancel_uri
+      cancel_uri: cancel_uri,
+      pageCount: pageCount,
+      itemCount: count,
+      pages: paginate.getArrayPages(req)(3, pageCount, req.query.page),
+      q: req.query.q ? req.query.q : ''
     });
   });
 };

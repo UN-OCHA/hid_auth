@@ -15,6 +15,7 @@ var https = require('https');
 https.globalAgent.maxSockets = Infinity;
 
 var express = require('express');
+var paginate = require('express-paginate');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
@@ -257,6 +258,7 @@ app.get('/register/:key', routes.users.resetpwuse);
 
 app.get('/admin', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin);
 
+app.use(paginate.middleware(10, 50));
 app.get('/admin/users', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminUsers.list);
 app.get('/admin/users/:id', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminUsers.view);
 app.get('/admin/users/:id/ops/:action', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminUsers.action);
