@@ -22,6 +22,10 @@ var OAuthUsersSchema = new Schema({
   times_reminded_verify: Number // Number of times the user was reminded to verify his account
 });
 
+OAuthUsersSchema.plugin(require('mongoose-list'), {
+  searchFields: ['email', 'name_given', 'name_family']
+});
+
 function hashPassword(password) {
   return bcrypt.hashSync(password, 11);
 }
