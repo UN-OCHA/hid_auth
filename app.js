@@ -106,37 +106,9 @@ app.oauth = oauthserver({
 
 app.use(serveStatic(path.join(__dirname, 'public')));
 
-app.use(function(err, req, res, next) {
-  if (process.env.NODE_ENV !== 'test') {
-    log.warn({'type': 'error', 'message': 'Error: ' + JSON.stringify(err)});
-  }
-
-  if (err) {
-    if (err.name === 'ValidationError') {
-      res.status(400);
-      res.send(err.errors);
-    }
-    if (err.code === 'EBADCSRFTOKEN') {
-      res.status(403);
-      res.render('csrf');
-    }
-  }
-  else {
-    res.status(err.code || 500);
-    var message = err.message || "The application has encountered an error. Please try again.";
-    res.render('error', {
-      message: message
-    });
-  }
-});
-
-if ('development' === app.get('env')) {
-  app.use(errorHandler());
-}
-
 app.get('/', routes.index);
 
-app.all('/oauth/access_token', app.oauth.grant());
+app.all('/oauth/access_token', app.oauth.grant(), app.oauth.errorHandler());
 
 app.get('/oauth/authorize', function(req, res, next) {
   // If a nonce value is provided, add it to the session to support either
@@ -190,7 +162,7 @@ app.get('/oauth/authorize', function(req, res, next) {
       });
     }
   });
-});
+}, app.oauth.errorHandler());
 
 app.post('/oauth/authorize', function(req, res, next) {
   // If the user is not authenticated, redirect to the login page.
@@ -243,9 +215,7 @@ app.post('/oauth/authorize', function(req, res, next) {
     log.info({'type': 'authorize:declined', 'message': 'User ' + req.session.userId + ' declined to authorize access to client ' + clientId + '.'});
     next(null, false, req.session.userId);
   }
-}));
-
-app.use(app.oauth.errorHandler());
+}), app.oauth.errorHandler());
 
 app.all('/account', middleware.requiresWebOrApiUser, routes.users.account);
 app.get('/account.json', cors(), middleware.requiresWebOrApiUser, routes.users.showjson);
@@ -284,5 +254,21 @@ app.all('/logout', function (req, res) {
 app.post('/api/register', middleware.requiresKeySecret, routes.api.register);
 app.post('/api/resetpw', middleware.requiresKeySecret, routes.api.resetpw);
 app.post('/api/users', middleware.requiresKeySecret, routes.api.users);
+
+app.use(function(err, req, res, next) {
+  log.warn({'type': 'error', 'message': 'Error: ' + JSON.stringify(err)});
+
+  if (err && err.code === 'EBADCSRFTOKEN') {
+    res.status(403);
+    res.render('csrf');
+  }
+  else {
+    res.status(err.code || 500);
+    var message = err.message || "The application has encountered an error. Please try again.";
+    res.render('error', {
+      message: message
+    });
+  }
+});
 
 module.exports = app;
