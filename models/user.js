@@ -80,6 +80,15 @@ OAuthUsersSchema.static('authenticate', function(email, password, cb) {
   });
 });
 
+// Virtual property name
+OAuthUsersSchema.virtual('name').get(function() {
+  return this.name_given + ' ' + this.name_family;
+});
+
+OAuthUsersSchema.set('toObject', {
+  virtuals: true
+});
+
 OAuthUsersSchema.methods.sanitize = function() {
   // Remove sensitive fields. The delete operator is not sufficient.
   var sanitized = this.toObject();
