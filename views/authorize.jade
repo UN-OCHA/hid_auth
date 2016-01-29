@@ -3,37 +3,40 @@ extends layout
 block content
   .container.main
     .row
-      .col-sm-8.col-sm-offset-2.col-md-6.col-md-offset-3
-        form.form-signin(method='post', action='', role='form')
-          h2.form-signin-heading Authorize #{client_name}
-          .form-group
-            .div Do you want to authorize #{client_name} access to your Humanitarian ID account?
-            h4 This application WILL be able to:
-            ul.authorize-list
-              li
-                i.glyphicon.glyphicon-ok
-                span View your profile information
-              li
-                i.glyphicon.glyphicon-ok
-                span Update your profile information
-              li
-                i.glyphicon.glyphicon-ok
-                span View your check-in information
-              li
-                i.glyphicon.glyphicon-ok
-                span Update your check-in information
-            h4 This application WILL NOT be able to:
-            ul.authorize-list
-              li
-                i.glyphicon.glyphicon-remove
-                span View your password
+       .col-md-6.text-left
+        img(src='/images/HID_BIG.png', alt='Error').hid-logo
+    #mainContainer
+      #container.main-container
+        .row
+          .col-sm-8.col-sm-offset-1.col-md-6.col-md-offset-3.main-text
+            form.form-signin(method='post', action='', role='form')
+                h2.form-signin-heading Authorize Humanitarian Contacts
+                .form-group
+                  .div 
+                  p.font-white You are one step away from being able to use your Humanitarian ID login for Humanitarian contacts
+                  h4.form-signin-heading This Application will be able to:
 
-          .form-group
-            input(type='hidden', name='allow', value='yes')
-            input(type='hidden', name='client_id', value='#{client_id}')
-            input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
-            input(type='hidden', name='response_type', value='#{response_type}')
-            input(type='hidden', name='scope', value='#{scope}')
-            input(type='hidden', name='_csrf', value='#{csrf}')
-            button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Authorize
-              span.fa.fa-angle-right
+                  ul.authorize-list
+                    li
+                      span.fa.fa-check.check-size
+                      col-sm-8
+                      span.font-style View your profile information
+
+                  h4.form-signin-heading.margin-padding This application WILL NOT be able to:
+                  ul.authorize-list
+                    li
+                      span.fa.fa-times.cross-size
+                      col-sm-8
+                      span.font-style View your password
+
+                .form-group
+                  input(type='hidden', name='allow', value='yes')
+                  input(type='hidden', name='client_id', value='#{client_id}')
+                  input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
+                  input(type='hidden', name='response_type', value='#{response_type}')
+                  input(type='hidden', name='scope', value='#{scope}')
+                  input(type='hidden', name='_csrf', value='#{csrf}')
+                  button.submit-button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Thanks I got it
+                    span.fa.fa-angle-right
+          #image.globe
+            span.fa.fa-globe
