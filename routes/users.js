@@ -9,6 +9,7 @@ var Client = require('./../models').OAuthClientsModel;
 module.exports.account = function(req, res) {
   var options = req.body || {},
     redirect_uri = req.body.redirect_uri || req.query.redirect_uri || '',
+    temp_uri = process.env.APP_BASE_URL,
     submitted = false,
     message = null,
     data = {};
@@ -94,7 +95,7 @@ module.exports.account = function(req, res) {
         return cb();
       }
     },
-    function (cb) {
+    function (cb) {     
       // Process/save the submitted form values.
       submitted = true;
 
@@ -136,12 +137,13 @@ module.exports.account = function(req, res) {
           }
         });
       }
-    }
+    },
   ],
   function (err, results) {
     if (submitted && redirect_uri && redirect_uri != undefined && String(redirect_uri).length) {
       return res.redirect(redirect_uri);
     }
+    //make changes here
 
     if (!data.email_recovery || typeof data.email_recovery !== 'string') {
       data.email_recovery = '';
@@ -152,7 +154,7 @@ module.exports.account = function(req, res) {
     if (!data.name_family || typeof data.name_family !== 'string') {
       data.name_family = '';
     }
-    res.render('account', {user: data, message: message, redirect_uri: redirect_uri, csrf: req.csrfToken(), allowPasswordReset: req.session.allowPasswordReset || 0});
+    res.render('account', {user: data, message: message, redirect_uri: redirect_uri, temp_uri: temp_uri, csrf: req.csrfToken(), allowPasswordReset: req.session.allowPasswordReset || 0});
   });
 };
 
@@ -193,7 +195,7 @@ module.exports.resetpw = function(req, res) {
   ],
   function (err, results) {
     var message = (results[0] && results[0].message) ? results[0].message : undefined;
-    res.render('index', {action: 'help', options: options, message: message, redirect: req.body.redirect || '', client_id: req.body.client_id || '', redirect_uri: req.body.redirect_uri || '', csrf: req.csrfToken()});
+    res.render('index', {action: 'help', options: options, message: message, redirect: req.body.redirect || '', client_id: req.body.client_id || '', redirect_uri: req.body.redirect_uri || '', temp_uri: temp_uri, csrf: req.csrfToken()});
   });
 };
 
