@@ -362,22 +362,53 @@ body.error-page a {
   color: #54B1C8;
 }
 
-/* Admin users */
-#listusers ul {
-  padding-left: 0;
+.main-container{
+  margin-top: 66px;
 }
 
-#search .btn {
-  margin-bottom: 0;
+.main-text{
+  width: 85%;
+  margin-left: 10px;
+  float: right;
 }
 
-/* Pager */
-.pager > a {
-  margin-left: 5px;
-  margin-right: 5px;
+.globe{
+    font-size: 100px;
+    margin-left: 45px;
 }
 
-.pager > li > a {
-  color: #428bca;
+.submit-button{
+  width: 75%;
+  margin-top: 40px;
 }
 
+.font-style{
+  margin-left: 15px;
+  color: #FFFFFF;
+  padding-bottom: 25px;
+  font-size: 16px;
+}
+
+.margin-padding{
+  margin-top: 25px;
+}
+
+.font-white{
+  color: #FFFFFF;
+  padding-bottom: 25px;
+  font-size: 16px;
+}
+
+.check-size{
+  font-size: 33px;
+}
+
+.cross-size{
+  font-size: 35px;
+  padding-right: 11px;
+}
+
+.hid-logo{
+  width: 130%;
+  margin-top: 50px;
+}
