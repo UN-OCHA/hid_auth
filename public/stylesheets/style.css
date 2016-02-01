@@ -362,7 +362,6 @@ body.error-page a {
   color: #54B1C8;
 }
 
-<<<<<<< HEAD
 .main-container{
   margin-top: 66px;
 }
@@ -413,24 +412,3 @@ body.error-page a {
   width: 130%;
   margin-top: 50px;
 }
-=======
-/* Admin users */
-#listusers ul {
-  padding-left: 0;
-}
-
-#search .btn {
-  margin-bottom: 0;
-}
-
-/* Pager */
-.pager > a {
-  margin-left: 5px;
-  margin-right: 5px;
-}
-
-.pager > li > a {
-  color: #428bca;
-}
-
->>>>>>> develop
