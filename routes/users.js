@@ -143,7 +143,6 @@ module.exports.account = function(req, res) {
     if (submitted && redirect_uri && redirect_uri != undefined && String(redirect_uri).length) {
       return res.redirect(redirect_uri);
     }
-    //make changes here
 
     if (!data.email_recovery || typeof data.email_recovery !== 'string') {
       data.email_recovery = '';
