@@ -80,9 +80,17 @@ OAuthUsersSchema.static('authenticate', function(email, password, cb) {
   });
 });
 
-// Virtual property name
+// Virtual properties for openid connect
 OAuthUsersSchema.virtual('name').get(function() {
   return this.name_given + ' ' + this.name_family;
+});
+
+OAuthUsersSchema.virtual('given_name').get(function() {
+  return this.name_given;
+});
+
+OAuthUsersSchema.virtual('family_name').get(function() {
+  return this.name_family;
 });
 
 OAuthUsersSchema.set('toObject', {
