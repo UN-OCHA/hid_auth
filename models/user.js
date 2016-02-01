@@ -22,6 +22,10 @@ var OAuthUsersSchema = new Schema({
   times_reminded_verify: Number // Number of times the user was reminded to verify his account
 });
 
+OAuthUsersSchema.plugin(require('mongoose-list'), {
+  searchFields: ['email', 'name_given', 'name_family']
+});
+
 function hashPassword(password) {
   return bcrypt.hashSync(password, 11);
 }
@@ -74,6 +78,15 @@ OAuthUsersSchema.static('authenticate', function(email, password, cb) {
     if (err || !user) return cb(err);
     cb(null, bcrypt.compareSync(password, user.hashed_password) && user.active ? user : null);
   });
+});
+
+// Virtual property name
+OAuthUsersSchema.virtual('name').get(function() {
+  return this.name_given + ' ' + this.name_family;
+});
+
+OAuthUsersSchema.set('toObject', {
+  virtuals: true
 });
 
 OAuthUsersSchema.methods.sanitize = function() {

@@ -37,7 +37,9 @@
     "pm2": "~0.14.6",
     "serve-static": "^1.10.0",
     "validator": "^3.42.0",
-    "restify": "~4.0.3"
+    "restify": "~4.0.3",
+    "express-paginate": "~0.1.0",
+    "mongoose-list": "~0.2.2"
   },
   "devDependencies": {
     "supertest": "^0.9.0",
