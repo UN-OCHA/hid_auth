@@ -93,6 +93,10 @@ OAuthUsersSchema.virtual('family_name').get(function() {
   return this.name_family;
 });
 
+OAuthUsersSchema.virtual('email_verified').get(function() {
+  return this.active === 1 ? true : false;
+});
+
 OAuthUsersSchema.set('toObject', {
   virtuals: true
 });
