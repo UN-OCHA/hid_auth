@@ -412,3 +412,60 @@ body.error-page a {
   width: 130%;
   margin-top: 50px;
 }
+
+.hid-logo-dashboard{
+  width: 150%;
+  margin-top: 15px;
+}
+
+.newsPpr-size{
+  font-size: 100px;
+  margin-left: 2.5%; 
+}
+
+.lock-size{
+  font-size: 160px;
+  margin-left: 13%;
+  width: 20%;
+}
+
+.text-align{
+  margin-top: -12.5%;
+  margin-left: 0%;
+  width: 112%;
+}
+
+.angle-align{
+  margin-top: 4px;
+}
+
+.dashboard-btn{
+  width: 61%;
+  margin-top: 20px;
+  padding-bottom: 10px;
+}
+
+.text-size{
+  font-size: 17px;
+}
+
+.btn-top{
+  margin-top: 35px;
+}
+
+.navTabs{
+  margin-left: 29%;
+  width: 50%;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.table{
+  width: 50%;
+  margin-left: 29.5%;
+  margin-top: -13.5%;
+}
+
+.updateButton{
+  margin-top: 30px;
+}
