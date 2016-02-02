@@ -2,66 +2,75 @@ extends layout
 
 block content
   .container.main
-    h1= title
-    h2 Welcome,
-      = " "
-      if user.name_given
-        span.name= user.name_given
-      else
-        span.name= user.email
+    .row
+       .col-md-4.col-md-offset-1.text-left
+        img(src='/images/HID_BIG.png', alt='Error').hid-logo-dashboard
+    .row
+      .container.newsPpr-size
+       .col-md-2.col-md-offset-1
+        span.fa.fa-newspaper-o
+      .container.text-align.col-md-9
+        .col-md-9.col-md-offset-3
+          h2 Go to your Dashboard
+          a(class='button', href='#{temp_uri}/#/dashboard').btn.btn-lg.btn-primary.btn-arrow.btn-block.dashboard-btn.text-size ACCESS HUMANITARIAN CONTACTS LIST
+            span.agnle-align.fa.fa-angle-right
 
-    ul.nav.nav-tabs(role='tablist')
-      li.active
-        a(href='#') Update Your Account
-      each role, i in user.roles
-        if role == 'admin'
+    .row
+      .container.navTabs
+        ul.nav.nav-tabs(role='tablist')
+          li.active
+            a(href='#') Update Your Account
+          each role, i in user.roles
+            if role == 'admin'
+              li
+                a(href='/admin') Admin
           li
-            a(href='/admin') Admin
-      li
-        a(href='/logout') Logout
+            a(href='/logout') Logout
+      .container.content
+        .row
+          .container.image
+            span.fa.fa-lock.lock-size
+          .container.table
+            h2 Change your password
+            
+            form.form-account(method='post', action='', role='form')
+              if message
+                div.messages(class='alert alert-warning', role='alert') !{message}
+              .form-group
+                label(for='email') Email address
+                input.form-control(name='email', type='email', placeholder='Email address', value='#{user.email}', required, readonly)
+              .form-group
+                label(for='email_recovery') Recovery email address
+                input.form-control(name='email_recovery', type='email', placeholder='Recovery email address', value='#{user.email_recovery}')
+              if allowPasswordReset
+                .form-group
+                  label(for='pass_new') New password
+                  input.form-control(name='pass_new', type='password', placeholder='New password', required)
+                .form-group
+                  label(for='pass_confirm') New password (confirm)
+                  input.form-control(name='pass_confirm', type='password', placeholder='New password (confirm)', required)
+              else
+                .form-group
+                  label(for='pass_new') New password
+                  input.form-control(name='pass_new', type='password', placeholder='New password')
+                .form-group
+                  label(for='pass_confirm') New password (confirm)
+                  input.form-control(name='pass_confirm', type='password', placeholder='New password (confirm)')
+              .form-group
+                label(for='name_given') Given name
+                input.form-control(name='name_given', type='text', placeholder='Given name', value='#{user.name_given}', required)
+              .form-group
+                label(for='name_family') Family name
+                input.form-control(name='name_family', type='text', placeholder='Family name', value='#{user.name_family}', required)
+              unless allowPasswordReset
+                .form-group.alert.alert-warning.hidden
+                  label(for='pass_current') Current password
+                  input.form-control(name='pass_current', type='password', placeholder='Current password')
+                  em You must provide your current password to change your email address, recovery email, or password.
 
-    form.form-account(method='post', action='', role='form')
-      p.account-lead-in Update your account settings for #{title}.
-
-      if message
-        div.messages(class='alert alert-warning', role='alert') !{message}
-
-      .form-group
-        label(for='email') Email address
-        input.form-control(name='email', type='email', placeholder='Email address', value='#{user.email}', required, readonly)
-      .form-group
-        label(for='email_recovery') Recovery email address
-        input.form-control(name='email_recovery', type='email', placeholder='Recovery email address', value='#{user.email_recovery}')
-      if allowPasswordReset
-        .form-group
-          label(for='pass_new') New password
-          input.form-control(name='pass_new', type='password', placeholder='New password', required)
-        .form-group
-          label(for='pass_confirm') New password (confirm)
-          input.form-control(name='pass_confirm', type='password', placeholder='New password (confirm)', required)
-      else
-        .form-group
-          label(for='pass_new') New password
-          input.form-control(name='pass_new', type='password', placeholder='New password')
-        .form-group
-          label(for='pass_confirm') New password (confirm)
-          input.form-control(name='pass_confirm', type='password', placeholder='New password (confirm)')
-      .form-group
-        label(for='name_given') Given name
-        input.form-control(name='name_given', type='text', placeholder='Given name', value='#{user.name_given}', required)
-      .form-group
-        label(for='name_family') Family name
-        input.form-control(name='name_family', type='text', placeholder='Family name', value='#{user.name_family}', required)
-      unless allowPasswordReset
-        .form-group.alert.alert-warning.hidden
-          label(for='pass_current') Current password
-          input.form-control(name='pass_current', type='password', placeholder='Current password')
-          em You must provide your current password to change your email address, recovery email, or password.
-
-      .form-group
-        button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Update Account
-          span.fa.fa-angle-right
-        input(type='hidden', name='redirect_uri', value='#{redirect_uri}')
-        input(type='hidden', name='user_id', value='#{user.user_id}')
-        input(type='hidden', name='_csrf', value='#{csrf}')
-        input(type='hidden', name='active', value=1)
+              .form-group
+                button.text-size.btn-top.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Update Account
+                  span.fa.fa-angle-right
+                input(type='hidden', name='user_id', value='#{user.user_id}')
+                input(type='hidden', name='_csrf', value='#{csrf}')
+                input(type='hidden', name='active', value=1)
