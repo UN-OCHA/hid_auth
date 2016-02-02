@@ -25,6 +25,7 @@ auth:
     PROFILES_CLIENT_ID: hid-local
     PROFILES_CLIENT_SECRET: client_secret
     APP_NAME: hid_auth-dockerdev
+    APP_BASE_URL: http://app.contactsid.vm
     SMTP_HOST: app.mailhog.vm
     SMTP_PORT: 1025
     SMTP_USER: humanitarianid
