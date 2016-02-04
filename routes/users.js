@@ -177,6 +177,7 @@ module.exports.resetpw = function(req, res) {
   var email = (req.body && req.body.email) ? req.body.email : undefined,
     clientId = req.body.client_id || '',
     options = {},
+    temp_uri = process.env.APP_BASE_URL,
     data;
 
   async.series([
