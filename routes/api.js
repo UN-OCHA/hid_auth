@@ -188,9 +188,16 @@ exports.resetpw = function(req, res) {
 }
 
 exports.users = function(req, res) {
+  var request = {};
+  if (req.body.email) {
+    request.email = new RegExp('^' + escapeStringRegexp(req.body.email) + '$', 'i');
+  }
+  else {
+    request.user_id = req.body.userid;
+  }
   async.series([
     function (cb) {
-      User.findOne({email: new RegExp('^' + escapeStringRegexp(req.body.email) + '$', 'i')}, function(err, user) {
+      User.findOne(request, function(err, user) {
         if (err || !user) {
           message = "Could not load user. Please try again."
           log.warn({type: 'api:users:error', message: 'Failed to load user.', err: err});
