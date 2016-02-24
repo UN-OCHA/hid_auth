@@ -17,6 +17,10 @@ h1 {
   display: none;
 }
 
+.affiliate-logos img {
+  vertical-align: baseline;
+}
+
 .main {
   height: 100vh;
 }
