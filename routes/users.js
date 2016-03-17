@@ -106,6 +106,9 @@ module.exports.account = function(req, res) {
           if (key == "pass_new") {
             data.hashed_password = User.hashPassword(options.pass_new);
           }
+          else if (key == 'name_given' || key == 'name_family') {
+            data[key] = options[key].charAt(0).toUpperCase() + options[key].substr(1);
+          }
           else {
             data[key] = options[key];
           }

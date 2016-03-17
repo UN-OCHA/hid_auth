@@ -60,6 +60,8 @@ module.exports.form = function(req, res) {
       }
       options.password = options.pass_new;
       options.active = 0;
+      options.name_given = options.name_given.charAt(0).toUpperCase() + options.name_given.substr(1);
+      options.name_family = options.name_family.charAt(0).toUpperCase() + options.name_family.substr(1);
 
       // Register the account
       User.register(options, function (err, user) {
