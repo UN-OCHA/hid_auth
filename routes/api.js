@@ -71,7 +71,9 @@ exports.register = function(req, res) {
         email: email,
         name_given: nameFirst,
         name_family: nameLast,
-        active: active
+        active: active,
+        expires: req.body.expires ? req.body.expires : false,
+        expiresAfter: req.body.expiresAfter ? req.body.expiresAfter : 0
       },
       password = User.hashPassword(email + Date.now() + nameLast + nameFirst),
       pos = Math.floor(Math.random() * (password.length - 12));

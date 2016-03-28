@@ -19,7 +19,9 @@ var OAuthUsersSchema = new Schema({
   roles: [String],
   login_last: Date,
   reminded_verify: Number, // timestamp
-  times_reminded_verify: Number // Number of times the user was reminded to verify his account
+  times_reminded_verify: Number, // Number of times the user was reminded to verify his account
+  expires: {type: Boolean, default: false},
+  expiresAfter: Number
 });
 
 OAuthUsersSchema.plugin(require('mongoose-list'), {
