@@ -117,6 +117,17 @@ OAuthUsersSchema.methods.sanitize = function() {
   return sanitized;
 };
 
+OAuthUsersSchema.methods.isExpired = function() {
+  var now = Date.now();
+  var created = this.user_id.replace(this.email + '_', '');
+  if (this.expires && now.valueOf() - created > this.expiresAfter) {
+    return true;
+  }
+  else {
+    return false;
+  }
+};
+
 mongoose.model('users', OAuthUsersSchema);
 
 var OAuthUsersModel = mongoose.model('users');

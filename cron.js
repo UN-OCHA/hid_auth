@@ -3,6 +3,7 @@ var users = require('./lib/users'),
 
 async.auto({
   reminderVerify: users.sendReminderVerifyEmails,
+  deleteExpired: users.deleteExpired
 },
 function (err, results) {
   if (err) {
