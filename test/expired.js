@@ -20,7 +20,7 @@ describe('user expired', function() {
 
     it('should not be expired', function (done) {
       var current = Date.now();
-      var created = current.valueOf() - 3600;
+      var created = current.valueOf() - 3600 * 1000;
       var expiresAfter = 7 * 24 * 3600;
       var user = new User({
         user_id: 'guillaume@viguierjust.com_' + created,
@@ -36,7 +36,7 @@ describe('user expired', function() {
 
     it('should be expired', function (done) {
       var current = Date.now();
-      var created = current.valueOf() - 8 * 24 * 3600;
+      var created = current.valueOf() - 8 * 24 * 3600 * 1000;
       var expiresAfter = 7 * 24 * 3600;
       var user = new User({
         user_id: 'guillaume@viguierjust.com_' + created,

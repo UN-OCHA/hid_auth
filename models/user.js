@@ -120,7 +120,8 @@ OAuthUsersSchema.methods.sanitize = function() {
 OAuthUsersSchema.methods.isExpired = function() {
   var now = Date.now();
   var created = this.user_id.replace(this.email + '_', '');
-  if (this.expires && now.valueOf() - created > this.expiresAfter) {
+  var expiresAfter = this.expiresAfter * 1000;
+  if (this.expires && now.valueOf() - created > expiresAfter) {
     return true;
   }
   else {
