@@ -105,7 +105,8 @@ exports.register = function(req, res) {
         var subject = '';
         var now = Date.now(),
           clientId = req.body.client_id || req.client_key || '';
-          reset_url = process.env.ROOT_URL || (req.protocol + "://" + req.get('host'));
+          reset_url = process.env.ROOT_URL || (req.protocol + "://" + req.get('host')),
+          template = 'register_ghost';
 
         // Use the resetpw endpoint so that ghost users are directed to their
         // account page to set their password, as they did not go through the
@@ -135,8 +136,13 @@ exports.register = function(req, res) {
           mailOptions.subject = inviter.name + ' has invited you to join Humanitarian ID';
         }
 
+        if (req.body.expires) {
+          // Registration happened through the kiosk
+          template = 'register_kiosk';
+        }
+
         // Send mail
-        mail.sendTemplate('register_ghost', mailOptions, function (err, info) {
+        mail.sendTemplate(template, mailOptions, function (err, info) {
           if (err) {
             message = 'Confirm email was not sent successfully. Please try again or contact administrators.';
             log.warn({'type': 'registerEmail:error', 'message': 'Registration verification email sending failed to ' + data.email + '.', 'err': err, 'info': info});
