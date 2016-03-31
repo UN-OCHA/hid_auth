@@ -116,6 +116,7 @@ module.exports.account = function(req, res) {
         }
       }
       if (changed) {
+        data.expires = false;
         return data.save(function (err, item) {
           if (err || !item) {
             message = "Error updating the user account.";

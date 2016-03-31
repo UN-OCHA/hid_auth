@@ -19,7 +19,9 @@ var OAuthUsersSchema = new Schema({
   roles: [String],
   login_last: Date,
   reminded_verify: Number, // timestamp
-  times_reminded_verify: Number // Number of times the user was reminded to verify his account
+  times_reminded_verify: Number, // Number of times the user was reminded to verify his account
+  expires: {type: Boolean, default: false},
+  expiresAfter: Number
 });
 
 OAuthUsersSchema.plugin(require('mongoose-list'), {
@@ -113,6 +115,18 @@ OAuthUsersSchema.methods.sanitize = function() {
   delete sanitized._id;
   delete sanitized.__v;
   return sanitized;
+};
+
+OAuthUsersSchema.methods.isExpired = function() {
+  var now = Date.now();
+  var created = this.user_id.replace(this.email + '_', '');
+  var expiresAfter = this.expiresAfter * 1000;
+  if (this.expires && now.valueOf() - created > expiresAfter) {
+    return true;
+  }
+  else {
+    return false;
+  }
 };
 
 mongoose.model('users', OAuthUsersSchema);
