@@ -5,6 +5,7 @@ var log = require('./../log');
 var async = require('async');
 var bcrypt = require('bcrypt');
 var Client = require('./../models').OAuthClientsModel;
+var jwt = require('./../lib/jwt');
 
 module.exports.account = function(req, res) {
   var options = req.body || {},
@@ -329,3 +330,22 @@ module.exports.resetpwuse = function(req, res, next) {
     });
   }
 };
+
+module.exports.loginJwt = function (req, res, next) {
+  User.authenticate(req.body.email, req.body.password, function(err, user) {
+    if (err || !user) {
+      res.json(401, "Invalid email or password");
+    }
+    else {
+      var token = jwt.issue({id: user._id});
+      var ret = {
+        'user': user,
+        'token': token
+      };
+      res.json(ret);
+    }
+
+    return next();
+  });
+}
+

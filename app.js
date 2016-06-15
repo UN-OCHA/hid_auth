@@ -66,7 +66,7 @@ app.use(helmet.hsts({maxAge: 2419200000, force: process.env.REQUIRE_SSL ? true :
 var formCSRF = function (req, res, next) {
   // Skip CSRF validation on the /oauth/access_token callback, as it's not based
   // on a form submission.
-  if (req.path == '/oauth/access_token' || req.path.substr(0, 5) == '/api/') {
+  if (req.path == '/oauth/access_token' || req.path == '/jsonwebtoken' || req.path.substr(0, 5) == '/api/') {
     next();
   } else {
     csrf(req, res, next);
@@ -219,6 +219,8 @@ app.post('/oauth/authorize', function(req, res, next) {
 
 app.all('/account', middleware.requiresWebOrApiUser, routes.users.account);
 app.get('/account.json', cors(), middleware.requiresWebOrApiUser, routes.users.showjson);
+
+app.post('/jsonwebtoken', routes.users.loginJwt);
 
 app.post('/register', routes.register.form);
 app.post('/login', routes.session.create);

@@ -2,3 +2,4 @@
 /config
 seed.js
 docker-compose.yml
+keys/hid.rsa
