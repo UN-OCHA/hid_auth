@@ -1,0 +1,22 @@
+{
+	"Welcome to Humanitarian ID login, a sign on service for Humanitarian ID, HumanitarianResponse.info, and other OCHA community sites.": "Bienvenue sur Humanitarian ID, un service de login pour Humanitarian ID, Humanitarianresponse.info et d'autres sites de la communauté OCHA.",
+	"Login": "Se connecter",
+	"Register": "S'inscrire",
+	"About": "A propos",
+	"Email address": "Adresse email",
+	"Password": "Mot de passe",
+	"Proceed": "Poursuivre",
+	"Forgot your password?": "Mot de passe oublié ?",
+	"Need to register?": "Besoin de s'inscrire ?",
+	"Sign up for a account. Doing so will give you access to Humanitarian ID as well as a growing number of related humanitarian community sites.": "Inscrivez vous pour obtenir votre compte. Celui ci vous permettra d'accéder à un nombre croissant de sites web de la communauté humanitaire.",
+	"Recovery email address (optional)": "Adresse email de récupération (optionnel)",
+	"Given name": "Prénom",
+	"Family name": "Nom",
+	"Password (confirm)": "Mot de passe (confirmez)",
+	"Sign Up": "S'inscrire",
+	"As a service to the humanitarian community, Humanitarian ID provides a login service that can be integrated into a variety of websites and applications. As more partners begin to integrate the solution, you will be able to access a variety of sites and tools with the same username and password. Simplification in the digital age - who can be against that?": "As a service to the humanitarian community, Humanitarian ID provides a login service that can be integrated into a variety of websites and applications. As more partners begin to integrate the solution, you will be able to access a variety of sites and tools with the same username and password. Simplification in the digital age - who can be against that?",
+	"Humanitarian ID also provides a self-managed approach to contact lists in humanitarian disasters. To find out more about the scope, features and benefits of Humanitarian ID, please visit us at <a href='http://humanitarian.id'>http://humanitarian.id</a>.": "Humanitarian ID also provides a self-managed approach to contact lists in humanitarian disasters. To find out more about the scope, features and benefits of Humanitarian ID, please visit us at <a href='http://humanitarian.id'>http://humanitarian.id</a>.",
+	"If you are interested in integrating the Humanitarian ID authentication on your platform, <a href='mailto:info@humanitarian.id'>please contact us (info@humanitarian.id)</a>.": "If you are interested in integrating the Humanitarian ID authentication on your platform, <a href='mailto:info@humanitarian.id'>please contact us (info@humanitarian.id)</a>.",
+	"If you forget the password for your Humanitarian ID account, you can request a new password by entering your primary (or recovery) email address here and clicking on 'Reset Password'.": "If you forget the password for your Humanitarian ID account, you can request a new password by entering your primary (or recovery) email address here and clicking on 'Reset Password'.",
+	"Reset Password": "Réinitialiser mot de passe"
+}

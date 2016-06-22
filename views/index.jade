@@ -24,13 +24,13 @@ block content
       h1= title
       img(src= "/images/logo.png")
       div.message
-        p Welcome to #{title}, a sign on service for Humanitarian ID, HumanitarianResponse.info, and other OCHA community sites.
+        p #{__("Welcome to Humanitarian ID login, a sign on service for Humanitarian ID, HumanitarianResponse.info, and other OCHA community sites.") }
       div.buttons
-        a.btn.btn-lg.btn-primary.btn-arrow.btn-block(href="/#login") Login
+        a.btn.btn-lg.btn-primary.btn-arrow.btn-block(href="/#login") #{ __("Login") }
           span.fa.fa-angle-right
-        a.btn.btn-lg.btn-primary.btn-arrow.btn-block(href="/#register") Register
+        a.btn.btn-lg.btn-primary.btn-arrow.btn-block(href="/#register") #{ __("Register") }
           span.fa.fa-angle-right
-        a.btn.btn-lg.btn-primary.btn-arrow.btn-block(href="/#about") About
+        a.btn.btn-lg.btn-primary.btn-arrow.btn-block(href="/#about") #{ __("About") }
           span.fa.fa-angle-right
       div.notice
         if message
@@ -46,16 +46,16 @@ block content
 
         form.form-signin(method='post', action='login', role='form')
           .form-group
-            label(for='email') Email address
+            label(for='email') #{ __("Email address") }
             input.form-control(name='email', type='email', placeholder='Email address', required, autofocus)
           .form-group
-            label(for='Password') Password
+            label(for='Password') #{ __("Password") }
             input.form-control(name='password', id='pass_login', type='password', placeholder='Password', required)
             input(type='checkbox', id='showPassword')
             span &nbsp
             label='Show Password'
           .form-group
-            button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit',id='signInBtn') Proceed
+            button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit',id='signInBtn') #{ __("Proceed") }
               span.fa.fa-angle-right
             input(type='hidden', name='redirect', value='#{redirect}')
             input(type='hidden', name='client_id', value='#{client_id}')
@@ -65,8 +65,8 @@ block content
             input(type='hidden', name='scope', value='#{scope}')
             input(type='hidden', name='_csrf', value='#{csrf}')
           .form-group
-            a.btn.btn-lg.btn-block.forgot-password(href='#forgotPass') Forgot your password?
-            a.btn.btn-lg.btn-block.register(href='#register') Need to register?
+            a.btn.btn-lg.btn-block.forgot-password(href='#forgotPass') #{ __("Forgot your password?") }
+            a.btn.btn-lg.btn-block.register(href='#register') #{ __("Need to register?") }
 
       div(id='register')
 
@@ -74,32 +74,32 @@ block content
           span.fa.fa-angle-left
         h2 register
 
-        p Sign up for a #{title} account. Doing so will give you access to Humanitarian ID as well as a growing number of related humanitarian community sites.
+        p #{ __("Sign up for a account. Doing so will give you access to Humanitarian ID as well as a growing number of related humanitarian community sites.") }
 
         form.form-signin(method='post', action='register', role='form')
           .form-group
-            label(for='email') Email address
+            label(for='email') #{ __("Email address") }
             input.form-control(name='email', type='email', placeholder='Email address', required)
           .form-group
-            label(for='email_recovery') Recovery email address (optional)
+            label(for='email_recovery') #{ __("Recovery email address (optional)") }
             input.form-control(name='email_recovery', type='email', placeholder='Recovery email address (optional)')
           .form-group
-            label(for='name_given') Given name
+            label(for='name_given') #{ __("Given name") }
             input.form-control(name='name_given', type='text', placeholder='Given name', required)
           .form-group
-            label(for='name_family') Family name
+            label(for='name_family') #{ __("Family name") }
             input.form-control(name='name_family', type='text', placeholder='Family name', required)
           .form-group
-            label(for='pass_new') Password
+            label(for='pass_new') #{ __("Password") }
             input.form-control(name='pass_new', id='pass_new', type='password', placeholder='Password', required)
           .form-group
-            label(for='pass_confirm') Password (confirm)
+            label(for='pass_confirm') #{ __("Password (confirm)") }
             input.form-control(name='pass_confirm', type='password', placeholder='Password (confirm)', required)
           .form-group.url
             label(for='url') URL
             input.form-control(name='url', type='text')
           .form-group
-            button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Sign Up
+            button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') #{ __("Sign Up") }
               span.fa.fa-angle-right
             input(type='hidden', name='redirect', value='#{redirect}')
             input(type='hidden', name='client_id', value='#{client_id}')
@@ -116,24 +116,24 @@ block content
         a.close-modal(href='#')
           span.fa.fa-angle-left
 
-        h2 About
+        h2 #{ __("About") }
 
-        p As a service to the humanitarian community, Humanitarian ID provides a login service that can be integrated into a variety of websites and applications. As more partners begin to integrate the solution, you will be able to access a variety of sites and tools with the same username and password. Simplification in the digital age - who can be against that?
-        p Humanitarian ID also provides a self-managed approach to contact lists in humanitarian disasters. To find out more about the scope, features and benefits of Humanitarian ID, please visit us at <a href="http://humanitarian.id">http://humanitarian.id</a>.
-        p If you are interested in integrating the Humanitarian ID authentication on your platform, <a href="mailto:info@humanitarian.id">please contact us (info@humanitarian.id)</a>.
+        p #{ __("As a service to the humanitarian community, Humanitarian ID provides a login service that can be integrated into a variety of websites and applications. As more partners begin to integrate the solution, you will be able to access a variety of sites and tools with the same username and password. Simplification in the digital age - who can be against that?") }
+        p #{ __("Humanitarian ID also provides a self-managed approach to contact lists in humanitarian disasters. To find out more about the scope, features and benefits of Humanitarian ID, please visit us at <a href='http://humanitarian.id'>http://humanitarian.id</a>.") }
+        p #{ __("If you are interested in integrating the Humanitarian ID authentication on your platform, <a href='mailto:info@humanitarian.id'>please contact us (info@humanitarian.id)</a>.") }
 
       div(id='forgotPass')
 
         a.close-modal(href='#')
           span.fa.fa-angle-left
 
-        p If you forget the password for your Humanitarian ID account, you can request a new password by entering your primary (or recovery) email address here and clicking on 'Reset Password'.
+        p #{ __("If you forget the password for your Humanitarian ID account, you can request a new password by entering your primary (or recovery) email address here and clicking on 'Reset Password'.") }
 
         form.form-signin(method='post', action='resetpw', role='form')
           .form-group
             input.form-control(name='email', type='email', placeholder='Email address (primary or recovery)', required)
           .form-group
-            button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Reset Password
+            button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') #{ __("Reset Password") }
               span.fa.fa-angle-right
             input(type='hidden', name='redirect', value='#{redirect}')
             input(type='hidden', name='client_id', value='#{client_id}')

@@ -13,21 +13,21 @@ block content
                 h2.form-signin-heading Authorize Humanitarian Contacts
                 .form-group
                   .div 
-                  p.font-white You are one step away from being able to use your Humanitarian ID login for Humanitarian contacts
-                  h4.form-signin-heading This Application will be able to:
+                  p.font-white #{ __("You are one step away from being able to use your Humanitarian ID login for Humanitarian contacts") }
+                  h4.form-signin-heading #{ __("This Application will be able to:") }
 
                   ul.authorize-list
                     li
                       span.fa.fa-check.check-size
                       col-sm-8
-                      span.font-style View your profile information
+                      span.font-style #{ __("View your profile information") }
 
-                  h4.form-signin-heading.margin-padding This application WILL NOT be able to:
+                  h4.form-signin-heading.margin-padding #{ __("This application WILL NOT be able to:") }
                   ul.authorize-list
                     li
                       span.fa.fa-times.cross-size
                       col-sm-8
-                      span.font-style View your password
+                      span.font-style #{ __("View your password") }
 
                 .form-group
                   input(type='hidden', name='allow', value='yes')
@@ -36,7 +36,7 @@ block content
                   input(type='hidden', name='response_type', value='#{response_type}')
                   input(type='hidden', name='scope', value='#{scope}')
                   input(type='hidden', name='_csrf', value='#{csrf}')
-                  button.submit-button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') Thanks I got it
+                  button.submit-button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') #{ __("Thanks I got it") }
                     span.fa.fa-angle-right
           #image.globe
             span.fa.fa-globe
