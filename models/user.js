@@ -1,4 +1,4 @@
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 var crypto = require('crypto');
 var escapeStringRegexp = require('escape-string-regexp');
 var mongoose = require('mongoose');

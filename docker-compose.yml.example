@@ -6,15 +6,11 @@ mongo:
     DNSDOCK_NAME: mongo
     DNSDOCK_IMAGE: contactsid
     MONGO_OPTIONS: --journal --noprealloc --smallfiles
-auth:
-  image: unocha/nginx16-nodejs
+auth-node:
+  image: unocha/alpine-base-nodejs
   volumes:
-    - .:/var/www/html
-    - ./env/etc/nginx/nginx.conf:/etc/nginx/nginx.conf
-    - ./env/etc/nginx/conf.d:/etc/nginx/conf.d
+    - .:/srv/www
   environment:
-    DNSDOCK_NAME: auth
-    DNSDOCK_IMAGE: contactsid
     DATABASE: mongo/contactsid-dev
     SESSION_SECRET: put_something_crazy_here_but_maybe_no_weird_chars_please
     REQUIRE_SSL: false
@@ -25,10 +21,21 @@ auth:
     PROFILES_CLIENT_ID: hid-local
     PROFILES_CLIENT_SECRET: client_secret
     APP_NAME: hid_auth-dockerdev
-    APP_BASE_URL: http://app.contactsid.vm
     SMTP_HOST: app.mailhog.vm
     SMTP_PORT: 1025
     SMTP_USER: humanitarianid
     SMTP_PASS: smtp_password
+    APP_BASE_URL: http://app.contactsid.vm
   links:
     - mongo:mongo
+auth-nginx:
+  image: unocha/alpine-base-nginx
+  volumes:
+    - .:/var/www/html
+    - ./env/etc/nginx/nginx.conf:/etc/nginx/nginx.conf
+    - ./env/etc/nginx/conf.d:/etc/nginx/conf.d
+  environment:
+    DNSDOCK_NAME: auth
+    DNSDOCK_IMAGE: contactsid
+  links:
+    - auth-node:auth-node

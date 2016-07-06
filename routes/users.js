@@ -3,7 +3,7 @@ var errors = require('./../errors');
 var mail = require('./../mail');
 var log = require('./../log');
 var async = require('async');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 var Client = require('./../models').OAuthClientsModel;
 var jwt = require('./../lib/jwt');
 
