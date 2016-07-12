@@ -37,34 +37,34 @@ block content
                 div.messages(class='alert alert-warning', role='alert') !{message}
               .form-group
                 label(for='email') #{ __("Email address") }
-                input.form-control(name='email', type='email', placeholder='Email address', value='#{user.email}', required, readonly)
+                input.form-control(name='email', type='email', placeholder='#{ __("Email address") }', value='#{user.email}', required, readonly)
               .form-group
                 label(for='email_recovery') #{ __("Recovery email address") }
-                input.form-control(name='email_recovery', type='email', placeholder='Recovery email address', value='#{user.email_recovery}')
+                input.form-control(name='email_recovery', type='email', placeholder='#{ __("Recovery email address") }', value='#{user.email_recovery}')
               if allowPasswordReset
                 .form-group
                   label(for='pass_new') #{ __("New password") }
-                  input.form-control(name='pass_new', type='password', placeholder='New password', required)
+                  input.form-control(name='pass_new', type='password', placeholder='#{ __("New password") }', required)
                 .form-group
                   label(for='pass_confirm') #{ __("New password (confirm)") }
-                  input.form-control(name='pass_confirm', type='password', placeholder='New password (confirm)', required)
+                  input.form-control(name='pass_confirm', type='password', placeholder='#{ __("New password (confirm)") }', required)
               else
                 .form-group
                   label(for='pass_new') #{ __("New password") }
-                  input.form-control(name='pass_new', type='password', placeholder='New password')
+                  input.form-control(name='pass_new', type='password', placeholder='#{ __("New password") }')
                 .form-group
                   label(for='pass_confirm') #{ __("New password (confirm)") }
-                  input.form-control(name='pass_confirm', type='password', placeholder='New password (confirm)')
+                  input.form-control(name='pass_confirm', type='password', placeholder='#{ __("New password (confirm)") }')
               .form-group
                 label(for='name_given') #{ __("Given name") }
-                input.form-control(name='name_given', type='text', placeholder='Given name', value='#{user.name_given}', required)
+                input.form-control(name='name_given', type='text', placeholder='#{ __("Given name") }', value='#{user.name_given}', required)
               .form-group
                 label(for='name_family') #{ __("Family name") }
-                input.form-control(name='name_family', type='text', placeholder='Family name', value='#{user.name_family}', required)
+                input.form-control(name='name_family', type='text', placeholder='#{ __("Family name") }', value='#{user.name_family}', required)
               unless allowPasswordReset
                 .form-group.alert.alert-warning.hidden
                   label(for='pass_current') #{ __("Current password") }
-                  input.form-control(name='pass_current', type='password', placeholder='Current password')
+                  input.form-control(name='pass_current', type='password', placeholder='#{ __("Current password") }')
                   em #{ __("You must provide your current password to change your email address, recovery email, or password.") }
 
               .form-group

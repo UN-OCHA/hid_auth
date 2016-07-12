@@ -47,13 +47,13 @@ block content
         form.form-signin(method='post', action='login', role='form')
           .form-group
             label(for='email') #{ __("Email address") }
-            input.form-control(name='email', type='email', placeholder='Email address', required, autofocus)
+            input.form-control(name='email', type='email', placeholder='#{ __("Email address") }', required, autofocus)
           .form-group
             label(for='Password') #{ __("Password") }
-            input.form-control(name='password', id='pass_login', type='password', placeholder='Password', required)
+            input.form-control(name='password', id='pass_login', type='password', placeholder='#{ __("Password") }', required)
             input(type='checkbox', id='showPassword')
             span &nbsp
-            label='Show Password'
+            label #{ __("Show Password") }
           .form-group
             button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit',id='signInBtn') #{ __("Proceed") }
               span.fa.fa-angle-right
@@ -79,22 +79,22 @@ block content
         form.form-signin(method='post', action='register', role='form')
           .form-group
             label(for='email') #{ __("Email address") }
-            input.form-control(name='email', type='email', placeholder='Email address', required)
+            input.form-control(name='email', type='email', placeholder='#{ __("Email address") }', required)
           .form-group
             label(for='email_recovery') #{ __("Recovery email address (optional)") }
-            input.form-control(name='email_recovery', type='email', placeholder='Recovery email address (optional)')
+            input.form-control(name='email_recovery', type='email', placeholder='#{ __("Recovery email address (optional)") }')
           .form-group
             label(for='name_given') #{ __("Given name") }
-            input.form-control(name='name_given', type='text', placeholder='Given name', required)
+            input.form-control(name='name_given', type='text', placeholder='#{ __("Given name") }', required)
           .form-group
             label(for='name_family') #{ __("Family name") }
-            input.form-control(name='name_family', type='text', placeholder='Family name', required)
+            input.form-control(name='name_family', type='text', placeholder='#{ __("Family name") }', required)
           .form-group
             label(for='pass_new') #{ __("Password") }
-            input.form-control(name='pass_new', id='pass_new', type='password', placeholder='Password', required)
+            input.form-control(name='pass_new', id='pass_new', type='password', placeholder='#{ __("Password") }', required)
           .form-group
             label(for='pass_confirm') #{ __("Password (confirm)") }
-            input.form-control(name='pass_confirm', type='password', placeholder='Password (confirm)', required)
+            input.form-control(name='pass_confirm', type='password', placeholder='#{ __("Password (confirm)") }', required)
           .form-group.url
             label(for='url') URL
             input.form-control(name='url', type='text')
@@ -119,8 +119,8 @@ block content
         h2 #{ __("About") }
 
         p #{ __("As a service to the humanitarian community, Humanitarian ID provides a login service that can be integrated into a variety of websites and applications. As more partners begin to integrate the solution, you will be able to access a variety of sites and tools with the same username and password. Simplification in the digital age - who can be against that?") }
-        p #{ __("Humanitarian ID also provides a self-managed approach to contact lists in humanitarian disasters. To find out more about the scope, features and benefits of Humanitarian ID, please visit us at <a href='http://humanitarian.id'>http://humanitarian.id</a>.") }
-        p #{ __("If you are interested in integrating the Humanitarian ID authentication on your platform, <a href='mailto:info@humanitarian.id'>please contact us (info@humanitarian.id)</a>.") }
+        p #{ __("Humanitarian ID also provides a self-managed approach to contact lists in humanitarian disasters. To find out more about the scope, features and benefits of Humanitarian ID, please visit us at ") } <a href="http://humanitarian.id">http://humanitarian.id</a>
+        p #{ __("If you are interested in integrating the Humanitarian ID authentication on your platform, ") } <a href='mailto:info@humanitarian.id'>#{ __("please contact us (info@humanitarian.id)") }</a>
 
       div(id='forgotPass')
 
@@ -131,7 +131,7 @@ block content
 
         form.form-signin(method='post', action='resetpw', role='form')
           .form-group
-            input.form-control(name='email', type='email', placeholder='Email address (primary or recovery)', required)
+            input.form-control(name='email', type='email', placeholder='#{ __("Email address (primary or recovery)") }', required)
           .form-group
             button.btn.btn-lg.btn-primary.btn-arrow.btn-block(type='submit') #{ __("Reset Password") }
               span.fa.fa-angle-right
