@@ -227,3 +227,10 @@ exports.users = function(req, res) {
     res.send(results[0] || {'status': 'error', 'message': 'An error occurred processing the request.'});
   });
 }
+
+exports.getUsers = function (req, res) {
+  User
+    .find({}, null, { skip: parseInt(req.query.offset), limit: parseInt(req.query.limit) }, function (err, users) {
+      res.send(users);
+    });
+}

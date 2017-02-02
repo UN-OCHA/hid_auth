@@ -276,6 +276,7 @@ app.all('/logout', function (req, res) {
 app.post('/api/register', middleware.requiresKeySecret, routes.api.register);
 app.post('/api/resetpw', middleware.requiresKeySecret, routes.api.resetpw);
 app.post('/api/users', middleware.requiresKeySecret, routes.api.users);
+app.get('/api/users', middleware.requiresKeySecret, routes.api.getUsers);
 
 app.use(function(err, req, res, next) {
   log.warn({'type': 'error', 'message': 'Error: ' + JSON.stringify(err)});
