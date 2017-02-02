@@ -231,6 +231,8 @@ exports.users = function(req, res) {
 exports.getUsers = function (req, res) {
   User
     .find({}, null, { skip: parseInt(req.query.offset), limit: parseInt(req.query.limit) }, function (err, users) {
-      res.send(users);
+      User.count(function (err, c) {
+        res.send({data: users, count: c});
+      });
     });
 }
