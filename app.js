@@ -249,6 +249,7 @@ app.get('/resetpw/:key', routes.users.resetpwuse);
 app.get('/register/:key', routes.users.resetpwuse);
 
 app.get('/admin', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.admin);
+app.get('/api/users', middleware.requiresKeySecret, routes.api.getUsers);
 
 app.use(paginate.middleware(10, 50));
 app.get('/admin/users', middleware.requiresWebUser, middleware.requiresAdminAccess, routes.adminUsers.list);
@@ -276,7 +277,6 @@ app.all('/logout', function (req, res) {
 app.post('/api/register', middleware.requiresKeySecret, routes.api.register);
 app.post('/api/resetpw', middleware.requiresKeySecret, routes.api.resetpw);
 app.post('/api/users', middleware.requiresKeySecret, routes.api.users);
-app.get('/api/users', middleware.requiresKeySecret, routes.api.getUsers);
 
 app.use(function(err, req, res, next) {
   log.warn({'type': 'error', 'message': 'Error: ' + JSON.stringify(err)});
