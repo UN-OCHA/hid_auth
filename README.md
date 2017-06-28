@@ -1,3 +1,7 @@
+# !!! DEPRECATED !!!
+
+This repository contains HID v1 code which is now deprecated.
+
 # Humanitarian ID Oauth2/Open ID Connect Provider
 
 This is a sign on service for Humanitarian ID (H.ID), HumanitarianResponse.info (HR.info), and other OCHA community sites.
